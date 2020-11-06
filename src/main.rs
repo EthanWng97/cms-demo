@@ -1,11 +1,8 @@
 use postgres::{Client, NoTls, Error};
    
-fn connect_databse(conn_string: &String) -> Result<Client, Error> {
-   let client = Client::connect(conn_string, NoTls)?;
-   return Ok(client);
-   //  return Ok(());
+fn connect_database(conn_string: String) -> postgres::Client {
+   return Client::connect(&conn_string, NoTls).expect("Failed to connect database!,{}");
 }
-
 fn create_table(){
 
 }
