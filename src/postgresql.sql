@@ -237,12 +237,13 @@ BEGIN
 	CLOSE ab_test_c_cur;
 	DEALLOCATE ab_test_c_cur;
    
-	--传出XML执行参数
--- 	StrXML := (SELECT *
---     FROM OutInfo row
---     for XML AUTO,ELEMENTS,ROOT('table'));
--- 	xml := '<dataset>'+StrXML+'</dataset>';
-   
+	-- 传出XML执行参数
+	-- StrXML := (SELECT *
+    -- FROM OutInfo row
+    -- for XML AUTO,ELEMENTS,ROOT('table'));
+    StrXML := 'select table_to_xml(''OutInfo'', true, true, '''')';
+	xml := '<dataset>'+StrXML+'</dataset>';
+
 	error :='0';
 Exception
 	When Others Then
