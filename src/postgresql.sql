@@ -14,7 +14,7 @@ CREATE or REPLACE PROCEDURE dbo.ab_test_control_Add(
     IN userId varchar(36),
     IN userName varchar,
     INOUT error varchar,
-    INOUT eInfo varchar,
+    INOUT eInfo varchar
 )
 AS $$
 
@@ -81,9 +81,9 @@ $$ LANGUAGE plpgsql;
 CREATE or REPLACE PROCEDURE dbo.ab_test_control_Action(
     IN userId varchar,      -- which user call the stored procedure
     IN userName varchar,    -- user name
-    INOUT info json,        -- input of action and details, output of result
+    INOUT info jsonb,        -- input of action and details, output of result
     INOUT entity varchar,   -- extra info
-    INOUT error int,        -- error code
+    INOUT error varchar,        -- error code
 	INOUT eInfo varchar     -- error details
 )
 AS $$
@@ -93,17 +93,9 @@ DECLARE
     language varchar := error; --国家代码
     position bigint := -1;		--错误位置
 
-    TmpXML xml := CONVERT(xml,xml);
-	TmpXMLEntity xml :=CONVERT(xml,xmlEntity);
-
     StrXML varchar;
-    return_info varchar;
-
-
-    --初始化扩展传出参数-------------------
-    xmlEntity varchar:='<dataset><table></table></dataset>';
-
-    return_error varchar(255);
+    return_error varchar;
+    return_eInfo varchar;
 	cur_films CURSOR FOR SELECT * FROM film WHERE release_year = p_year;
 
 	sId varchar(36);
@@ -147,7 +139,7 @@ BEGIN
         (
         action varchar(20),
         sId varchar(36),
-        error int,
+        error varchar, 
         eInfo varchar
         );
  	OPEN ab_test_c_cur;
@@ -175,7 +167,7 @@ BEGIN
 
 	WHILE fetch_status = 0
 	LOOP
-        return_info := '';
+        return_eInfo := '';
         return_error := language;
         IF action='add' Then
             CALL ab_test_control_Add(
@@ -192,24 +184,11 @@ BEGIN
                    timeSpinner,
                    dateTimeBox,
                    userId,
-                   return_error);
+                   userName,
+                   return_error,
+                   return_eInfo);
 	    ELSIF action='upp' Then
---             CALL ab_test_control_Upp(
---                    sId,
---                    textBox,
---                    checkBox,
---                    dateBox,
---                    richTextBox,
---                    dropDownList,
---                    foreignKey,
---                    dropDownTree,
---                    numberBox,
---                    numberSpinner,
---                    timeSpinner,
---                    dateTimeBox,
---                    userId,
---                    sTamp,
---                    return_error);
+
 	    ELSIF action='del' Then
             CALL ab_test_control_Del(sId,userId,return_error);
 	    ELSE
@@ -223,7 +202,7 @@ BEGIN
 
         insert into OutInfo
             (action,sId,error,eInfo)
-        values(action, sId, return_error, return_info);
+        values(action, sId, return_error, return_eInfo);
         
         FETCH NEXT FROM ab_test_c_cur INTO
 			 sId,
@@ -255,11 +234,14 @@ BEGIN
     -- for XML AUTO,ELEMENTS,ROOT('table'));
     StrXML := 'select table_to_xml(''OutInfo'', true, true, '''')';
 
-	error :='0';
-    Exception
-	    When Others Then
-            get stacked diagnostics eInfo:= MESSAGE_TEXT;
-            error:= concat('error: ',eInfo);
+	error:='00000';
+    eInfo:= 'successful completion';
+    exception
+        When Others Then
+            get stacked diagnostics eInfo:= MESSAGE_TEXT,
+                                    error:= RETURNED_SQLSTATE;
+            eInfo:= concat('error: ',eInfo);
+
 --          set error = procName+':'+dbo.SpringSpTranslation_Error(procName,language,999,Convert(varchar(150),position),ERROR_MESSAGE(),'','','');
 
 END;
