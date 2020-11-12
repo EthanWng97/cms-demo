@@ -1,18 +1,18 @@
 CREATE or REPLACE PROCEDURE dbo.ab_test_control_Add(
-    textBox varchar(50),
-    checkBox BOOLEAN,
-    dateBox timestamp,
-    richTextBox varchar(256),
-    dropDownList int,
-    foreignKey varchar(36),
-    dropDownTree int,
-    numberBox decimal(18,2),
-    numberSpinner int,
-    timeSpinner varchar(10),
-    dateTimeBox timestamp,
-    createUser varchar(36),
-    INOUT error varchar(500),
-    INOUT sId varchar(36)
+    INOUT sId varchar(36),
+    IN textBox varchar(50),
+    IN checkBox BOOLEAN,
+    IN dateBox timestamp with time zone,
+    IN richTextBox varchar(256),
+    IN dropDownList int,
+    IN foreignKey varchar(36),
+    IN dropDownTree int,
+    IN numberBox decimal(18,2),
+    IN numberSpinner int,
+    IN timeSpinner varchar(10),
+    IN dateTimeBox timestamp with time zone,
+    IN userId varchar(36),
+    INOUT error varchar(500)
 )
 AS $$
 
@@ -20,80 +20,80 @@ DECLARE
     procName varchar(50) := 'ab_test_control_Add';    --存储过程名称
     language varchar(50):= error;    --语言代码
     position bigint := 1;     --错误位置
-    errorinfo text;
+    eInfo text;
 
 BEGIN
-    sId:='SELECT uuid_generate_v4()';
-    Insert Into ab_test_control
-       (
-       sId,
-       textBox,
-       checkBox,
-       dateBox,
-       richTextBox,
-       dropDownList,
-       foreignKey,
-       dropDownTree,
-       numberBox,
-       numberSpinner,
-       timeSpinner,
-       dateTimeBox,
-       createUser,
-       createTime,
-       modifyUser,
-       modifyTime
-       )
-    values(
-           @sId,
-           @textBox,
-           @checkBox,
-           @dateBox,
-           @richTextBox,
-           @dropDownList,
-           @foreignKey,
-           @dropDownTree,
-           @numberBox,
-           @numberSpinner,
-           @timeSpinner,
-           @dateTimeBox,
-           @createUser,
-           sysdatetimeoffset(),
-           @createUser,
-           sysdatetimeoffset()
-          );
-    COMMIT;
+    sId:=uuid_generate_v4();
+    Insert Into dbo.ab_test_control
+    (
+        sId,
+        textBox,
+        checkBox,
+        dateBox,
+        richTextBox,
+        dropDownList,
+        foreignKey,
+        dropDownTree,
+        numberBox,
+        numberSpinner,
+        timeSpinner,
+        dateTimeBox,
+        createUser,
+        createTime,
+        modifyUser,
+        modifyTime
+    )
+    values
+    (
+        sId,
+        textBox,
+        checkBox,
+        dateBox,
+        richTextBox,
+        dropDownList,
+        foreignKey,
+        dropDownTree,
+        numberBox,
+        numberSpinner,
+        timeSpinner,
+        dateTimeBox,
+        userId,
+        now(),
+        userId,
+        now()
+    );
     error:='0';
-
-exception
-    When Others Then
-        rollback;
-        get stacked diagnostics errorinfo:= MESSAGE_TEXT;
-        error:='error:'+errorinfo;
-    --   error := procName+':'+dbo.SpringSpTranslation_Error(procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
-
+    exception
+        When Others Then
+            rollback;
+            get stacked diagnostics eInfo:= MESSAGE_TEXT;
+            error:= concat('error: ',eInfo);
+            -- raise notice '异常: %',eInfo;
+            --   error := procName+':'+dbo.SpringSpTranslation_Error(procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+    COMMIT;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE or REPLACE PROCEDURE dbo.ab_test_control_Action(
-    IN userId varchar,
-    IN userName varchar,
-    INOUT info json,
-    INOUT entity varchar, 
-    INOUT error int,
-	INOUT eInfo varchar
+    IN userId varchar,      -- which user call the stored procedure
+    IN userName varchar,    -- user name
+    INOUT info json,        -- input of action and details, output of result
+    INOUT entity varchar,   -- extra info
+    INOUT error int,        -- error code
+	INOUT eInfo varchar     -- error details
 )
 AS $$
 
 DECLARE
-	procName varchar(50):= 'ab_test_control_Action';  --存储过程名称
-    language varchar(50) := error; --国家代码
+	procName varchar := 'ab_test_control_Action';  --存储过程名称
+    language varchar := error; --国家代码
     position bigint := -1;		--错误位置
 
     TmpXML xml := CONVERT(xml,xml);
 	TmpXMLEntity xml :=CONVERT(xml,xmlEntity);
 
     StrXML varchar;
-    info_return varchar;
+    return_info varchar;
 
 
     --初始化扩展传出参数-------------------
@@ -105,7 +105,7 @@ DECLARE
 	sId varchar(36);
   	textBox varchar(50);
   	checkBox bit;
-  	dateBox timestamp;
+  	dateBox timestamp with time zone;
   	richTextBox varchar(256);
   	dropDownList int;
   	foreignKey varchar(36);
@@ -113,8 +113,8 @@ DECLARE
   	numberBox decimal(18,2);
   	numberSpinner int;
   	timeSpinner varchar(10);
-  	dateTimeBox timestamp;
-  	sTamp timestamp;
+  	dateTimeBox timestamp with time zone;
+  	sTamp timestamp with time zone;
   	xmlinfo xml;
   	info varchar;
   	action varchar(20);
@@ -171,7 +171,7 @@ BEGIN
 
 	WHILE fetch_status = 0
 	LOOP
-        info_return := '';
+        return_info := '';
         return_error := language;
         IF action='add' Then
             CALL ab_test_control_Add(
@@ -187,7 +187,7 @@ BEGIN
                    numberSpinner,
                    timeSpinner,
                    dateTimeBox,
-                   createUser,
+                   userId,
                    return_error);
 	    ELSIF action='upp' Then
 --             CALL ab_test_control_Upp(
@@ -203,11 +203,11 @@ BEGIN
 --                    numberSpinner,
 --                    timeSpinner,
 --                    dateTimeBox,
---                    createUser,
+--                    userId,
 --                    sTamp,
 --                    return_error);
 	    ELSIF action='del' Then
-            CALL ab_test_control_Del(sId,createUser,return_error);
+            CALL ab_test_control_Del(sId,userId,return_error);
 	    ELSE
           return_error := 'Marked['+action+'] undefined!';
 		END IF;
@@ -219,7 +219,7 @@ BEGIN
 
         insert into OutInfo
             (action,sId,error,eInfo)
-        values(action, sId, info_return, return_error);
+        values(action, sId, return_error, return_info);
         
         FETCH NEXT FROM ab_test_c_cur INTO
 			 sId,
@@ -255,7 +255,7 @@ BEGIN
 Exception
 	When Others Then
         get stacked diagnostics eInfo:= MESSAGE_TEXT;
-        error:='error:'+errorinfo;
+        error:= 'error:%', eInfo;
 -- BEGIN CATCH
       --set error='error:'+ERROR_MESSAGE();
 --       set error = procName+':'+dbo.SpringSpTranslation_Error(procName,language,999,Convert(varchar(150),position),ERROR_MESSAGE(),'','','');

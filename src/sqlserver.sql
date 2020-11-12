@@ -189,3 +189,81 @@ BEGIN CATCH
 END CATCH;
 
 END;
+
+CREATE PROCEDURE [dbo].[ab_test_control_Add]
+      @sId varchar(36) OUTPUT,
+      @textBox nvarchar(50),
+      @checkBox bit,
+      @dateBox datetime,
+      @richTextBox nvarchar(256),
+      @dropDownList int,
+      @foreignKey varchar(36),
+      @dropDownTree int,
+      @numberBox decimal(18,2),
+      @numberSpinner int,
+      @timeSpinner nvarchar(10),
+      @dateTimeBox datetime,
+      @createUser varchar(36),
+      @error nvarchar(500) OUTPUT
+AS
+
+BEGIN
+
+declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;          --错误位置
+set @procName = 'ab_test_control_Add';
+set @language = @error;
+set @position = 1;
+
+begin transaction;
+
+BEGIN TRY
+     set @sId=lower(newid()); 
+     Insert Into ab_test_control(
+             sId,
+             textBox,
+             checkBox,
+             dateBox,
+             richTextBox,
+             dropDownList,
+             foreignKey,
+             dropDownTree,
+             numberBox,
+             numberSpinner,
+             timeSpinner,
+             dateTimeBox,
+             createUser,
+             createTime,
+             modifyUser,
+             modifyTime
+           ) 
+     Values(
+             @sId,
+             @textBox,
+             @checkBox,
+             @dateBox,
+             @richTextBox,
+             @dropDownList,
+             @foreignKey,
+             @dropDownTree,
+             @numberBox,
+             @numberSpinner,
+             @timeSpinner,
+             @dateTimeBox,
+             @createUser,
+             sysdatetimeoffset(),
+             @createUser,
+             sysdatetimeoffset()
+           );
+     commit transaction;
+     set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      --set @error='error:'+ERROR_MESSAGE();
+      set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
