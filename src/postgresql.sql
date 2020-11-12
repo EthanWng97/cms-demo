@@ -12,7 +12,9 @@ CREATE or REPLACE PROCEDURE dbo.ab_test_control_Add(
     IN timeSpinner varchar(10),
     IN dateTimeBox timestamp with time zone,
     IN userId varchar(36),
-    INOUT error varchar(500)
+    IN userName varchar,
+    INOUT error varchar,
+    INOUT eInfo varchar,
 )
 AS $$
 
@@ -20,7 +22,6 @@ DECLARE
     procName varchar(50) := 'ab_test_control_Add';    --存储过程名称
     language varchar(50):= error;    --语言代码
     position bigint := 1;     --错误位置
-    eInfo text;
 
 BEGIN
     sId:=uuid_generate_v4();
@@ -39,6 +40,7 @@ BEGIN
         timeSpinner,
         dateTimeBox,
         createUser,
+        creataUserName,
         createTime,
         modifyUser,
         modifyTime
@@ -58,17 +60,19 @@ BEGIN
         timeSpinner,
         dateTimeBox,
         userId,
+        userName,
         now(),
         userId,
         now()
     );
-    error:='0';
+    error:='00000';
+    eInfo:= 'successful completion';
     exception
         When Others Then
             rollback;
-            get stacked diagnostics eInfo:= MESSAGE_TEXT;
-            error:= concat('error: ',eInfo);
-            -- raise notice '异常: %',eInfo;
+            get stacked diagnostics eInfo:= MESSAGE_TEXT,
+                                    error:= RETURNED_SQLSTATE;
+            eInfo:= concat('error: ',eInfo);
             --   error := procName+':'+dbo.SpringSpTranslation_Error(procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
     COMMIT;
 END;
@@ -252,13 +256,11 @@ BEGIN
     StrXML := 'select table_to_xml(''OutInfo'', true, true, '''')';
 
 	error :='0';
-Exception
-	When Others Then
-        get stacked diagnostics eInfo:= MESSAGE_TEXT;
-        error:= 'error:%', eInfo;
--- BEGIN CATCH
-      --set error='error:'+ERROR_MESSAGE();
---       set error = procName+':'+dbo.SpringSpTranslation_Error(procName,language,999,Convert(varchar(150),position),ERROR_MESSAGE(),'','','');
+    Exception
+	    When Others Then
+            get stacked diagnostics eInfo:= MESSAGE_TEXT;
+            error:= concat('error: ',eInfo);
+--          set error = procName+':'+dbo.SpringSpTranslation_Error(procName,language,999,Convert(varchar(150),position),ERROR_MESSAGE(),'','','');
 
 END;
 $$ LANGUAGE plpgsql;
