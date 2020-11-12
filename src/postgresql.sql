@@ -75,10 +75,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE or REPLACE PROCEDURE dbo.ab_test_control_Action(
-    INOUT xml varchar,
-    INOUT xmlEntity varchar, 
-    INOUT error varchar,
-	INOUT errorinfo varchar
+    IN userId varchar,
+    IN userName varchar,
+    INOUT info json,
+    INOUT entity varchar, 
+    INOUT error int,
+	INOUT eInfo varchar
 )
 AS $$
 
@@ -141,8 +143,8 @@ BEGIN
         (
         action varchar(20),
         sId varchar(36),
-        info varchar,
-        error varchar
+        error int,
+        eInfo varchar
         );
  	OPEN ab_test_c_cur;
 
@@ -209,10 +211,16 @@ BEGIN
 	    ELSE
           return_error := 'Marked['+action+'] undefined!';
 		END IF;
-		
+
+        -- action varchar(20),
+        -- sId varchar(36),
+        -- error int,
+        -- eInfo varchar,
+
         insert into OutInfo
-            (action,sId,info,error)
+            (action,sId,error,eInfo)
         values(action, sId, info_return, return_error);
+        
         FETCH NEXT FROM ab_test_c_cur INTO
 			 sId,
 			 textBox,
@@ -242,12 +250,11 @@ BEGIN
     -- FROM OutInfo row
     -- for XML AUTO,ELEMENTS,ROOT('table'));
     StrXML := 'select table_to_xml(''OutInfo'', true, true, '''')';
-	xml := '<dataset>'+StrXML+'</dataset>';
 
 	error :='0';
 Exception
 	When Others Then
-        get stacked diagnostics errorinfo:= MESSAGE_TEXT;
+        get stacked diagnostics eInfo:= MESSAGE_TEXT;
         error:='error:'+errorinfo;
 -- BEGIN CATCH
       --set error='error:'+ERROR_MESSAGE();
