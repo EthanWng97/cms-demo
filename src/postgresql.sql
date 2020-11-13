@@ -25,6 +25,7 @@ DECLARE
 
 BEGIN
     sId:=uuid_generate_v4();
+    RAISE NOTICE 'add function: 1';
     Insert Into dbo.ab_test_control
     (
         sId,
@@ -66,13 +67,13 @@ BEGIN
         now()
     );
     error:='00000';
-    eInfo:= 'successful completion';
+    eInfo:= 'successful add';
     exception
         When Others Then
             rollback;
             get stacked diagnostics eInfo:= MESSAGE_TEXT,
                                     error:= RETURNED_SQLSTATE;
-            eInfo:= concat('error: ',eInfo);
+            eInfo:= concat('error in add procedure: ',eInfo);
             --   error := procName+':'+dbo.SpringSpTranslation_Error(procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
     COMMIT;
 END;
@@ -92,157 +93,63 @@ DECLARE
 	procName varchar := 'ab_test_control_Action';  --存储过程名称
     language varchar := error; --国家代码
     position bigint := -1;		--错误位置
-
-    StrXML varchar;
     return_error varchar;
     return_eInfo varchar;
-	cur_films CURSOR FOR SELECT * FROM film WHERE release_year = p_year;
-
-	sId varchar(36);
-  	textBox varchar(50);
-  	checkBox bit;
-  	dateBox timestamp with time zone;
-  	richTextBox varchar(256);
-  	dropDownList int;
-  	foreignKey varchar(36);
-  	dropDownTree int;
-  	numberBox decimal(18,2);
-  	numberSpinner int;
-  	timeSpinner varchar(10);
-  	dateTimeBox timestamp with time zone;
-  	sTamp timestamp with time zone;
-  	xmlinfo xml;
-  	info varchar;
+  	rowinfo jsonb;
   	action varchar(20);
-  	ab_test_c_cur CURSOR FOR
-         SELECT
-        C.value('sId[1]','varchar(36)') as sId,
-        C.value('textBox[1]','nvarchar(50)') as textBox,
-        C.value('checkBox[1]','bit') as checkBox,
-        C.value('dateBox[1]','datetime') as dateBox,
-        C.value('richTextBox[1]','nvarchar(256)') as richTextBox,
-        C.value('dropDownList[1]','int') as dropDownList,
-        C.value('foreignKey[1]','varchar(36)') as foreignKey,
-        C.value('dropDownTree[1]','int') as dropDownTree,
-        C.value('numberBox[1]','decimal(18,2)') as numberBox,
-        C.value('numberSpinner[1]','int') as numberSpinner,
-        C.value('timeSpinner[1]','nvarchar(10)') as timeSpinner,
-        C.value('dateTimeBox[1]','datetime') as dateTimeBox,
-        C.value('sTamp[1]','timestamp') as sTamp,
-        T.C.query('info') as xmlinfo,
-        C.value('action[1]','nvarchar(20)') as action
-    from TmpXML.nodes('/dataset/table/row') as T(C);
-	
+    sId varchar(36):= rowinfo->>'sId';
 BEGIN
-    --定义@xml返回XML临时表
-    CREATE TEMP TABLE  OutInfo 
+    --定义返回JSON临时表
+    CREATE TEMP TABLE OutInfo 
         (
         action varchar(20),
         sId varchar(36),
         error varchar, 
         eInfo varchar
         );
- 	OPEN ab_test_c_cur;
-
-		FETCH NEXT FROM ab_test_c_cur INTO
-			 sId,
-			 textBox,
-			 checkBox,
-			 dateBox,
-			 richTextBox,
-			 dropDownList,
-			 foreignKey,
-			 dropDownTree,
-			 numberBox,
-			 numberSpinner,
-			 timeSpinner,
-			 dateTimeBox,
-			 sTamp,
-			 xmlinfo,
-			 action;
-		info := CONVERT(varchar,xmlinfo);
-		info := replace(info,'<info>','<dataset>');
-		info := replace(info,'</info>','</dataset>');
-
-
-	WHILE fetch_status = 0
-	LOOP
-        return_eInfo := '';
-        return_error := language;
-        IF action='add' Then
-            CALL ab_test_control_Add(
+    FOR rowinfo in SELECT * FROM jsonb_array_elements(info)
+        LOOP
+            RAISE NOTICE '%',rowinfo;
+            return_error := language;
+            return_eInfo := '';
+            IF rowinfo->>'action'='add' Then
+                CALL dbo.ab_test_control_Add(
                    sId ,
-                   textBox,
-                   checkBox,
-                   dateBox,
-                   richTextBox,
-                   dropDownList,
-                   foreignKey,
-                   dropDownTree,
-                   numberBox,
-                   numberSpinner,
-                   timeSpinner,
-                   dateTimeBox,
+                   rowinfo->>'textBox',
+                   (rowinfo->>'checkBox')::boolean,
+                   (rowinfo->>'dateBox')::timestamp with time zone,
+                   rowinfo->>'richTextBox',
+                   (rowinfo->>'dropDownList')::int,
+                   rowinfo->>'foreignKey',
+                   (rowinfo->>'dropDownTree')::int,
+                   (rowinfo->>'numberBox')::decimal(18,2),
+                   (rowinfo->>'numberSpinner')::int,
+                   rowinfo->>'timeSpinner',
+                   (rowinfo->>'dateTimeBox')::timestamp with time zone,
                    userId,
                    userName,
                    return_error,
                    return_eInfo);
-	    ELSIF action='upp' Then
+	        ELSIF action='upp' Then
 
-	    ELSIF action='del' Then
-            CALL ab_test_control_Del(sId,userId,return_error);
-	    ELSE
-          return_error := 'Marked['+action+'] undefined!';
-		END IF;
+	        ELSIF action='del' Then
+                CALL ab_test_control_Del(sId,userId,return_error);
+	        ELSE
+                return_eInfo := concat('Marked[', rowinfo->>action, '] undefined!');
+	    	END IF;
 
-        -- action varchar(20),
-        -- sId varchar(36),
-        -- error int,
-        -- eInfo varchar,
+            insert into OutInfo
+                (action,sId,error,eInfo)
+            values(action, sId, return_error, return_eInfo);
+        END LOOP;
 
-        insert into OutInfo
-            (action,sId,error,eInfo)
-        values(action, sId, return_error, return_eInfo);
-        
-        FETCH NEXT FROM ab_test_c_cur INTO
-			 sId,
-			 textBox,
-			 checkBox,
-			 dateBox,
-			 richTextBox,
-			 dropDownList,
-			 foreignKey,
-			 dropDownTree,
-			 numberBox,
-			 numberSpinner,
-			 timeSpinner,
-			 dateTimeBox,
-			 sTamp,
-			 xmlinfo,
-			 action;
-        info = CONVERT(varchar,xmlinfo);
-        info = replace(info,'<info>','<dataset>');
-        info = replace(info,'</info>','</dataset>');
-
-    END LOOP;
-	CLOSE ab_test_c_cur;
-	DEALLOCATE ab_test_c_cur;
-   
-	-- 传出XML执行参数
-	-- StrXML := (SELECT *
-    -- FROM OutInfo row
-    -- for XML AUTO,ELEMENTS,ROOT('table'));
-    StrXML := 'select table_to_xml(''OutInfo'', true, true, '''')';
-
+    DROP TABLE OutInfo;
 	error:='00000';
     eInfo:= 'successful completion';
     exception
         When Others Then
             get stacked diagnostics eInfo:= MESSAGE_TEXT,
                                     error:= RETURNED_SQLSTATE;
-            eInfo:= concat('error: ',eInfo);
-
---          set error = procName+':'+dbo.SpringSpTranslation_Error(procName,language,999,Convert(varchar(150),position),ERROR_MESSAGE(),'','','');
-
+            eInfo:= concat('error in main procedure: ',eInfo);
 END;
 $$ LANGUAGE plpgsql;
