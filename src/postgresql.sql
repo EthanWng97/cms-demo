@@ -107,7 +107,59 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE or REPLACE PROCEDURE dbo.ab_test_control_Upp(
+    INOUT sId_tmp varchar(36),
+    IN textBox_tmp varchar(50),
+    IN checkBox_tmp BOOLEAN,
+    IN dateBox_tmp timestamp with time zone,
+    IN richTextBox_tmp varchar(256),
+    IN dropDownList_tmp int,
+    IN foreignKey_tmp varchar(36),
+    IN dropDownTree_tmp int,
+    IN numberBox_tmp decimal(18,2),
+    IN numberSpinner_tmp int,
+    IN timeSpinner_tmp varchar(10),
+    IN dateTimeBox_tmp timestamp with time zone,
+    IN modifyUser_tmp varchar(36),
+    IN sTamp_tmp timestamp with time zone,
+    INOUT error varchar,
+    INOUT eInfo varchar
+)
+AS $$
 
+DECLARE 
+    procName varchar(50) := 'ab_test_control_Del';    --存储过程名称
+    language varchar(50):= error;    --语言代码
+    position bigint := 1;     --错误位置
+
+BEGIN
+    Update dbo.ab_test_control Set
+        textBox=textBox_tmp,
+        checkBox=checkBox_tmp,
+        dateBox=dateBox_tmp,
+        richTextBox=richTextBox_tmp,
+        dropDownList=dropDownList_tmp,
+        foreignKey=foreignKey_tmp,
+        dropDownTree=dropDownTree_tmp,
+        numberBox=numberBox_tmp,
+        numberSpinner=numberSpinner_tmp,
+        timeSpinner=timeSpinner_tmp,
+        dateTimeBox=dateTimeBox_tmp,
+        modifyUser=modifyUser_tmp,
+        modifyTime=now()
+        WHERE sId=sId_tmp;
+    error:='00000';
+    eInfo:= 'successful update';
+    exception
+        When Others Then
+            rollback;
+            get stacked diagnostics eInfo:= MESSAGE_TEXT,
+                                    error:= RETURNED_SQLSTATE;
+            eInfo:= concat('error in update procedure: ',eInfo);
+            --   error := procName+':'+dbo.SpringSpTranslation_Error(procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE or REPLACE PROCEDURE dbo.ab_test_control_Action(
     IN userId varchar,      -- which user call the stored procedure
@@ -141,6 +193,7 @@ DECLARE
     numberSpinner int;
     timeSpinner varchar;
     dateTimeBox timestamp with time zone;
+    sTamp timestamp with time zone;
     -- parameter list
 
 BEGIN
@@ -170,6 +223,7 @@ BEGIN
             numberSpinner := rowinfo->>'numberSpinner';
             timeSpinner := rowinfo->>'timeSpinner';
             dateTimeBox := rowinfo->>'dateTimeBox';
+            sTamp := rowinfo->>'sTamp';
             -- parameter assignment
 
             return_error := language;
@@ -193,7 +247,23 @@ BEGIN
                    return_error,
                    return_eInfo);
 	        ELSIF action = 'upp' Then
-
+                CALL dbo.ab_test_control_Upp(
+                   sId ,
+                   textBox,
+                   checkBox,
+                   dateBox,
+                   richTextBox,
+                   dropDownList,
+                   foreignKey,
+                   dropDownTree,
+                   numberBox,
+                   numberSpinner,
+                   timeSpinner,
+                   dateTimeBox,
+                   userId,
+                   sTamp,
+                   return_error,
+                   return_eInfo);
 	        ELSIF action = 'del' Then
                 CALL dbo.ab_test_control_Del(sId,userId,return_error, return_eInfo);
 	        ELSE
