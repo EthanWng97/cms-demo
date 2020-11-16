@@ -267,3 +267,91 @@ BEGIN CATCH
 END CATCH;
 
 END;
+
+CREATE PROCEDURE [dbo].[ab_test_control_Del]
+      @sId varchar(36),
+      @modifyUser varchar(36),
+      @error nvarchar(500) OUTPUT
+AS
+
+BEGIN
+
+declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;          --错误位置
+set @procName = 'ab_test_control_Del';
+set @language = @error;
+set @position = 1;
+
+begin transaction;
+
+BEGIN TRY
+     DELETE FROM ab_test_control WHERE sId=@sId;
+     commit transaction;
+     set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      --set @error='error:'+ERROR_MESSAGE();
+      set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
+
+CREATE PROCEDURE [dbo].[ab_test_control_Upp]
+      @sId varchar(36),
+      @textBox nvarchar(50),
+      @checkBox bit,
+      @dateBox datetime,
+      @richTextBox nvarchar(256),
+      @dropDownList int,
+      @foreignKey varchar(36),
+      @dropDownTree int,
+      @numberBox decimal(18,2),
+      @numberSpinner int,
+      @timeSpinner nvarchar(10),
+      @dateTimeBox datetime,
+      @modifyUser varchar(36),
+      @sTamp timestamp,
+      @error varchar(500) OUTPUT
+AS
+
+BEGIN
+
+declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;          --错误位置
+set @procName = 'ab_test_control_Upp';
+set @language = @error;
+set @position = 1;
+
+begin transaction;
+
+BEGIN TRY
+     Update ab_test_control Set
+             textBox=@textBox,
+             checkBox=@checkBox,
+             dateBox=@dateBox,
+             richTextBox=@richTextBox,
+             dropDownList=@dropDownList,
+             foreignKey=@foreignKey,
+             dropDownTree=@dropDownTree,
+             numberBox=@numberBox,
+             numberSpinner=@numberSpinner,
+             timeSpinner=@timeSpinner,
+             dateTimeBox=@dateTimeBox,
+             modifyUser=@modifyUser,
+             modifyTime=sysdatetimeoffset()
+           WHERE sId=@sId;
+     commit transaction;
+     set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      --set @error='error:'+ERROR_MESSAGE();
+      set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
