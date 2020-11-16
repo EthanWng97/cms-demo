@@ -99,6 +99,20 @@ DECLARE
   	action varchar(20);
     sId varchar(36):= rowinfo->>'sId';
     rowoutput jsonb;
+    -- parameter list
+    textBox varchar;
+    checkBox boolean;
+    dateBox timestamp with time zone;
+    richTextBox varchar;
+    dropDownList int;
+    foreignKey varchar;
+    dropDownTree int;
+    numberBox decimal(18,2);
+    numberSpinner int;
+    timeSpinner varchar;
+    dateTimeBox timestamp with time zone;
+    -- parameter list
+
 BEGIN
     --定义返回JSON临时表
     CREATE TEMP TABLE OutInfo 
@@ -111,22 +125,37 @@ BEGIN
     FOR rowinfo in SELECT * FROM jsonb_array_elements(info)
         LOOP
             -- RAISE NOTICE '%',rowinfo;
+
+            -- parameter assignment
+            textBox := rowinfo->>'textBox';
+            checkBox := rowinfo->>'checkBox';
+            dateBox := rowinfo->>'dateBox';
+            richTextBox := rowinfo->>'richTextBox';
+            dropDownList := rowinfo->>'dropDownList';
+            foreignKey := rowinfo->>'foreignKey';
+            dropDownTree := rowinfo->>'dropDownTree';
+            numberBox := rowinfo->>'numberBox';
+            numberSpinner := rowinfo->>'numberSpinner';
+            timeSpinner := rowinfo->>'timeSpinner';
+            dateTimeBox := rowinfo->>'dateTimeBox';
+            -- parameter assignment
+
             return_error := language;
             return_eInfo := '';
             IF rowinfo->>'action'='add' Then
                 CALL dbo.ab_test_control_Add(
                    sId ,
-                   rowinfo->>'textBox',
-                   (rowinfo->>'checkBox')::boolean,
-                   (rowinfo->>'dateBox')::timestamp with time zone,
-                   rowinfo->>'richTextBox',
-                   (rowinfo->>'dropDownList')::int,
-                   rowinfo->>'foreignKey',
-                   (rowinfo->>'dropDownTree')::int,
-                   (rowinfo->>'numberBox')::decimal(18,2),
-                   (rowinfo->>'numberSpinner')::int,
-                   rowinfo->>'timeSpinner',
-                   (rowinfo->>'dateTimeBox')::timestamp with time zone,
+                   textBox,
+                   checkBox,
+                   dateBox,
+                   richTextBox,
+                   dropDownList,
+                   foreignKey,
+                   dropDownTree,
+                   numberBox,
+                   numberSpinner,
+                   timeSpinner,
+                   dateTimeBox,
                    userId,
                    userName,
                    return_error,
