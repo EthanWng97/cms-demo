@@ -10,5 +10,7 @@
             "username": "root",
             "password": "120912"
         }
-    ]
+    ],
+    "cmake.configureOnOpen": true,
+    "jupyter.jupyterServerType": "local"
 }

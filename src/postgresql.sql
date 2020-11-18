@@ -44,7 +44,8 @@ BEGIN
         creataUserName,
         createTime,
         modifyUser,
-        modifyTime
+        modifyTime,
+        stamp
     )
     values
     (
@@ -64,6 +65,7 @@ BEGIN
         userName,
         now(),
         userId,
+        now(),
         now()
     );
     error:='00000';
@@ -121,7 +123,6 @@ CREATE or REPLACE PROCEDURE dbo.ab_test_control_Upp(
     IN timeSpinner_tmp varchar(10),
     IN dateTimeBox_tmp timestamp with time zone,
     IN modifyUser_tmp varchar(36),
-    IN sTamp_tmp timestamp with time zone,
     INOUT error varchar,
     INOUT eInfo varchar
 )
@@ -146,7 +147,8 @@ BEGIN
         timeSpinner=timeSpinner_tmp,
         dateTimeBox=dateTimeBox_tmp,
         modifyUser=modifyUser_tmp,
-        modifyTime=now()
+        modifyTime=now(),
+        stamp=now()
         WHERE sId=sId_tmp;
     error:='00000';
     eInfo:= 'successful update';
