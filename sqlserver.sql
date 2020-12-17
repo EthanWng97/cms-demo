@@ -355,3 +355,37 @@ BEGIN CATCH
 END CATCH;
 
 END;
+
+CREATE TABLE [dbo].[springTb](
+	[sId] [varchar](36) NOT NULL,
+	[pId] [varchar](36) NULL,
+	[tbType] [int] NULL,
+	[name] [nvarchar](50) NULL,
+	[shortName] [nvarchar](50) NULL,
+	[description] [nvarchar](256) NULL,
+	[descriptionEn] [nvarchar](256) NULL,
+	[tbName] [nvarchar](50) NULL,
+	[fieldName] [nvarchar](50) NULL,
+	[fieldNo] [int] NULL,
+	[isFile] [bit] NULL,
+	[filePathNo] [varchar](36) NULL,
+	[storedProcName] [nvarchar](256) NULL,
+	[remark] [nvarchar](max) NULL,
+	[queue] [int] NULL,
+	[createUser] [varchar](36) NULL,
+	[createTime] [datetimeoffset](7) NULL,
+	[modifyUser] [varchar](36) NULL,
+	[modifyTime] [datetimeoffset](7) NULL,
+	[sTamp] [timestamp] NULL,
+ CONSTRAINT [PK_Sys_Table] PRIMARY KEY CLUSTERED 
+(
+	[sId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[springTb] ADD  CONSTRAINT [DF_Sys_Table_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+ALTER TABLE [dbo].[springTb] ADD  CONSTRAINT [DF_Sys_Table_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
+GO
