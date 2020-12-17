@@ -356,3 +356,33 @@ CALL dbo.ab_test_control_action(userId=>'120912', userName=> 'wangyifan', info=>
         "dateTimeBox":"2020-11-12 04:17:43.635664",
         "sTamp":"2020-11-12 04:17:43.635664"
     }]', entity=>'123', error=>'123', eInfo=>'123');
+
+CREATE TABLE dbo.springTb
+(
+sId varchar(36) NOT NULL,
+pId varchar(36) NULL,
+tbType int NULL,
+name varchar(50) NULL,
+shortName varchar(50) NULL,
+description varchar(256) NULL,
+descriptionEn varchar(256) NULL,
+tbName varchar(50) NULL,
+fieldName varchar(50) NULL,
+fieldNo int NULL,
+isFile smallint NULL,
+filePathNo varchar(36) NULL,
+storedProcName varchar(256) NULL,
+remark varchar NULL,
+queue int NULL,
+createUser varchar(36) NULL,
+createTime timestamp with time zone default now(),
+modifyUser varchar(36) NULL,
+modifyTime timestamp with time zone default now(),
+sTamp varchar NULL
+)
+
+COPY dbo.springtb 
+FROM '/root/springtb.csv'
+csv
+HEADER
+NULL 'NULL'
