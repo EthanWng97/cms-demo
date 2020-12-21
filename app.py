@@ -6,30 +6,38 @@ from sqlalchemy_mptt import mptt_sessionmaker
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
 Base = declarative_base()
+# class Tree(Base, BaseNestedSets):
+#     __tablename__ = "dbo.springtb"
+#     id = Column(String, primary_key=True)
+#     name = Column(String)
 
-class Tree(Base, BaseNestedSets):
-    __tablename__ = "tree"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(8))
-
-    def __repr__(self):
-        return "<Node (%s)>" % self.id
+#     def __repr__(self):
+#         return "<Node (%s)>" % self.id
 
 
-def print_tree(group_name, tab=1):
-    """
-    :param str group_name:要查找的树的根的名称
-    :param int tab: 格式化用的-数量
-    """
-    group = db_session.query(Tree).filter_by(
-        name=group_name).one_or_none()  # type: TreeGroup
+def traverse_trees(tab=1, sid="NULL"):
+    group = db_session.execute(
+        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue" %(sid)).fetchall()
     if not group:
         return
-    # group found - print name and find children
-    print('- ' * tab + group.name)
-    for child_group in group.children:  # type: TreeGroup
-        # new tabulation value for child record
-        print_tree(child_group.name, tab * 2)
+    tab = tab+1
+    for i in group:
+        if i.description:
+            print('- ' * tab + i.description + '[' + i.name + ']')
+        else:
+            print('- ' * tab + i.name)
+        traverse_trees(tab, i.sid)
+
+def print_all_tree(tab=1):
+    """
+    :param int tab: format output via tab
+    """
+    traverse_trees()
+    group = db_session.execute(
+        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue").fetchall()
+    for i in group:
+        print('- ' + i.name)
+        traverse_trees(sid=i.sid)
 
 
 # 创建flask的应用对象
@@ -49,10 +57,6 @@ if __name__ == '__main__':
         'postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan')
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
     db_session = scoped_session(sessionmaker(bind=engine))
-    rows = db_session.execute(
-        "SELECT * FROM dbo.springtb").fetchall()
-    for row in rows:
-        print(row) 
-        # print(f"{row.origin} to {flight.destination}, {flight.duration} minutes.")
+    print_all_tree()
     # 启动flask
     # app.run()
