@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import render_template
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -49,7 +50,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     """定义视图函数"""
-    return 'Hello World!'
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
@@ -57,6 +58,6 @@ if __name__ == '__main__':
         'postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan')
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
     db_session = scoped_session(sessionmaker(bind=engine))
-    print_all_tree()
+    # print_all_tree()
     # 启动flask
-    # app.run()
+    app.run()
