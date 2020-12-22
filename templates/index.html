@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Hello Page</title>
-    <script src="{{ url_for('static',filename='js/tree.js') }}"></script>
+    <!-- <script src="{{ url_for('static',filename='js/tree.js') }}"></script> -->
+    <!-- <script src="/static/js/tree.js"></script> -->
+    <link rel="stylesheet" href="/static/zTree_v3/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="/static/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script src="/static/js/jquery.min.js "></script>
+    <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.core.js"></script>
+    <!-- <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.excheck.js"></script> -->
 </head>
+
 <body>
     Flask APP
+    <div class="modal-body">
+        <ul id="treeDemo" class="ztree" style="width:260px; overflow:auto;"></ul>
+        <!-- <div id="tree" style="height:220px;overflow-x:hidden;"> -->
+        <script src="{{ url_for('static',filename='js/tree.js') }}"></script>
+    </div>
+
 </body>
+
 </html>
