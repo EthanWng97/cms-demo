@@ -386,3 +386,38 @@ FROM '/root/springtb.csv'
 csv
 HEADER
 NULL 'NULL'
+
+CREATE TABLE dbo.springField
+(
+    sId varchar(36) NOT NULL,
+    tbId varchar(36) NULL,
+    isField smallint NULL,
+    name varchar(50) NULL,
+    description varchar(256) NULL,
+    descriptionEn varchar(256) NULL,
+    fdType varchar(50) NULL,
+    length bigint NULL,
+    decimal bigint NULL,
+    isNullable smallint NULL,
+    isUseable smallint NULL,
+    isForeignKey smallint NULL,
+    fkTbId varchar(36) NULL,
+    fkFieldId varchar(36) NULL,
+    defaultValue varchar(500) NULL,
+    uiType int NULL,
+    uiMask varchar(100) NULL,
+    uiVisible smallint NULL,
+    uiReadOnly smallint NULL,
+    uiWidth int NULL,
+    uiDefault varchar(200) NULL,
+    isAddField smallint NULL,
+    isEditField smallint NULL,
+    orderType int NULL,
+    remark varchar NULL,
+    queue int NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+)

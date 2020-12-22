@@ -1,44 +1,44 @@
 CREATE  PROCEDURE [dbo].[ab_test_control_Action]
-    @xml nvarchar(max) OUTPUT,
-    @xmlEntity nvarchar(max) OUTPUT,
-    @createUser nvarchar(36),
-    @error nvarchar(500) output
+      @xml nvarchar(max) OUTPUT,
+      @xmlEntity nvarchar(max) OUTPUT,
+      @createUser nvarchar(36),
+      @error nvarchar(500) output
 AS
 
 BEGIN
 
-    declare @procName nvarchar(50),    --存储过程名称
+      declare @procName nvarchar(50),    --存储过程名称
         @language nvarchar(50), --国家代码
         @position bigint;
-    --错误位置
-    set @procName = 'ab_test_control_Action';
-    set @language = @error;
-    set @position = 1;
+      --错误位置
+      set @procName = 'ab_test_control_Action';
+      set @language = @error;
+      set @position = 1;
 
 
 
-    declare  @TmpXML xml,
+      declare  @TmpXML xml,
          @TmpXMLEntity xml;
-    set @TmpXML = CONVERT(xml,@xml);
-    set @TmpXMLEntity = CONVERT(xml,@xmlEntity);
+      set @TmpXML = CONVERT(xml,@xml);
+      set @TmpXMLEntity = CONVERT(xml,@xmlEntity);
 
-    --定义@xml返回XML临时表
-    DECLARE @OutInfo TABLE 
+      --定义@xml返回XML临时表
+      DECLARE @OutInfo TABLE 
         (
-        action nvarchar(20),
-        sId varchar(36),
-        info nvarchar(max),
-        error nvarchar(max)
+            action nvarchar(20),
+            sId varchar(36),
+            info nvarchar(max),
+            error nvarchar(max)
         );
-    DECLARE @StrXML nvarchar(max);
-    DECLARE @info_return varchar(MAX);
+      DECLARE @StrXML nvarchar(max);
+      DECLARE @info_return varchar(MAX);
 
 
-    --初始化扩展传出参数-------------------
-    SET @xmlEntity='<dataset><table></table></dataset>';
+      --初始化扩展传出参数-------------------
+      SET @xmlEntity='<dataset><table></table></dataset>';
 
-    DECLARE @return_error nvarchar(255);
-    BEGIN TRY
+      DECLARE @return_error nvarchar(255);
+      BEGIN TRY
 DECLARE
        @sId varchar(36),
        @textBox nvarchar(50),
@@ -60,22 +60,22 @@ DECLARE
 
     DECLARE ab_test_c_cur CURSOR FOR
          SELECT
-        C.value('sId[1]','varchar(36)') as sId,
-        C.value('textBox[1]','nvarchar(50)') as textBox,
-        C.value('checkBox[1]','bit') as checkBox,
-        C.value('dateBox[1]','datetime') as dateBox,
-        C.value('richTextBox[1]','nvarchar(256)') as richTextBox,
-        C.value('dropDownList[1]','int') as dropDownList,
-        C.value('foreignKey[1]','varchar(36)') as foreignKey,
-        C.value('dropDownTree[1]','int') as dropDownTree,
-        C.value('numberBox[1]','decimal(18,2)') as numberBox,
-        C.value('numberSpinner[1]','int') as numberSpinner,
-        C.value('timeSpinner[1]','nvarchar(10)') as timeSpinner,
-        C.value('dateTimeBox[1]','datetime') as dateTimeBox,
-        C.value('sTamp[1]','timestamp') as sTamp,
-        T.C.query('info') as xmlinfo,
-        C.value('action[1]','nvarchar(20)') as action
-    from @TmpXML.nodes('/dataset/table/row') as T(C);
+            C.value('sId[1]','varchar(36)') as sId,
+            C.value('textBox[1]','nvarchar(50)') as textBox,
+            C.value('checkBox[1]','bit') as checkBox,
+            C.value('dateBox[1]','datetime') as dateBox,
+            C.value('richTextBox[1]','nvarchar(256)') as richTextBox,
+            C.value('dropDownList[1]','int') as dropDownList,
+            C.value('foreignKey[1]','varchar(36)') as foreignKey,
+            C.value('dropDownTree[1]','int') as dropDownTree,
+            C.value('numberBox[1]','decimal(18,2)') as numberBox,
+            C.value('numberSpinner[1]','int') as numberSpinner,
+            C.value('timeSpinner[1]','nvarchar(10)') as timeSpinner,
+            C.value('dateTimeBox[1]','datetime') as dateTimeBox,
+            C.value('sTamp[1]','timestamp') as sTamp,
+            T.C.query('info') as xmlinfo,
+            C.value('action[1]','nvarchar(20)') as action
+      from @TmpXML.nodes('/dataset/table/row') as T(C);
 
 
  	OPEN ab_test_c_cur;
@@ -103,11 +103,11 @@ DECLARE
 
 	WHILE @@fetch_status = 0
 	BEGIN
-        set @info_return = '';
-        set @return_error = @language;
-        IF @action='add'
+            set @info_return = '';
+            set @return_error = @language;
+            IF @action='add'
           BEGIN
-            EXEC ab_test_control_Add
+                  EXEC ab_test_control_Add
                    @sId OUTPUT,
                    @textBox,
                    @checkBox,
@@ -122,10 +122,10 @@ DECLARE
                    @dateTimeBox,
                    @createUser,
                    @return_error OUTPUT;
-        END;
+            END;
 	    ELSE IF @action='upp'
           BEGIN
-            EXEC ab_test_control_Upp
+                  EXEC ab_test_control_Upp
                    @sId,
                    @textBox,
                    @checkBox,
@@ -141,17 +141,17 @@ DECLARE
                    @createUser,
                    @sTamp,
                    @return_error OUTPUT;
-        END;
+            END;
 	    ELSE IF @action='del'
           BEGIN
-            EXEC ab_test_control_Del @sId,@createUser,@return_error output;
-        END;
+                  EXEC ab_test_control_Del @sId,@createUser,@return_error output;
+            END;
 	    else
           set @return_error = 'Marked['+@action+'] undefined!';
-        insert into @OutInfo
-            (action,sId,info,error)
-        values(@action, @sId, @info_return, @return_error);
-        FETCH NEXT FROM ab_test_c_cur INTO
+            insert into @OutInfo
+                  (action,sId,info,error)
+            values(@action, @sId, @info_return, @return_error);
+            FETCH NEXT FROM ab_test_c_cur INTO
 			 @sId,
 			 @textBox,
 			 @checkBox,
@@ -167,18 +167,18 @@ DECLARE
 			 @sTamp,
 			 @xmlinfo,
 			 @action;
-        set @info = CONVERT(nvarchar(MAX),@xmlinfo);
-        set @info = replace(@info,'<info>','<dataset>');
-        set @info = replace(@info,'</info>','</dataset>');
+            set @info = CONVERT(nvarchar(MAX),@xmlinfo);
+            set @info = replace(@info,'<info>','<dataset>');
+            set @info = replace(@info,'</info>','</dataset>');
 
-    END;
+      END;
 	CLOSE ab_test_c_cur;
 	DEALLOCATE ab_test_c_cur;
    
 	--传出XML执行参数
 	SET @StrXML = (SELECT *
-    FROM @OutInfo row
-    for XML AUTO,ELEMENTS,ROOT('table'));
+      FROM @OutInfo row
+      for XML AUTO,ELEMENTS,ROOT('table'));
 	set @xml = '<dataset>'+@StrXML+'</dataset>';
    
 	SET @error='0';
@@ -209,52 +209,54 @@ AS
 
 BEGIN
 
-declare @procName nvarchar(50),    --存储过程名称
+      declare @procName nvarchar(50),    --存储过程名称
         @language nvarchar(50),    --语言代码
-        @position bigint;          --错误位置
-set @procName = 'ab_test_control_Add';
-set @language = @error;
-set @position = 1;
+        @position bigint;
+      --错误位置
+      set @procName = 'ab_test_control_Add';
+      set @language = @error;
+      set @position = 1;
 
-begin transaction;
+      begin transaction;
 
-BEGIN TRY
+      BEGIN TRY
      set @sId=lower(newid()); 
-     Insert Into ab_test_control(
-             sId,
-             textBox,
-             checkBox,
-             dateBox,
-             richTextBox,
-             dropDownList,
-             foreignKey,
-             dropDownTree,
-             numberBox,
-             numberSpinner,
-             timeSpinner,
-             dateTimeBox,
-             createUser,
-             createTime,
-             modifyUser,
-             modifyTime
-           ) 
-     Values(
-             @sId,
-             @textBox,
-             @checkBox,
-             @dateBox,
-             @richTextBox,
-             @dropDownList,
-             @foreignKey,
-             @dropDownTree,
-             @numberBox,
-             @numberSpinner,
-             @timeSpinner,
-             @dateTimeBox,
-             @createUser,
-             sysdatetimeoffset(),
-             @createUser,
-             sysdatetimeoffset()
+     Insert Into ab_test_control
+            (
+            sId,
+            textBox,
+            checkBox,
+            dateBox,
+            richTextBox,
+            dropDownList,
+            foreignKey,
+            dropDownTree,
+            numberBox,
+            numberSpinner,
+            timeSpinner,
+            dateTimeBox,
+            createUser,
+            createTime,
+            modifyUser,
+            modifyTime
+            )
+      Values(
+                  @sId,
+                  @textBox,
+                  @checkBox,
+                  @dateBox,
+                  @richTextBox,
+                  @dropDownList,
+                  @foreignKey,
+                  @dropDownTree,
+                  @numberBox,
+                  @numberSpinner,
+                  @timeSpinner,
+                  @dateTimeBox,
+                  @createUser,
+                  sysdatetimeoffset(),
+                  @createUser,
+                  sysdatetimeoffset()
            );
      commit transaction;
      set @error='0';
@@ -276,16 +278,17 @@ AS
 
 BEGIN
 
-declare @procName nvarchar(50),    --存储过程名称
+      declare @procName nvarchar(50),    --存储过程名称
         @language nvarchar(50),    --语言代码
-        @position bigint;          --错误位置
-set @procName = 'ab_test_control_Del';
-set @language = @error;
-set @position = 1;
+        @position bigint;
+      --错误位置
+      set @procName = 'ab_test_control_Del';
+      set @language = @error;
+      set @position = 1;
 
-begin transaction;
+      begin transaction;
 
-BEGIN TRY
+      BEGIN TRY
      DELETE FROM ab_test_control WHERE sId=@sId;
      commit transaction;
      set @error='0';
@@ -319,16 +322,17 @@ AS
 
 BEGIN
 
-declare @procName nvarchar(50),    --存储过程名称
+      declare @procName nvarchar(50),    --存储过程名称
         @language nvarchar(50),    --语言代码
-        @position bigint;          --错误位置
-set @procName = 'ab_test_control_Upp';
-set @language = @error;
-set @position = 1;
+        @position bigint;
+      --错误位置
+      set @procName = 'ab_test_control_Upp';
+      set @language = @error;
+      set @position = 1;
 
-begin transaction;
+      begin transaction;
 
-BEGIN TRY
+      BEGIN TRY
      Update ab_test_control Set
              textBox=@textBox,
              checkBox=@checkBox,
@@ -356,28 +360,29 @@ END CATCH;
 
 END;
 
-CREATE TABLE [dbo].[springTb](
-	[sId] [varchar](36) NOT NULL,
-	[pId] [varchar](36) NULL,
-	[tbType] [int] NULL,
-	[name] [nvarchar](50) NULL,
-	[shortName] [nvarchar](50) NULL,
-	[description] [nvarchar](256) NULL,
-	[descriptionEn] [nvarchar](256) NULL,
-	[tbName] [nvarchar](50) NULL,
-	[fieldName] [nvarchar](50) NULL,
-	[fieldNo] [int] NULL,
-	[isFile] [bit] NULL,
-	[filePathNo] [varchar](36) NULL,
-	[storedProcName] [nvarchar](256) NULL,
-	[remark] [nvarchar](max) NULL,
-	[queue] [int] NULL,
-	[createUser] [varchar](36) NULL,
-	[createTime] [datetimeoffset](7) NULL,
-	[modifyUser] [varchar](36) NULL,
-	[modifyTime] [datetimeoffset](7) NULL,
-	[sTamp] [timestamp] NULL,
- CONSTRAINT [PK_Sys_Table] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[springTb]
+(
+      [sId] [varchar](36) NOT NULL,
+      [pId] [varchar](36) NULL,
+      [tbType] [int] NULL,
+      [name] [nvarchar](50) NULL,
+      [shortName] [nvarchar](50) NULL,
+      [description] [nvarchar](256) NULL,
+      [descriptionEn] [nvarchar](256) NULL,
+      [tbName] [nvarchar](50) NULL,
+      [fieldName] [nvarchar](50) NULL,
+      [fieldNo] [int] NULL,
+      [isFile] [bit] NULL,
+      [filePathNo] [varchar](36) NULL,
+      [storedProcName] [nvarchar](256) NULL,
+      [remark] [nvarchar](max) NULL,
+      [queue] [int] NULL,
+      [createUser] [varchar](36) NULL,
+      [createTime] [datetimeoffset](7) NULL,
+      [modifyUser] [varchar](36) NULL,
+      [modifyTime] [datetimeoffset](7) NULL,
+      [sTamp] [timestamp] NULL,
+      CONSTRAINT [PK_Sys_Table] PRIMARY KEY CLUSTERED 
 (
 	[sId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -389,3 +394,38 @@ GO
 
 ALTER TABLE [dbo].[springTb] ADD  CONSTRAINT [DF_Sys_Table_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
 GO
+
+CREATE TABLE [dbo].[springField]
+(
+      [sId] [varchar](36) NOT NULL,
+      [tbId] [varchar](36) NULL,
+      [isField] [bit] NULL,
+      [name] [nvarchar](50) NULL,
+      [description] [nvarchar](256) NULL,
+      [descriptionEn] [nvarchar](256) NULL,
+      [fdType] [nvarchar](50) NULL,
+      [length] [bigint] NULL,
+      [decimal] [bigint] NULL,
+      [isNullable] [bit] NULL,
+      [isUseable] [bit] NULL,
+      [isForeignKey] [bit] NULL,
+      [fkTbId] [varchar](36) NULL,
+      [fkFieldId] [varchar](36) NULL,
+      [defaultValue] [nvarchar](500) NULL,
+      [uiType] [int] NULL,
+      [uiMask] [nvarchar](100) NULL,
+      [uiVisible] [bit] NULL,
+      [uiReadOnly] [bit] NULL,
+      [uiWidth] [int] NULL,
+      [uiDefault] [nvarchar](200) NULL,
+      [isAddField] [bit] NULL,
+      [isEditField] [bit] NULL,
+      [orderType] [int] NULL,
+      [remark] [nvarchar](max) NULL,
+      [queue] [int] NULL,
+      [createUser] [varchar](36) NULL,
+      [createTime] [datetimeoffset](7) NULL,
+      [modifyUser] [varchar](36) NULL,
+      [modifyTime] [datetimeoffset](7) NULL,
+      [sTamp] [timestamp] NULL
+)
