@@ -1,4 +1,5 @@
 from flask import Flask
+import json
 from flask import render_template
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -18,16 +19,19 @@ Base = declarative_base()
 
 def traverse_trees(tab=1, sid="NULL"):
     group = db_session.execute(
-        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue" %(sid)).fetchall()
+        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
+        % (sid)
+    ).fetchall()
     if not group:
         return
-    tab = tab+1
+    tab = tab + 1
     for i in group:
         if i.description:
-            print('- ' * tab + i.description + '[' + i.name + ']')
+            print("- " * tab + i.description + "[" + i.name + "]")
         else:
-            print('- ' * tab + i.name)
+            print("- " * tab + i.name)
         traverse_trees(tab, i.sid)
+
 
 def print_all_tree(tab=1):
     """
@@ -35,49 +39,56 @@ def print_all_tree(tab=1):
     """
     traverse_trees()
     group = db_session.execute(
-        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue").fetchall()
+        "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+    ).fetchall()
     for i in group:
-        print('- ' + i.name)
+        print("- " + i.name)
         traverse_trees(sid=i.sid)
 
-
-def get_simple_json():
-    groups = db_session.execute(
-        "SELECT * FROM dbo.springtb").fetchall()
-    result = []
-    for i in groups:
-        if i.pid == None:
-            _dict = {
-                'id': i.sid,
-                'pId': 0,
-                'name': i.name,
-            }
-        else:
-            _dict = {
-                'id': i.sid,
-                'pId': i.pid,
-                'name': i.name,
-            }
-        result.append(_dict)
-    return result
 
 # 创建flask的应用对象
 # __name__表示当前的模块名称
 # 模块名: flask以这个模块所在的目录为根目录，默认这个目录中的static为静态目录，templates为模板目录
 app = Flask(__name__)
 
+@app.route("/getjson", methods=["GET", "POST"])  # 路由
+def get_simple_json():
+    groups = db_session.execute("SELECT * FROM dbo.springtb").fetchall()
+    result = []
+    for i in groups:
+        if i.pid == None:
+            _dict = {
+                "id": i.sid,
+                "pId": 0,
+                "name": i.name,
+            }
+        else:
+            _dict = {
+                "id": i.sid,
+                "pId": i.pid,
+                "name": i.name,
+            }
+        result.append(_dict)
+    return json.dumps(result)
+    # testInfo = {}
+    # testInfo['name'] = 'xiaoliao'
+    # testInfo['age'] = '28'
+    # return json.dumps(testInfo)
+
+
 # 定义url请求路径
-@app.route('/')
+@app.route("/")
 def hello_world():
     """定义视图函数"""
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     engine = create_engine(
-        'postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan')
+        "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan"
+    )
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
     db_session = scoped_session(sessionmaker(bind=engine))
     # get_simple_json()
     # 启动flask
-    app.run()
+    app.run(debug=True)
