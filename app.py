@@ -46,34 +46,36 @@ def print_all_tree(tab=1):
         traverse_trees(sid=i.sid)
 
 
+def xpid(pid):
+    if pid == None:
+        return 0
+    return pid
+
+
+def xstr(description, name):
+    if description is None:
+        return name
+    return description + "[" + name + "]"
+
+
 # 创建flask的应用对象
 # __name__表示当前的模块名称
 # 模块名: flask以这个模块所在的目录为根目录，默认这个目录中的static为静态目录，templates为模板目录
 app = Flask(__name__)
+
 
 @app.route("/getjson", methods=["GET", "POST"])  # 路由
 def get_simple_json():
     groups = db_session.execute("SELECT * FROM dbo.springtb").fetchall()
     result = []
     for i in groups:
-        if i.pid == None:
-            _dict = {
-                "id": i.sid,
-                "pId": 0,
-                "name": i.name,
-            }
-        else:
-            _dict = {
-                "id": i.sid,
-                "pId": i.pid,
-                "name": i.name,
-            }
+        _dict = {
+            "id": i.sid,
+            "pId": xpid(i.pid),
+            "name": xstr(i.description, i.name),
+        }
         result.append(_dict)
     return json.dumps(result)
-    # testInfo = {}
-    # testInfo['name'] = 'xiaoliao'
-    # testInfo['age'] = '28'
-    # return json.dumps(testInfo)
 
 
 # 定义url请求路径
