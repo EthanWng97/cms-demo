@@ -12,26 +12,25 @@ var setting = {
 var zNodes;
 
 function setCheck() {
-    $.ajax({
-        url: "getjson",
-        type: "POST",
-        dataType: "json",
-        success: function (data) {
-            // alert(data.name + ":" + data.age);
-            console.log(data);
-            zNodes = data;
-        },
-        error: function () {
-            console.log("error");
-        },
-    });
-
     var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
         type = { Y: "ps", N: "ps" };
     zTree.setting.check.chkboxType = type;
 }
 
 $(function () {
-    $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-    setCheck();
+    $.ajax({
+        url: "getjson",
+        type: "POST",
+        dataType: "json",
+        success: function (data) {
+            zNodes = data;
+            console.log(zNodes);
+            $(document).ready(function () {
+                $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            });
+        },
+        error: function () {
+            console.log(error);
+        },
+    });
 });
