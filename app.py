@@ -57,11 +57,16 @@ def xpid(pid):
     return pid
 
 
-def xstr(pid, description, name):
+def xname(pid, description, name):
     if pid is None or description is None:
         return name
     return description + "[" + name + "]"
 
+
+def xparent(tbtype):
+    if tbtype == 1:
+        return 0
+    return 1
 
 # 创建flask的应用对象
 # __name__表示当前的模块名称
@@ -77,7 +82,8 @@ def get_simple_json():
         _dict = {
             "id": i.sid,
             "pId": xpid(i.pid),
-            "name": xstr(i.pid, i.description, i.name),
+            "name": xname(i.pid, i.description, i.name),
+            "isParent": xparent(i.tbtype),
         }
         result.append(_dict)
     return json.dumps(result)
