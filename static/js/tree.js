@@ -9,22 +9,14 @@ var setting = {
     },
 };
 
-var zNodes;
-
-function setCheck() {
-    var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
-        type = { Y: "ps", N: "ps" };
-    zTree.setting.check.chkboxType = type;
-}
-
-$(function () {
+function onLoadTree() {
+    var zNodes;
     $.ajax({
         url: "getjson",
         type: "POST",
         dataType: "json",
         success: function (data) {
             zNodes = data;
-            console.log(zNodes);
             $(document).ready(function () {
                 $.fn.zTree.init($("#treeDemo"), setting, zNodes);
             });
@@ -33,4 +25,8 @@ $(function () {
             console.log(error);
         },
     });
+}
+
+$(function () {
+    onLoadTree();
 });
