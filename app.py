@@ -57,8 +57,8 @@ def xpid(pid):
     return pid
 
 
-def xstr(description, name):
-    if description is None:
+def xstr(pid, description, name):
+    if pid is None or description is None:
         return name
     return description + "[" + name + "]"
 
@@ -77,7 +77,7 @@ def get_simple_json():
         _dict = {
             "id": i.sid,
             "pId": xpid(i.pid),
-            "name": xstr(i.description, i.name),
+            "name": xstr(i.pid, i.description, i.name),
         }
         result.append(_dict)
     return json.dumps(result)
