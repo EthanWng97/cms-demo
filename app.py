@@ -8,6 +8,11 @@ from sqlalchemy_mptt import mptt_sessionmaker
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
 Base = declarative_base()
+engine = create_engine(
+    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan"
+)
+db_session = scoped_session(sessionmaker(bind=engine))
+
 # class Tree(Base, BaseNestedSets):
 #     __tablename__ = "dbo.springtb"
 #     id = Column(String, primary_key=True)
@@ -86,11 +91,7 @@ def hello_world():
 
 
 if __name__ == "__main__":
-    engine = create_engine(
-        "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan"
-    )
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
-    db_session = scoped_session(sessionmaker(bind=engine))
     # get_simple_json()
     # 启动flask
     app.run(debug=True)
