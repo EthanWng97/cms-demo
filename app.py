@@ -1,6 +1,5 @@
-from flask import Flask
 import json
-from flask import render_template
+from flask import Flask, render_template, request
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -68,6 +67,7 @@ def xparent(tbtype):
         return 0
     return 1
 
+
 # 创建flask的应用对象
 # __name__表示当前的模块名称
 # 模块名: flask以这个模块所在的目录为根目录，默认这个目录中的static为静态目录，templates为模板目录
@@ -76,7 +76,18 @@ app = Flask(__name__)
 
 @app.route("/getjson", methods=["GET", "POST"])  # 路由
 def get_simple_json():
-    groups = db_session.execute("SELECT * FROM dbo.springtb").fetchall()
+    sid = request.args.get("sId")
+    groups = None
+    print(sid)
+    if sid is None:  # request root node
+        groups = db_session.execute(
+            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+        ).fetchall()
+    else:
+        groups = db_session.execute(
+            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
+            % (sid)
+        ).fetchall()
     result = []
     for i in groups:
         _dict = {
