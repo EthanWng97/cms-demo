@@ -78,7 +78,6 @@ app = Flask(__name__)
 def get_simple_json():
     sid = request.args.get("sId")
     groups = None
-    print(sid)
     if sid is None:  # request root node
         groups = db_session.execute(
             "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
