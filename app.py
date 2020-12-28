@@ -8,7 +8,7 @@ from sqlalchemy_mptt.mixins import BaseNestedSets
 
 Base = declarative_base()
 engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan"
+    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan",pool_size=50, max_overflow=20
 )
 db_session = scoped_session(sessionmaker(bind=engine))
 
