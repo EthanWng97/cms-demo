@@ -11,17 +11,32 @@ var setting = {
         enable: true,
         url: "getjson",
         autoParam: ["id=sId"],
-        // otherParam:{"otherParam":"zTreeAsyncTest"}, 
         type: 'get',
         dataType: "json"
     },
     callback: {
+        onExpand: addSubNode
     }
 }
 var zNodes;
 var zTree;
 //获取树成功后进行的回调操作
 
+function addSubNode(event, treeId, treeNode) {
+    if (!treeNode.isParent) return;
+    var data = treeNode.children;
+    preLoadNode(data);
+}
+
+function preLoadNode(rawData) {
+    if (!rawData) rawData = zTree.getNodes();
+    for (var p in rawData) {//遍历json对象的每个key/value对,p为key
+        if (rawData[p].isParent == 1 && rawData[p].children == undefined) {
+            console.log("preload: " + rawData[p].name);
+            zTree.reAsyncChildNodesPromise(rawData[p], "refresh", isSilent = true);
+        }
+    }
+}
 function onLoadTree() {
     $.ajax({
         cache: true,
@@ -31,13 +46,13 @@ function onLoadTree() {
         async: true,
         success: function (data) {
             zNodes = data;
-            zTree = $.fn.zTree.init($("#treeDemo"), setting, null);
+            zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            preLoadNode(zTree.getNodes());
         },
         error: function (data) {
             console.log(error);
         },
     });
-    // console.log(zTree.getNodes());
 }
 
 $(function () {
