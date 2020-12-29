@@ -98,6 +98,36 @@ def get_simple_json():
         result.append(_dict)
     return json.dumps(result)
 
+@app.route("/getunionjson", methods=["GET", "POST"])
+def get_union_json():
+    """
+    docstring
+    """
+    i = 0
+    sql_string = ""
+    for sid in  json.loads(request.form.get('sId')):
+        if i == 0:
+            sql_string += "(SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)" % (sid)
+            i+=1
+        else:
+            sql_string += "union all (SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)" % (sid)
+    groups = db_session.execute(sql_string).fetchall()
+    result = {}
+    for i in groups:
+        pid = xpid(i.pid)
+        name = xname(i.pid, i.description, i.name)
+        isParent = xparent(i.tbtype)
+        _dict = {
+            "id": i.sid,
+            "pId": pid,
+            "name": name,
+            "isParent": isParent,
+        }
+        if pid  not in result.keys():
+            result[pid] = []
+        result[pid].append(_dict)
+
+    return json.dumps(result)
 
 # 定义url请求路径
 @app.route("/")
