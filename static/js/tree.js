@@ -9,29 +9,28 @@ var setting = {
     },
     callback: {
         // onClick: addSubNode,
-        onExpand: addSubNode
+        onExpand: expandNode
     }
 }
 var zNodes;
 var zTree;
 
-function addSubNode(event, treeId, treeNode) {
+function expandNode(event, treeId, treeNode) {
     if (!treeNode.isParent) return;
     var data = treeNode.children;
     preLoadNode(data);
 }
 
-function wrapAjax(myJson){
+function wrapAjax(myJson) {
     $.ajax({
         cache: true,
-        url: "getjson",
-        type: "GET",
+        url: "getunionjson",
+        type: "POST",
         dataType: "json",
-        data: { sId: myJson.id },
+        data: { sId: myJson },
         async: true,
         success: function (data) {
-            console.log("preload: " + myJson.name);
-            zTree.addNodes(myJson, data, isSilent = true);
+            addSubNodes(data);
         },
         error: function (data) {
             console.log(data);
@@ -39,13 +38,24 @@ function wrapAjax(myJson){
     });
 }
 
+function addSubNodes(data) {
+    for (var val in data) {
+        parentNode = zTree.getNodeByParam('id', val)
+        console.log("preoload: " + parentNode.name)
+        zTree.addNodes(parentNode, data[val], isSilent = true)
+    }
+}
+
 function preLoadNode(rawData) {
     if (!rawData) rawData = zTree.getNodes();
+    var data_list = [];
     for (var p in rawData) {//遍历json对象的每个key/value对,p为key
         if (rawData[p].isParent == 1 && rawData[p].children == undefined) {
-            wrapAjax(rawData[p]);
+            data_list.push(rawData[p].id);
         }
     }
+    if (data_list.length != 0)
+        wrapAjax(JSON.stringify(data_list));
 }
 
 function onLoadTree() {
