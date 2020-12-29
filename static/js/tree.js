@@ -28,7 +28,7 @@ function wrapAjax(myJson) {
         type: "POST",
         dataType: "json",
         data: { sId: myJson },
-        async: true,
+        async: false,
         success: function (data) {
             addSubNodes(data);
         },
@@ -47,7 +47,7 @@ function addSubNodes(data) {
 }
 
 function preLoadNode(rawData) {
-    if (!rawData) rawData = zTree.getNodes();
+    if (rawData == undefined) rawData = zTree.getNodes();
     var data_list = [];
     for (var p in rawData) {//遍历json对象的每个key/value对,p为key
         if (rawData[p].isParent == 1 && rawData[p].children == undefined) {
