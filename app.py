@@ -8,7 +8,9 @@ from sqlalchemy_mptt.mixins import BaseNestedSets
 
 Base = declarative_base()
 engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan",pool_size=50, max_overflow=20
+    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan",
+    pool_size=50,
+    max_overflow=20,
 )
 db_session = scoped_session(sessionmaker(bind=engine))
 
@@ -50,22 +52,67 @@ def print_all_tree(tab=1):
         traverse_trees(sid=i.sid)
 
 
-def xpid(pid):
+def _xpid(pid):
     if pid == None:
         return 0
     return pid
 
 
-def xname(pid, description, name):
+def _xname(pid, description, name):
     if pid is None or description is None:
         return name
     return description + "[" + name + "]"
 
 
-def xparent(tbtype):
+def _xparent(tbtype):
     if tbtype == 1:
         return 0
     return 1
+
+
+def _is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError:
+        return False
+    return True
+
+
+def _contruct_dict(sid, pid, description, name, tbtype):
+    _dict = {
+        "id": sid,
+        "pId": _xpid(pid),
+        "name": _xname(pid, description, name),
+        "isParent": _xparent(tbtype),
+    }
+    return _dict
+
+
+def _construct_sqlstring(sid, isJson=False):
+    sql_string = ""
+    if isJson is False:
+        if sid is None:  # request root node
+            sql_string = "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+        else:
+            sql_string = (
+                "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
+                % (sid)
+            )
+    else:
+        i = 0
+        for each_sid in json.loads(sid):
+            if i == 0:
+                sql_string += (
+                    "(SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)"
+                    % (each_sid)
+                )
+                i += 1
+            else:
+                sql_string += (
+                    "union all (SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)"
+                    % (each_sid)
+                )
+    return sql_string
 
 
 # 创建flask的应用对象
@@ -75,59 +122,34 @@ app = Flask(__name__)
 
 
 @app.route("/getjson", methods=["GET", "POST"])  # 路由
-def get_simple_json():
+def get_single_json():
     sid = request.args.get("sId")
-    groups = None
-    if sid is None:  # request root node
-        groups = db_session.execute(
-            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
-        ).fetchall()
-    else:
-        groups = db_session.execute(
-            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
-            % (sid)
-        ).fetchall()
+    sql_string = ""
+    sql_string = _construct_sqlstring(sid)
+    groups = db_session.execute(sql_string).fetchall()
     result = []
     for i in groups:
-        _dict = {
-            "id": i.sid,
-            "pId": xpid(i.pid),
-            "name": xname(i.pid, i.description, i.name),
-            "isParent": xparent(i.tbtype),
-        }
+        _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
         result.append(_dict)
     return json.dumps(result)
 
+
 @app.route("/getunionjson", methods=["GET", "POST"])
 def get_union_json():
-    """
-    docstring
-    """
-    i = 0
+    sid = request.form.get("sId")
+    isJson = _is_json(sid)
     sql_string = ""
-    for sid in  json.loads(request.form.get('sId')):
-        if i == 0:
-            sql_string += "(SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)" % (sid)
-            i+=1
-        else:
-            sql_string += "union all (SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)" % (sid)
+    sql_string = _construct_sqlstring(sid, isJson)
     groups = db_session.execute(sql_string).fetchall()
     result = {}
     for i in groups:
-        pid = xpid(i.pid)
-        name = xname(i.pid, i.description, i.name)
-        isParent = xparent(i.tbtype)
-        _dict = {
-            "id": i.sid,
-            "pId": pid,
-            "name": name,
-            "isParent": isParent,
-        }
-        if pid  not in result.keys():
+        pid = _xpid(i.pid)
+        _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
+        if pid not in result.keys():
             result[pid] = []
         result[pid].append(_dict)
-
     return json.dumps(result)
+
 
 # 定义url请求路径
 @app.route("/")
