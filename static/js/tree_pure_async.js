@@ -15,14 +15,14 @@ var setting = {
         dataType: "json"
     },
     callback: {
-        onExpand: addSubNode
+        onExpand: expandNode
     }
 }
 var zNodes;
 var zTree;
 //获取树成功后进行的回调操作
 
-function addSubNode(event, treeId, treeNode) {
+function expandNode(event, treeId, treeNode) {
     if (!treeNode.isParent) return;
     var data = treeNode.children;
     preLoadNode(data);
