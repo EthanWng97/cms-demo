@@ -1,15 +1,29 @@
 var setting = {
-    check: {
-        enable: true,
-    },
+    // views: {
+    //     addHoverDom: addHoverDom, //当鼠标移动到节点上时，显示用户自定义控件
+    //     removeHoverDom: removeHoverDom, //离开节点时的操作
+    //     selectedMulti: false
+    // },
     data: {
         simpleData: {
             enable: true,
         },
     },
+    edit: {
+        enable: true,
+        editNameSelectAll: true,
+        showRemoveBtn: true,
+        removeTitle: "删除节点",
+        showRenameBtn: true,
+        renameTitle: "编辑节点"
+    },
     callback: {
-        // onClick: addSubNode,
-        onExpand: expandNode
+        onExpand: expandNode,
+        // beforeRemove: beforeRemove,  // determine whether the node can be deleted
+        beforeRename: beforeRename,   // determine whether the node can be renamed
+        // onRemove: onRemove,
+        // onRename: onRename,
+        // beforeDrag: beforeDrag,
     }
 }
 var zNodes;
