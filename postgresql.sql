@@ -600,7 +600,7 @@ BEGIN
                 --    return_error,
                 --    return_eInfo);
 	        ELSIF _action = 'del' Then
-                -- CALL dbo.ab_test_control_Del(sId,userId,return_error, return_eInfo);
+                CALL dbo.springTb_Del(_sId,_userId,_return_error, _return_eInfo);
 	        ELSIF _action = 'move' Then
 	        ELSIF _action = 'paste' Then
             ELSIF _action = 'getmoudel' Then
