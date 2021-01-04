@@ -421,3 +421,71 @@ CREATE TABLE dbo.springField
     modifyTime timestamp with time zone NULL,
     sTamp varchar NULL
 )
+
+CREATE or REPLACE PROCEDURE dbo.springTb_Del(
+    INOUT _sId varchar(36),
+    IN _modifyUser varchar,
+    INOUT _error varchar,
+    INOUT _eInfo varchar
+)
+AS $$
+
+DECLARE 
+    _procName varchar(50) := 'springTb_Del';    --存储过程名称
+    _language varchar(50):= _error;    --语言代码
+    _position bigint := 1;     --错误位置
+
+    _count int;
+    _pId varchar(36);
+    _tabname varchar;
+    _queue int;
+
+BEGIN
+    select count(*) into _count
+    from dbo.springTb
+    where pId=_sId;
+
+    if _count>0 Then
+        _error:='00000';
+        _eInfo :='请先删除子项表。';
+        return;
+    END IF;
+
+    select name, pId, queue into _tabname, _pId, _queue
+    from dbo.springTb
+    where sId = _sId;
+    -- delete from springTranslation where tbName='springTb' and (sId=sId or path=('pId='+sId));
+    -- delete from springTranslation where tbName='springField' and path=('tbId='+sId); 
+    -- delete from springSp where tbId=sId;
+    -- delete from dbo.springTbSpSetup where sId=sId;
+    -- delete from dbo.springFdList_d where mId in (select sId
+    --     from dbo.springFdList_m
+    --     where tbId=sId);
+    -- delete from dbo.springFdList_m where tbId=sId;
+    -- delete from dbo.springFdForeignKey where tbId=sId;
+    -- delete from dbo.springTbUiTemplate where tbId=sId;
+    
+    -- delete from dbo.springFileList where sId in (SELECT fileId
+    --     FROM dbo.springFileTableRel
+    --     where tbName like tabname)
+    -- delete  FROM  dbo.springFileTableRel where tbName like tabname
+    delete from dbo.springTb where sId=_sId;
+    if _pId is null Then
+	        update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
+    else
+		 update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
+    END IF;
+
+    _error:='00000';
+    _eInfo:= 'successful delete';
+    exception
+        When Others Then
+            rollback;
+            get stacked diagnostics _eInfo:= MESSAGE_TEXT,
+                                    _error:= RETURNED_SQLSTATE;
+            _eInfo:= concat('error in delete procedure: ',_eInfo);
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
+
+
