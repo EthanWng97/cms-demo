@@ -489,3 +489,142 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE or REPLACE PROCEDURE dbo.springTb_Action(
+    IN _userId varchar,      -- which user call the stored procedure
+    IN _userName varchar,    -- user name
+    INOUT _info jsonb,       -- input of action and details, output of result
+    INOUT _entity varchar,   -- extra info
+    INOUT _error varchar,    -- error code
+	INOUT _eInfo varchar     -- error details
+)
+AS $$
+
+DECLARE
+	_procName varchar := 'springTb_Action';  --存储过程名称
+    _language varchar := _error; --国家代码
+    _position bigint := -1;		--错误位置
+    _return_error varchar;
+    _return_eInfo varchar;
+  	_rowinfo jsonb;
+    _action varchar;
+    _sId varchar(36);
+    _rowoutput jsonb;
+    -- parameter list
+    _pId varchar;
+    _tbType smallint;
+    _name varchar(50);
+    _shortName varchar(50);
+    _description varchar;
+    _descriptionEn varchar;
+    _tbName varchar(50);
+    _fieldName varchar(50);
+    _fieldNo int;
+    _isFile smallint;
+    _filePathNo varchar(36);
+    _storedProcName varchar;
+    _remark varchar;
+    _sTamp timestamp with time zone;
+    _queue int;
+    -- parameter list
+
+BEGIN
+    --定义返回JSON临时表
+    CREATE TEMP TABLE _OutInfo 
+        (
+        _action varchar(20),
+        _sId varchar(36),
+        _error varchar, 
+        _eInfo varchar
+        );
+    FOR _rowinfo in SELECT * FROM jsonb_array_elements(_info)
+        LOOP
+            -- RAISE NOTICE '%',rowinfo;
+
+            -- parameter assignment
+            _action := _rowinfo->>'action';
+            _sId := _rowinfo->>'sId';
+            _pId := _rowinfo->>'pId';
+            _tbType := _rowinfo->>'tbtype';
+            _name := _rowinfo->>'name';
+            _shortName := _rowinfo->>'shortName';
+            _description := _rowinfo->>'description';
+            _descriptionEn := _rowinfo->>'descriptionEn';
+            _tbName := _rowinfo->>'tbName';
+            _fieldName := _rowinfo->>'fieldName';
+            _fieldNo := _rowinfo->>'fieldNo';
+            _isFile := _rowinfo->>'isFile';
+            _filePathNo := _rowinfo->>'filePathNo';
+            _storedProcName := _rowinfo->>'storedProcName';
+            _remark := _rowinfo->>'remark';
+            _sTamp := _rowinfo->>'sTamp';
+            _queue := _rowinfo->>'queue';
+            -- parameter assignment
+
+            _return_error := _language;
+            _return_eInfo := '';
+            IF _action ='add' Then
+
+                -- CALL dbo.ab_test_control_Add(
+                --    sId ,
+                --    textBox,
+                --    checkBox,
+                --    dateBox,
+                --    richTextBox,
+                --    dropDownList,
+                --    foreignKey,
+                --    dropDownTree,
+                --    numberBox,
+                --    numberSpinner,
+                --    timeSpinner,
+                --    dateTimeBox,
+                --    userId,
+                --    userName,
+                --    return_error,
+                --    return_eInfo);
+	        ELSIF _action = 'upp' Then
+                -- CALL dbo.ab_test_control_Upp(
+                --    sId ,
+                --    textBox,
+                --    checkBox,
+                --    dateBox,
+                --    richTextBox,
+                --    dropDownList,
+                --    foreignKey,
+                --    dropDownTree,
+                --    numberBox,
+                --    numberSpinner,
+                --    timeSpinner,
+                --    dateTimeBox,
+                --    userId,
+                --    sTamp,
+                --    return_error,
+                --    return_eInfo);
+	        ELSIF _action = 'del' Then
+                -- CALL dbo.ab_test_control_Del(sId,userId,return_error, return_eInfo);
+	        ELSIF _action = 'move' Then
+	        ELSIF _action = 'paste' Then
+            ELSIF _action = 'getmoudel' Then
+            ELSIF _action = 'setmoudel' Then
+            ELSE
+                _return_eInfo := concat('Marked[', _action, '] undefined!');
+	    	END IF;
+
+            insert into _OutInfo
+                (_action,_sId,_error,_eInfo)
+            values(_action, _sId, _return_error, _return_eInfo);
+        END LOOP;
+
+    _info := json_agg(_OutInfo)
+                from (
+                select * from _OutInfo) as _OutInfo;
+
+    DROP TABLE _OutInfo;
+	_error:='00000';
+    _eInfo:= 'successful completion';
+    exception
+        When Others Then
+            get stacked diagnostics _eInfo:= MESSAGE_TEXT,
+                                    _error:= RETURNED_SQLSTATE;
+            _eInfo:= concat('error in main procedure: ',_eInfo);
+END;
+$$ LANGUAGE plpgsql;
