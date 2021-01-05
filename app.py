@@ -87,31 +87,24 @@ def _contruct_dict(sid, pid, description, name, tbtype):
     }
     return _dict
 
+def _construct_select_sqlstring(sid):
+    if(sid is None):
+        return "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+    else:
+        return "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue" % (sid)
 
 def _fetch_tree_data(sid, isJson=False):
     sql_string = ""
     if isJson is False:
-        if sid is None:  # request root node
-            sql_string = "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
-        else:
-            sql_string = (
-                "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
-                % (sid)
-            )
+        sql_string = _construct_select_sqlstring(sid)
     else:
         i = 0
         for each_sid in json.loads(sid):
             if i == 0:
-                sql_string += (
-                    "(SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)"
-                    % (each_sid)
-                )
+                sql_string += "(" + _construct_select_sqlstring(each_sid) + ")"
                 i += 1
             else:
-                sql_string += (
-                    "union all (SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)"
-                    % (each_sid)
-                )
+                sql_string += "union all ( "+ _construct_select_sqlstring(each_sid)  + ") "
     return db_session.execute(sql_string).fetchall()
 
 
@@ -131,6 +124,16 @@ def get_single_json():
         result.append(_dict)
     return json.dumps(result)
 
+# @app.route("/getjsontest", methods=["GET", "POST"])  # 路由
+# def get_single_json():
+#     sid = request.form.get("sId")
+#     isJson = _is_json(sid)
+#     groups = _fetch_tree_data(sid, isJson)
+#     result = {}
+#     for i in groups:
+#         _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
+#         result.append(_dict)
+#     return json.dumps(result)
 
 @app.route("/getunionjson", methods=["GET", "POST"])
 def get_union_json():
