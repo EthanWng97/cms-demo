@@ -1,7 +1,4 @@
 var setting = {
-    check: {
-        enable: true,
-    },
     data: {
         simpleData: {
             enable: true,
@@ -9,10 +6,11 @@ var setting = {
     },
     async: { // 属性配置
         enable: true,
-        url: "getjson",
-        autoParam: ["id=sId"],
-        type: 'get',
-        dataType: "json"
+        url: "getunionjson",
+        otherParam: getParam,
+        type: 'post',
+        dataType: "json",
+        dataFilter: dataFilter
     },
     callback: {
         onExpand: expandNode
@@ -22,6 +20,18 @@ var zNodes;
 var zTree;
 //获取树成功后进行的回调操作
 
+function getParam(treeId, treeNode){
+    var data_list = [];
+    data_list.push(treeNode.id);
+    var jsonObj = { "sId": JSON.stringify(data_list)};
+    return jsonObj
+}
+
+function dataFilter(treeId, parentNode, responseData){
+    if (responseData) {
+        return responseData[parentNode.id];
+    }
+}
 function expandNode(event, treeId, treeNode) {
     if (!treeNode.isParent) return;
     var data = treeNode.children;
@@ -40,16 +50,16 @@ function preLoadNode(rawData) {
 function onLoadTree() {
     $.ajax({
         cache: true,
-        url: "getjson",
-        type: "GET",
+        url: "getunionjson",
+        type: "POST",
         dataType: "json",
         async: true,
         success: function (data) {
-            zNodes = data;
+            zNodes = data["0"];
             zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
             preLoadNode(zTree.getNodes());
         },
-        error: function (data) {
+        error: function (error) {
             console.log(error);
         },
     });
