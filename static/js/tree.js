@@ -22,7 +22,7 @@ var setting = {
         // beforeRemove: beforeRemove,  // determine whether the node can be deleted
         beforeRename: beforeRename,   // determine whether the node can be renamed
         // onRemove: onRemove,
-        // onRename: onRename,
+        onRename: onRename,
         // beforeDrag: beforeDrag,
     }
 }
@@ -75,12 +75,12 @@ function preLoadNode(rawData) {
 function onLoadTree() {
     $.ajax({
         cache: true,
-        url: "getjson",
-        type: "GET",
+        url: "getunionjson",
+        type: "POST",
         dataType: "json",
         async: true,
         success: function (data) {
-            zNodes = data;
+            zNodes = data["0"];
             zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
             preLoadNode(zTree.getNodes());
         },
