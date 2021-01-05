@@ -46,8 +46,8 @@ function wrapAjax(myJson) {
         success: function (data) {
             addSubNodes(data);
         },
-        error: function (data) {
-            console.log(data);
+        error: function (error) {
+            console.log(error);
         },
     });
 }
@@ -84,7 +84,7 @@ function onLoadTree() {
             zTree = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
             preLoadNode(zTree.getNodes());
         },
-        error: function (data) {
+        error: function (error) {
             console.log(error);
         },
     });
