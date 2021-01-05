@@ -89,14 +89,24 @@ def _contruct_dict(sid, pid, description, name, tbtype):
     }
     return _dict
 
+
 def _construct_select_sqlstring(sid):
-    if(sid is None):
-        return "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+    if sid is None:
+        return (
+            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+        )
     else:
-        return "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue" % (sid)
+        return (
+            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
+            % (sid)
+        )
+
 
 def _construct_call_sqlstring(userid, username, info, entity, error, einfo):
-    return "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');" % (userid, username, info, entity, error, einfo)
+    return (
+        "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');"
+        % (userid, username, info, entity, error, einfo)
+    )
 
 
 def _fetch_tree_data(sid, isJson=False):
@@ -110,14 +120,25 @@ def _fetch_tree_data(sid, isJson=False):
                 sql_string += "(" + _construct_select_sqlstring(each_sid) + ")"
                 i += 1
             else:
-                sql_string += "union all ( "+ _construct_select_sqlstring(each_sid)  + ") "
+                sql_string += (
+                    "union all ( " + _construct_select_sqlstring(each_sid) + ") "
+                )
     return db_session.execute(sql_string).fetchall()
+
 
 def _fetch_action_data(action_json):
     sql_string = ""
-    info_json = json.dumps(action_json['_info'])
-    sql_string = _construct_call_sqlstring(action_json['_userId'], action_json['_userName'], info_json, action_json['_entity'], action_json['_error'], action_json['_eInfo'])
+    info_json = json.dumps(action_json["_info"])
+    sql_string = _construct_call_sqlstring(
+        action_json["_userId"],
+        action_json["_userName"],
+        info_json,
+        action_json["_entity"],
+        action_json["_error"],
+        action_json["_eInfo"],
+    )
     return db_session.execute(sql_string).fetchall()
+
 
 # 创建flask的应用对象
 # __name__表示当前的模块名称
@@ -183,49 +204,49 @@ if __name__ == "__main__":
         "_userName": "wangyifan",
         "_info": [
             {
-                "action":"del",
-                "sId":"123",
-                "pId":"textbox2",
+                "action": "del",
+                "sId": "123",
+                "pId": "textbox2",
                 "tbType": 0,
-	        	"name": "testname",
-	        	"shortName": "testshortName",
-	        	"description": "testdescription",
-	        	"descriptionEn": "testdescriptionEn",
-	        	"tbName": "testtbName",
-	        	"fieldName": "testfieldName",
-                "fieldNo" : 123,
-	        	"isFile": 0,
-                "filePathNo" : "testfilePathNo",
-	        	"storedProcName": "teststoredProcName",
-	        	"remark": "testremark",
-	        	"sTamp": "2020-11-12 04:17:43.635664",
-                "queue":1
+                "name": "testname",
+                "shortName": "testshortName",
+                "description": "testdescription",
+                "descriptionEn": "testdescriptionEn",
+                "tbName": "testtbName",
+                "fieldName": "testfieldName",
+                "fieldNo": 123,
+                "isFile": 0,
+                "filePathNo": "testfilePathNo",
+                "storedProcName": "teststoredProcName",
+                "remark": "testremark",
+                "sTamp": "2020-11-12 04:17:43.635664",
+                "queue": 1,
             },
             {
-                "action":"del",
-                "sId":"123",
-                "pId":"textbox2",
+                "action": "del",
+                "sId": "123",
+                "pId": "textbox2",
                 "tbType": 0,
-	        	"name": "testname",
-	        	"shortName": "testshortName",
-	        	"description": "testdescription",
-	        	"descriptionEn": "testdescriptionEn",
-	        	"tbName": "testtbName",
-	        	"fieldName": "testfieldName",
-                "fieldNo" : 123,
-	        	"isFile": 0,
-                "filePathNo" : "testfilePathNo",
-	        	"storedProcName": "teststoredProcName",
-	        	"remark": "testremark",
-	        	"sTamp": "2020-11-12 04:17:43.635664",
-                "queue":1
+                "name": "testname",
+                "shortName": "testshortName",
+                "description": "testdescription",
+                "descriptionEn": "testdescriptionEn",
+                "tbName": "testtbName",
+                "fieldName": "testfieldName",
+                "fieldNo": 123,
+                "isFile": 0,
+                "filePathNo": "testfilePathNo",
+                "storedProcName": "teststoredProcName",
+                "remark": "testremark",
+                "sTamp": "2020-11-12 04:17:43.635664",
+                "queue": 1,
             },
-            ],
+        ],
         "_entity": "123",
         "_error": "123",
-        "_eInfo": "123"
+        "_eInfo": "123",
     }
-    
+
     action_json = json.dumps(action_json)
     action_json = json.loads(action_json)
     get_action(action_json)
