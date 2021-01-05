@@ -88,7 +88,7 @@ def _contruct_dict(sid, pid, description, name, tbtype):
     return _dict
 
 
-def _construct_sqlstring(sid, isJson=False):
+def _fetch_tree_data(sid, isJson=False):
     sql_string = ""
     if isJson is False:
         if sid is None:  # request root node
@@ -112,7 +112,7 @@ def _construct_sqlstring(sid, isJson=False):
                     "union all (SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue)"
                     % (each_sid)
                 )
-    return sql_string
+    return db_session.execute(sql_string).fetchall()
 
 
 # 创建flask的应用对象
@@ -124,9 +124,7 @@ app = Flask(__name__)
 @app.route("/getjson", methods=["GET", "POST"])  # 路由
 def get_single_json():
     sid = request.args.get("sId")
-    sql_string = ""
-    sql_string = _construct_sqlstring(sid)
-    groups = db_session.execute(sql_string).fetchall()
+    groups = _fetch_tree_data(sid)
     result = []
     for i in groups:
         _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
@@ -138,9 +136,7 @@ def get_single_json():
 def get_union_json():
     sid = request.form.get("sId")
     isJson = _is_json(sid)
-    sql_string = ""
-    sql_string = _construct_sqlstring(sid, isJson)
-    groups = db_session.execute(sql_string).fetchall()
+    groups = _fetch_tree_data(sid, isJson)
     result = {}
     for i in groups:
         pid = _xpid(i.pid)
