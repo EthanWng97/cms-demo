@@ -73,6 +73,8 @@ def _xparent(tbtype):
 def _is_json(myjson):
     try:
         json.loads(myjson)
+    except TypeError:
+        return False
     except ValueError:
         return False
     return True
