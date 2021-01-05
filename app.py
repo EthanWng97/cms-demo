@@ -95,6 +95,10 @@ def _construct_select_sqlstring(sid):
     else:
         return "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue" % (sid)
 
+def _construct_call_sqlstring(userid, username, info, entity, error, einfo):
+    return "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');" % (userid, username, info, entity, error, einfo)
+
+
 def _fetch_tree_data(sid, isJson=False):
     sql_string = ""
     if isJson is False:
@@ -109,6 +113,11 @@ def _fetch_tree_data(sid, isJson=False):
                 sql_string += "union all ( "+ _construct_select_sqlstring(each_sid)  + ") "
     return db_session.execute(sql_string).fetchall()
 
+def _fetch_action_data(action_json):
+    sql_string = ""
+    info_json = json.dumps(action_json['_info'])
+    sql_string = _construct_call_sqlstring(action_json['_userId'], action_json['_userName'], info_json, action_json['_entity'], action_json['_error'], action_json['_eInfo'])
+    return db_session.execute(sql_string).fetchall()
 
 # 创建flask的应用对象
 # __name__表示当前的模块名称
@@ -116,26 +125,30 @@ def _fetch_tree_data(sid, isJson=False):
 app = Flask(__name__)
 
 
-@app.route("/getjson", methods=["GET", "POST"])  # 路由
-def get_single_json():
-    sid = request.args.get("sId")
-    groups = _fetch_tree_data(sid)
-    result = []
-    for i in groups:
-        _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
-        result.append(_dict)
-    return json.dumps(result)
-
-# @app.route("/getjsontest", methods=["GET", "POST"])  # 路由
+# @app.route("/getjson", methods=["GET", "POST"])  # 路由
 # def get_single_json():
-#     sid = request.form.get("sId")
-#     isJson = _is_json(sid)
-#     groups = _fetch_tree_data(sid, isJson)
-#     result = {}
+#     sid = request.args.get("sId")
+#     groups = _fetch_tree_data(sid)
+#     result = []
 #     for i in groups:
 #         _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
 #         result.append(_dict)
 #     return json.dumps(result)
+
+
+def get_action(action_json):
+    # action_json = request.form.get("action_json")
+    # isJson = _is_json(action_json)
+    groups = _fetch_action_data(action_json)
+    print(groups)
+    result = {}
+    for i in groups:
+        print(i._info)
+        print(i._entity)
+        print(i._error)
+        print(i._einfo)
+    # return json.dumps(result)
+
 
 @app.route("/getunionjson", methods=["GET", "POST"])
 def get_union_json():
@@ -163,4 +176,56 @@ if __name__ == "__main__":
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
     # get_simple_json()
     # 启动flask
-    app.run(debug=True)
+    # app.run(debug=True)
+
+    action_json = {
+        "_userId": "120912",
+        "_userName": "wangyifan",
+        "_info": [
+            {
+                "action":"del",
+                "sId":"123",
+                "pId":"textbox2",
+                "tbType": 0,
+	        	"name": "testname",
+	        	"shortName": "testshortName",
+	        	"description": "testdescription",
+	        	"descriptionEn": "testdescriptionEn",
+	        	"tbName": "testtbName",
+	        	"fieldName": "testfieldName",
+                "fieldNo" : 123,
+	        	"isFile": 0,
+                "filePathNo" : "testfilePathNo",
+	        	"storedProcName": "teststoredProcName",
+	        	"remark": "testremark",
+	        	"sTamp": "2020-11-12 04:17:43.635664",
+                "queue":1
+            },
+            {
+                "action":"del",
+                "sId":"123",
+                "pId":"textbox2",
+                "tbType": 0,
+	        	"name": "testname",
+	        	"shortName": "testshortName",
+	        	"description": "testdescription",
+	        	"descriptionEn": "testdescriptionEn",
+	        	"tbName": "testtbName",
+	        	"fieldName": "testfieldName",
+                "fieldNo" : 123,
+	        	"isFile": 0,
+                "filePathNo" : "testfilePathNo",
+	        	"storedProcName": "teststoredProcName",
+	        	"remark": "testremark",
+	        	"sTamp": "2020-11-12 04:17:43.635664",
+                "queue":1
+            },
+            ],
+        "_entity": "123",
+        "_error": "123",
+        "_eInfo": "123"
+    }
+    
+    action_json = json.dumps(action_json)
+    action_json = json.loads(action_json)
+    get_action(action_json)
