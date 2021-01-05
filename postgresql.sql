@@ -628,3 +628,24 @@ BEGIN
             _eInfo:= concat('error in main procedure: ',_eInfo);
 END;
 $$ LANGUAGE plpgsql;
+
+CALL dbo.springTb_Action(_userId=>'120912', _userName=> 'wangyifan', _info=>'[
+    {
+        "action":"del",
+        "sId":"123",
+        "pId":"textbox2",
+        "tbType": 0,
+		"name": "testname",
+		"shortName": "testshortName",
+		"description": "testdescription",
+		"descriptionEn": "testdescriptionEn",
+		"tbName": "testtbName",
+		"fieldName": "testfieldName",
+        "fieldNo" : 123,
+		"isFile": 0,
+        "filePathNo" : "testfilePathNo",
+		"storedProcName": "teststoredProcName",
+		"remark": "testremark",
+		"sTamp": "2020-11-12 04:17:43.635664",
+        "queue":1
+    }]', _entity=>'123', _error=>'123', _eInfo=>'123');
