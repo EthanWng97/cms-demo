@@ -1,9 +1,10 @@
 var setting = {
-    // views: {
-    //     addHoverDom: addHoverDom, //当鼠标移动到节点上时，显示用户自定义控件
-    //     removeHoverDom: removeHoverDom, //离开节点时的操作
-    //     selectedMulti: false
-    // },
+    views: {
+        // addHoverDom: addHoverDom, //当鼠标移动到节点上时，显示用户自定义控件
+        // removeHoverDom: removeHoverDom, //离开节点时的操作
+        // selectedMulti: false
+        dblClickExpand: false
+    },
     data: {
         simpleData: {
             enable: true,
@@ -19,7 +20,7 @@ var setting = {
     },
     callback: {
         onExpand: expandNode,
-        // beforeRemove: beforeRemove,  // determine whether the node can be deleted
+        beforeRemove: beforeRemove,  // determine whether the node can be deleted
         beforeRename: beforeRename,   // determine whether the node can be renamed
         // onRemove: onRemove,
         onRename: onRename,
