@@ -187,6 +187,15 @@ def get_union_json():
     return json.dumps(result)
 
 
+@app.route("/dataset", methods=["GET", "POST"])
+def dataset():
+    action_json = request.form.get("action")
+    isJson = _is_json(action_json)
+    result = get_action(action_json)
+    print(json.dumps(result))
+    return json.dumps(result)
+
+
 # 定义url请求路径
 @app.route("/")
 def hello_world():
@@ -198,55 +207,57 @@ if __name__ == "__main__":
     mptt_session = mptt_sessionmaker(sessionmaker(bind=engine))
     # get_simple_json()
     # 启动flask
-    # app.run(debug=True)
+    app.run(debug=True)
 
-    action_json = {
-        "_userId": "120912",
-        "_userName": "wangyifan",
-        "_info": [
-            {
-                "action": "del",
-                "sId": "123",
-                "pId": "textbox2",
-                "tbType": 0,
-                "name": "testname",
-                "shortName": "testshortName",
-                "description": "testdescription",
-                "descriptionEn": "testdescriptionEn",
-                "tbName": "testtbName",
-                "fieldName": "testfieldName",
-                "fieldNo": 123,
-                "isFile": 0,
-                "filePathNo": "testfilePathNo",
-                "storedProcName": "teststoredProcName",
-                "remark": "testremark",
-                "sTamp": "2020-11-12 04:17:43.635664",
-                "queue": 1,
-            },
-            {
-                "action": "del",
-                "sId": "123",
-                "pId": "textbox2",
-                "tbType": 0,
-                "name": "testname",
-                "shortName": "testshortName",
-                "description": "testdescription",
-                "descriptionEn": "testdescriptionEn",
-                "tbName": "testtbName",
-                "fieldName": "testfieldName",
-                "fieldNo": 123,
-                "isFile": 0,
-                "filePathNo": "testfilePathNo",
-                "storedProcName": "teststoredProcName",
-                "remark": "testremark",
-                "sTamp": "2020-11-12 04:17:43.635664",
-                "queue": 1,
-            },
-        ],
-        "_entity": "123",
-        "_error": "123",
-        "_eInfo": "123",
-    }
+    # action_json = {
+    #     "_userId": "120912",
+    #     "_userName": "wangyifan",
+    #     "_info": [
+    #         {
+    #             "action": "del",
+    #             "sId": "123",
+    #             "pId": "textbox2",
+    #             "tbType": 0,
+    #             "name": "testname",
+    #             "shortName": "testshortName",
+    #             "description": "testdescription",
+    #             "descriptionEn": "testdescriptionEn",
+    #             "tbName": "testtbName",
+    #             "fieldName": "testfieldName",
+    #             "fieldNo": 123,
+    #             "isFile": 0,
+    #             "filePathNo": "testfilePathNo",
+    #             "storedProcName": "teststoredProcName",
+    #             "remark": "testremark",
+    #             "sTamp": "2020-11-12 04:17:43.635664",
+    #             "queue": 1,
+    #         },
+    #         {
+    #             "action": "del",
+    #             "sId": "123",
+    #             "pId": "textbox2",
+    #             "tbType": 0,
+    #             "name": "testname",
+    #             "shortName": "testshortName",
+    #             "description": "testdescription",
+    #             "descriptionEn": "testdescriptionEn",
+    #             "tbName": "testtbName",
+    #             "fieldName": "testfieldName",
+    #             "fieldNo": 123,
+    #             "isFile": 0,
+    #             "filePathNo": "testfilePathNo",
+    #             "storedProcName": "teststoredProcName",
+    #             "remark": "testremark",
+    #             "sTamp": "2020-11-12 04:17:43.635664",
+    #             "queue": 1,
+    #         },
+    #     ],
+    #     "_entity": "123",
+    #     "_error": "123",
+    #     "_eInfo": "123",
+    # }
 
-    action_json = json.dumps(action_json) # convert to json
-    get_action(action_json)
+    # action_json = json.dumps(action_json) # convert to json
+    # get_action(action_json)
+
+ 
