@@ -44,3 +44,53 @@ function beforeRemove(treeId, treeNode) {
     }
     return true;
 }
+
+function onRemove(event, treeId, treeNode){
+        var data = {
+        "sId": treeNode.id,
+        "pId": treeNode.pId,  //父节点
+        "name": treeNode.name,
+    };
+    console.log(data);
+    var info_json = {
+        "action": "del",
+        "sId": treeNode.id,
+        "pId": treeNode.pId,
+        "tbType": 0,
+        "name": "testname",
+        "shortName": "testshortName",
+        "description": "testdescription",
+        "descriptionEn": "testdescriptionEn",
+        "tbName": "testtbName",
+        "fieldName": "testfieldName",
+        "fieldNo": 123,
+        "isFile": 0,
+        "filePathNo": "testfilePathNo",
+        "storedProcName": "teststoredProcName",
+        "remark": "testremark",
+        "sTamp": "2020-11-12 04:17:43.635664",
+        "queue": 1};
+    
+    var data_list = [];
+    data_list.push(info_json);
+    var jsonObj = {
+        "_userId": "",
+        "_userName": "",
+        "_info": JSON.stringify(data_list),
+        "_entity": "123",
+        "_error": "123",
+        "_eInfo": "123"
+    };
+
+    $.ajax({
+        cache: true,
+        url: "dataset",
+        type: 'post',
+        dataType: "json",
+        data: { action: JSON.stringify(jsonObj) },
+        // timeout: 1000, //超时时间设置，单位毫秒
+        success: function (res) {
+            layer.msg(res.msg)
+        }
+    });
+}
