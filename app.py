@@ -160,6 +160,7 @@ app = Flask(__name__)
 def get_action(action_json):
     # action_json = request.form.get("action_json")
     # isJson = _is_json(action_json)
+    action_json = json.loads(action_json)
     groups = _fetch_action_data(action_json)
     print(groups)
     result = {}
@@ -247,6 +248,5 @@ if __name__ == "__main__":
         "_eInfo": "123",
     }
 
-    action_json = json.dumps(action_json)
-    action_json = json.loads(action_json)
+    action_json = json.dumps(action_json) # convert to json
     get_action(action_json)
