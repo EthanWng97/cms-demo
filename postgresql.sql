@@ -494,10 +494,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-
-
-
 CREATE or REPLACE PROCEDURE dbo.springTb_Action(
     IN _userId varchar,      -- which user call the stored procedure
     IN _userName varchar,    -- user name
