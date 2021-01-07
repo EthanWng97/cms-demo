@@ -104,7 +104,7 @@ def _construct_select_sqlstring(sid):
         )
 
 
-def _construct_call_sqlstring(userid, username, info, entity, error, einfo):
+def _construct_call_sqlstring():
     return (
         text("CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);")
     )
