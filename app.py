@@ -106,10 +106,6 @@ def _construct_select_sqlstring(sid):
 
 def _construct_call_sqlstring(userid, username, info, entity, error, einfo):
     return (
-        # "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');"
-        # % (userid, username, info, entity, error, einfo)
-        # "CALL dbo.springTb_Action(_userId=>'{_userId}', _userName=> '{_userName}', _info=> '{_info}',  _entity=>'{_entity}', _error=>'{_error}', _eInfo=>'{_eInfo}');"
-        # .format(_userId=userid, _userName=username, _info=info, _entity=entity, _error=error, _eInfo=einfo)
         text("CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);")
     )
 
@@ -141,14 +137,7 @@ def _exec_procedure(proc_name, params):
 
 def _fetch_action_data(action_json):
     sql_string = ""
-    sql_string = _construct_call_sqlstring(
-        action_json["_userId"],
-        action_json["_userName"],
-        action_json["_info"],
-        action_json["_entity"],
-        action_json["_error"],
-        action_json["_eInfo"],
-    )
+    sql_string = _construct_call_sqlstring()
     # return db_session.execute(sql_string).fetchall()
     return db_session.execute(sql_string, {"_userId": action_json["_userId"], 
     "_userId": action_json["_userId"],
