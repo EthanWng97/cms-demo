@@ -1,7 +1,9 @@
 import json
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import sql
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.sql import text 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_mptt import mptt_sessionmaker
 from sqlalchemy_mptt.mixins import BaseNestedSets
@@ -13,7 +15,6 @@ engine = create_engine(
     max_overflow=20,
 )
 db_session = scoped_session(sessionmaker(bind=engine))
-
 # class Tree(Base, BaseNestedSets):
 #     __tablename__ = "dbo.springtb"
 #     id = Column(String, primary_key=True)
@@ -104,8 +105,11 @@ def _construct_select_sqlstring(sid):
 
 def _construct_call_sqlstring(userid, username, info, entity, error, einfo):
     return (
-        "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');"
-        % (userid, username, info, entity, error, einfo)
+        # "CALL dbo.springTb_Action(_userId=>'%s', _userName=> '%s', _info=> '%s',  _entity=>'%s', _error=>'%s', _eInfo=>'%s');"
+        # % (userid, username, info, entity, error, einfo)
+        # "CALL dbo.springTb_Action(_userId=>'{_userId}', _userName=> '{_userName}', _info=> '{_info}',  _entity=>'{_entity}', _error=>'{_error}', _eInfo=>'{_eInfo}');"
+        # .format(_userId=userid, _userName=username, _info=info, _entity=entity, _error=error, _eInfo=einfo)
+        text("CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);")
     )
 
 
@@ -128,16 +132,23 @@ def _fetch_tree_data(sid, isJson=False):
 
 def _fetch_action_data(action_json):
     sql_string = ""
-    info_json = json.dumps(action_json["_info"])
     sql_string = _construct_call_sqlstring(
         action_json["_userId"],
         action_json["_userName"],
-        info_json,
+        action_json["_info"],
         action_json["_entity"],
         action_json["_error"],
         action_json["_eInfo"],
     )
-    return db_session.execute(sql_string).fetchall()
+    # return db_session.execute(sql_string).fetchall()
+    return db_session.execute(sql_string, {"_userId": action_json["_userId"], 
+    "_userId": action_json["_userId"],
+    "_userName": action_json["_userName"],
+    "_info": action_json["_info"],
+    "_entity": action_json["_entity"],
+    "_error": action_json["_error"],
+    "_eInfo": action_json["_eInfo"],
+    }).fetchall()
 
 
 # 创建flask的应用对象
@@ -192,7 +203,6 @@ def dataset():
     action_json = request.form.get("action")
     isJson = _is_json(action_json)
     result = get_action(action_json)
-    print(json.dumps(result))
     return json.dumps(result)
 
 
@@ -259,5 +269,3 @@ if __name__ == "__main__":
 
     # action_json = json.dumps(action_json) # convert to json
     # get_action(action_json)
-
- 
