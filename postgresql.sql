@@ -439,6 +439,7 @@ DECLARE
     _pId varchar(36);
     _tabname varchar;
     _queue int;
+	_tmp varchar;
 
 BEGIN
     select count(*) into _count
@@ -469,15 +470,19 @@ BEGIN
     --     FROM dbo.springFileTableRel
     --     where tbName like tabname)
     -- delete  FROM  dbo.springFileTableRel where tbName like tabname
-    delete from dbo.springTb where sId=_sId;
+	delete from dbo.springTb where sId=_sid RETURNING sId INTO _tmp;
+	if _tmp is null Then
+		_tmp := '0';
+	end if;
+--     EXECUTE 'delete from dbo.springTb where sId=$1 RETURNING *' INTO _tmp USING _sId;
     if _pId is null Then
-	        update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
+	    update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
     else
-		 update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
+		update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
     END IF;
 
     _error:='00000';
-    _eInfo:= 'successful delete';
+    _eInfo:= 'successful delete: ' ||  _tmp;
     exception
         When Others Then
             rollback;
@@ -487,6 +492,10 @@ BEGIN
     COMMIT;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+
 
 
 CREATE or REPLACE PROCEDURE dbo.springTb_Action(
