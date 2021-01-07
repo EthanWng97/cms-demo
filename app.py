@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy import sql
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.sql import text 
+from sqlalchemy.sql import text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_mptt import mptt_sessionmaker
 from sqlalchemy_mptt.mixins import BaseNestedSets
@@ -105,8 +105,8 @@ def _construct_select_sqlstring(sid):
 
 
 def _construct_call_sqlstring():
-    return (
-        text("CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);")
+    return text(
+        "CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);"
     )
 
 
@@ -128,25 +128,34 @@ def _fetch_tree_data(sid, isJson=False):
 
 
 def _exec_procedure(proc_name, params):
-    sql_params = ",".join(["{0}='{1}'".format(name, value) for name, value in params.items()])
+    sql_params = ",".join(
+        ["{0}='{1}'".format(name, value) for name, value in params.items()]
+    )
     sql_string = """
         CALL dbo.{proc_name} ({params});
-    """.format(proc_name=proc_name, params=sql_params)
+    """.format(
+        proc_name=proc_name, params=sql_params
+    )
 
     return db_session.execute(sql_string).fetchall()
+
 
 def _fetch_action_data(action_json):
     sql_string = ""
     sql_string = _construct_call_sqlstring()
     # return db_session.execute(sql_string).fetchall()
-    return db_session.execute(sql_string, {"_userId": action_json["_userId"], 
-    "_userId": action_json["_userId"],
-    "_userName": action_json["_userName"],
-    "_info": action_json["_info"],
-    "_entity": action_json["_entity"],
-    "_error": action_json["_error"],
-    "_eInfo": action_json["_eInfo"],
-    }).fetchall()
+    return db_session.execute(
+        sql_string,
+        {
+            "_userId": action_json["_userId"],
+            "_userId": action_json["_userId"],
+            "_userName": action_json["_userName"],
+            "_info": action_json["_info"],
+            "_entity": action_json["_entity"],
+            "_error": action_json["_error"],
+            "_eInfo": action_json["_eInfo"],
+        },
+    ).fetchall()
 
 
 # 创建flask的应用对象
