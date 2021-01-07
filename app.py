@@ -1,4 +1,5 @@
 import json
+from sys import setswitchinterval
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy import sql
@@ -129,6 +130,14 @@ def _fetch_tree_data(sid, isJson=False):
                 )
     return db_session.execute(sql_string).fetchall()
 
+
+def _exec_procedure(proc_name, params):
+    sql_params = ",".join(["{0}='{1}'".format(name, value) for name, value in params.items()])
+    sql_string = """
+        CALL dbo.{proc_name} ({params});
+    """.format(proc_name=proc_name, params=sql_params)
+
+    return db_session.execute(sql_string).fetchall()
 
 def _fetch_action_data(action_json):
     sql_string = ""
