@@ -756,3 +756,282 @@ END CATCH;
 END;
 
 
+USE [SpringCms]
+GO
+/****** Object:  StoredProcedure [dbo].[oceanLoadDb_Upp]    Script Date: 2021/1/8 10:15:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[oceanLoadDb_Upp]
+	@sId varchar(36) OUTPUT,
+	@type int,
+	@keyVal nvarchar(256),
+	@json nvarchar(max),
+	@xml nvarchar(max),
+	@modifyUser varchar(36),
+	@sTamp timestamp,
+	@error varchar(500) OUTPUT
+AS
+
+BEGIN
+
+	declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;
+	--错误位置
+	set @procName = 'oceanLoadDb_Upp';
+	set @language = @error;
+	set @position = 1;
+
+	select @sId=sId
+	from oceanLoadDb
+	where type=@type and keyVal=@keyVal;
+
+	begin transaction;
+	BEGIN TRY
+     if @sId is null
+	   begin
+		set @sId=lower(newid());
+		Insert Into oceanLoadDb
+			(
+			sId,
+			type,
+			keyVal,
+			json,
+			xml,
+			createUser,
+			createTime,
+			modifyUser,
+			modifyTime
+			)
+		Values(
+				@sId,
+				@type,
+				@keyVal,
+				@json,
+				CONVERT(xml,@xml),
+				@modifyUser,
+				sysdatetimeoffset(),
+				@modifyUser,
+				sysdatetimeoffset()
+				   );
+	end;
+	else
+	    begin
+		Update oceanLoadDb Set
+					 json=@json, 
+					 xml= CONVERT(xml,@xml), 
+					 modifyUser=@modifyUser, 
+					 modifyTime=sysdatetimeoffset()
+				   WHERE sId=@sId;
+
+		if type=1
+			begin
+			EXEC oceanLoadDb_Upp_Type1
+                   	@sId,
+                   	@json,
+                   	@xml,
+					@createUser,
+					@createTime,
+					@modifyUser,
+					@modifyTime,
+					@sTamp,
+                   @return_error OUTPUT;
+		end;
+		else if type=2
+			begin
+
+			end;
+
+	end;
+     commit transaction;
+     set @error='0';
+END
+	TRY
+
+BEGIN CATCH
+	rollback transaction;
+	set @error='error:'+ERROR_MESSAGE();
+	--set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+	END CATCH;
+
+END;
+
+
+USE [SpringCms]
+GO
+/****** Object:  StoredProcedure [dbo].[oceanLoadDb_Upp]    Script Date: 2021/1/8 10:15:53 ******/
+CREATE PROCEDURE [dbo].[oceanLoadDb_Upp_Type1]
+	@sId varchar(36),
+	@json nvarchar(max),
+	@xml nvarchar(max),
+	@modifyUser varchar(36),
+	@sTamp timestamp,
+	@error varchar(500) OUTPUT
+AS
+
+BEGIN
+	declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint,
+		@isexist nvarchar(36);
+	--错误位置
+	set @procName = '[oceanLoadDb_Upp_Type1]';
+	set @language = @error;
+	set @position = 1;
+
+	begin transaction;
+	BEGIN TRY
+	select @isexist=sign
+	from [dbo].[eqProject]
+	where sign=@sId
+	
+	declare @tab table(
+		time datetime,
+		address nvarchar(256),
+		rate nvarchar(50),
+		buildArea nvarchar(256),
+		description nvarchar(512),
+		pronum nvarchar(36),
+		protype nvarchar(36),
+		buildtime nvarchar(50),
+		prophase nvarchar(36),
+		proarea nvarchar(50)
+ 	)
+
+	insert @tab
+		(time,address,rate, buildArea, description, pronum, protype, buildtime, prophase, proarea)
+	SELECT
+		C.value('code[1]','nvarchar(125)') as code,
+		C.value('name[1]','nvarchar(125)') as name,
+		C.value('val[1]','nvarchar(125)') as val
+			-- time, -- 发布时间
+			-- address, -- 项目地址
+			-- rate, -- 总投资额
+			-- buildArea, -- 建筑面积
+			-- description, -- 项目概况
+			-- foreignKey, -- 编号
+			-- dropDownTree, -- 项目类型
+			-- numberBox, -- 建设周期
+			-- numberSpinner, -- 项目阶段
+			-- timeSpinner, -- 地区（省直辖市+市区）
+	from @xml.nodes('/root') as T(C);
+
+	IF @isexist is null
+        BEGIN
+		-- insert
+		Insert Into dbo.eqProject
+			(
+			sId,
+			time, -- 发布时间
+			address, -- 项目地址
+			rate, -- 总投资额
+			buildArea, -- 建筑面积
+			description, -- 项目概况
+			foreignKey, -- 编号
+			dropDownTree, -- 项目类型
+			numberBox, -- 建设周期
+			numberSpinner, -- 项目阶段
+			timeSpinner, -- 地区（省直辖市+市区）
+			)
+		Values(
+			lower(newid()),
+			time, -- 发布时间
+			address, -- 项目地址
+			rate, -- 总投资额
+			buildArea, -- 建筑面积
+			description, -- 项目概况
+			foreignKey, -- 编号
+			dropDownTree, -- 项目类型
+			numberBox, -- 建设周期
+			numberSpinner, -- 项目阶段
+			timeSpinner, -- 地区（省直辖市+市区）
+           );
+	END;
+	ELSE
+		BEGIN
+		-- update
+		END;
+    commit transaction;
+    set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      set @error='error:'+ERROR_MESSAGE();
+      --set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
+GO
+
+
+
+declare @xml xml,
+        @DH varchar(100);
+select @xml=xml
+from [dbo].[oceanLoadDb]
+where sId='b6625561-0c23-485a-9237-6451518488b5'
+
+select @xml;
+
+declare @tab table(
+	code nvarchar(125),
+	name nvarchar(125),
+	val nvarchar(125)
+ )
+
+insert @tab
+	(code,name,val)
+SELECT
+	C.value('code[1]','nvarchar(125)') as code,
+	C.value('name[1]','nvarchar(125)') as name,
+	C.value('val[1]','nvarchar(125)') as val
+from @xml.nodes('/root/detail') as T(C);
+
+select @DH=val
+from @tab
+where code='DH';
+
+select @DH;
+
+
+-- 开发商子表
+CREATE TABLE [dbo].[eqProOther]
+(
+	[sId] [varchar](36) NULL,
+	[pId] [varchar](36) NULL,
+	[int1] [int] NULL,
+	[type] [int] NULL,
+	[title] [nvarchar](50) NULL,
+	[contact] [nvarchar](20) NULL,
+	[name] [nvarchar](50) NULL,
+	[phone] [nvarchar](50) NULL,
+	[mobilePhone] [nvarchar](50) NULL,
+	[email] [nvarchar](128) NULL,
+	[msn] [nvarchar](50) NULL,
+	[qq] [nvarchar](50) NULL,
+	[site] [nvarchar](50) NULL,
+	[address] [nvarchar](50) NULL,
+	[remark] [nvarchar](max) NULL,
+	[isDel] [bit] NULL,
+	[createUser] [nvarchar](50) NULL,
+	[createTime] [datetimeoffset](7) NULL,
+	[modifyUser] [nvarchar](50) NULL,
+	[modifyTime] [datetimeoffset](7) NULL,
+	[sTamp] [timestamp] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[eqProOther] ADD  CONSTRAINT [DF_eqProOther_isDel]  DEFAULT ((0)) FOR [isDel]
+GO
+
+ALTER TABLE [dbo].[eqProOther] ADD  CONSTRAINT [DF_eqProOther_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+ALTER TABLE [dbo].[eqProOther] ADD  CONSTRAINT [DF_eqProOther_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
