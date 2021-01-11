@@ -862,7 +862,7 @@ END;
 USE [SpringCms]
 GO
 /****** Object:  StoredProcedure [dbo].[oceanLoadDb_Upp]    Script Date: 2021/1/8 10:15:53 ******/
-CREATE PROCEDURE [dbo].[oceanLoadDb_Upp_Type1]
+ALTER PROCEDURE [dbo].[oceanLoadDb_Upp_Type1]
 	@sId varchar(36),
 	@json nvarchar(max),
 	@xml nvarchar(max),
@@ -875,7 +875,11 @@ BEGIN
 	declare @procName nvarchar(50),    --存储过程名称
         @language nvarchar(50),    --语言代码
         @position bigint,
-		@isexist nvarchar(36);
+		@isexist nvarchar(36),
+		@TmpXML xml,
+        @TmpAddress xml,
+        @TmpArea nvarchar(125);
+	set @TmpXML = CONVERT(xml,@xml);
 	--错误位置
 	set @procName = '[oceanLoadDb_Upp_Type1]';
 	set @language = @error;
@@ -899,60 +903,63 @@ BEGIN
 		prophase nvarchar(36),
 		proarea nvarchar(50)
  	)
+    -- insert @tab(address)
+    set @TmpAddress = (select @TmpXML.query('/root/titles[name="项目地址"]/val[1]'));
+
+    set @TmpArea = (select @TmpXML.value('data(/root/titles[13]/val)[1]','nvarchar(125)')) + ' ' + (select @TmpXML.value('data(/root/titles[14]/val)[1]','nvarchar(125)'));
+
 
 	insert @tab
 		(time,address,rate, buildArea, description, pronum, protype, buildtime, prophase, proarea)
 	SELECT
-		C.value('code[1]','nvarchar(125)') as code,
-		C.value('name[1]','nvarchar(125)') as name,
-		C.value('val[1]','nvarchar(125)') as val
-			-- time, -- 发布时间
-			-- address, -- 项目地址
-			-- rate, -- 总投资额
-			-- buildArea, -- 建筑面积
-			-- description, -- 项目概况
-			-- foreignKey, -- 编号
-			-- dropDownTree, -- 项目类型
-			-- numberBox, -- 建设周期
-			-- numberSpinner, -- 项目阶段
-			-- timeSpinner, -- 地区（省直辖市+市区）
-	from @xml.nodes('/root') as T(C);
+		C.value('titles[2]/val[1]','nvarchar(125)') as time,-- 发布时间
+		@TmpAddress.value('val[1]','nvarchar(125)') as address,-- 项目地址
+		C.value('titles[5]/val[1]','nvarchar(125)') as rate,-- 总投资额
+		C.value('titles[10]/val[1]','nvarchar(125)') as buildArea,-- 建筑面积
+		C.value('infos[1]/val[1]','nvarchar(125)') as description, -- 项目概况
+		C.value('titles[1]/val[1]','nvarchar(125)') as pronum, -- 项目编号
+		C.value('titles[3]/val[1]','nvarchar(125)') as protype, -- 项目类型
+		C.value('titles[4]/val[1]','nvarchar(125)') as buildtime, -- 建设周期
+		C.value('titles[7]/val[1]','nvarchar(125)') as prophase, -- 项目阶段
+		@TmpArea as proarea
+	-- 地区（省直辖市+市区）
+	from @TmpXML.nodes('/root') as T(C);
 
-	IF @isexist is null
-        BEGIN
-		-- insert
-		Insert Into dbo.eqProject
-			(
-			sId,
-			time, -- 发布时间
-			address, -- 项目地址
-			rate, -- 总投资额
-			buildArea, -- 建筑面积
-			description, -- 项目概况
-			foreignKey, -- 编号
-			dropDownTree, -- 项目类型
-			numberBox, -- 建设周期
-			numberSpinner, -- 项目阶段
-			timeSpinner, -- 地区（省直辖市+市区）
-			)
-		Values(
-			lower(newid()),
-			time, -- 发布时间
-			address, -- 项目地址
-			rate, -- 总投资额
-			buildArea, -- 建筑面积
-			description, -- 项目概况
-			foreignKey, -- 编号
-			dropDownTree, -- 项目类型
-			numberBox, -- 建设周期
-			numberSpinner, -- 项目阶段
-			timeSpinner, -- 地区（省直辖市+市区）
-           );
-	END;
-	ELSE
-		BEGIN
-		-- update
-		END;
+	-- IF @isexist is null
+    --     BEGIN
+    --     -- insert
+    --     Insert Into dbo.eqProject
+    --         (
+    --         sId,
+    --         time, -- 发布时间
+    --         address, -- 项目地址
+    --         rate, -- 总投资额
+    --         buildArea, -- 建筑面积
+    --         description, -- 项目概况
+    --         foreignKey, -- 编号
+    --         dropDownTree, -- 项目类型
+    --         numberBox, -- 建设周期
+    --         numberSpinner, -- 项目阶段
+    --         timeSpinner, -- 地区（省直辖市+市区）
+    --         )
+    --     Values(
+    --             lower(newid()),
+    --             time, -- 发布时间
+    --             address, -- 项目地址
+    --             rate, -- 总投资额
+    --             buildArea, -- 建筑面积
+    --             description, -- 项目概况
+    --             foreignKey, -- 编号
+    --             dropDownTree, -- 项目类型
+    --             numberBox, -- 建设周期
+    --             numberSpinner, -- 项目阶段
+    --             timeSpinner,  -- 地区（省直辖市+市区）
+    --        );
+    -- END;
+	-- ELSE
+	-- 	BEGIN
+    --     -- update
+    --     END;
     commit transaction;
     set @error='0';
 END TRY
@@ -965,7 +972,6 @@ END CATCH;
 
 END;
 GO
-
 
 
 declare @xml xml,
