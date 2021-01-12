@@ -916,7 +916,7 @@ BEGIN
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetime();
-	EXEC dbo.springTimeId @createTime,'oceanLoadDb',@tId output;
+	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
 
 	set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
@@ -949,20 +949,20 @@ BEGIN
             )
         Values(
                 lower(newid()),
-				@TmpXML.value('(root/name)[1]','nvarchar(36)'), -- 标题
-                @TmpTime.value('val[1]','nvarchar(125)'), -- 发布时间
-                @TmpAddress.value('val[1]','nvarchar(125)'), -- 项目地址
-                @TmpRate.value('val[1]','nvarchar(125)'), -- 总投资额
-                @TmpBuildArea.value('val[1]','nvarchar(125)'), -- 建筑面积
-                @TmpDescription.value('val[1]','nvarchar(125)'), -- 项目概况
+				@TmpTitle, -- 标题
+                @TmpTime, -- 发布时间
+                @TmpAddress, -- 项目地址
+                @TmpRate, -- 总投资额
+                @TmpBuildArea, -- 建筑面积
+                @TmpDescription, --
 				0,
 				@tId,
 				@sId,
 				0,
-                @TmpPronum.value('val[1]','nvarchar(125)'), -- 编号
-                @TmpProtype.value('val[1]','nvarchar(125)'), -- 项目类型
-                @TmpBuildTime.value('val[1]','nvarchar(125)'), -- 建设周期
-                @TmpProPhase.value('val[1]','nvarchar(125)'), -- 项目阶段
+                @TmpPronum, -- 编号
+                @TmpProtype, -- 项目类型
+                @TmpBuildTime, -- 建设周期
+                @TmpProPhase, -- 项目阶段
                 @TmpArea,  -- 地区（省直辖市+市区）
 				@createTime
            );
@@ -971,16 +971,16 @@ BEGIN
 		BEGIN
         -- update
 		     Update dbo.eqProject Set
-			 title=@TmpXML.value('(root/name)[1]','nvarchar(36)'), -- 标题
-             time=@TmpTime.value('val[1]','nvarchar(125)'),
-             address=@TmpAddress.value('val[1]','nvarchar(125)'), -- 项目地址
-             rate=@TmpRate.value('val[1]','nvarchar(125)'),
-             buildArea=@TmpBuildArea.value('val[1]','nvarchar(125)'),
-             description=@TmpDescription.value('val[1]','nvarchar(125)'),
-             pronum=@TmpPronum.value('val[1]','nvarchar(125)'),
-             protype=@TmpProtype.value('val[1]','nvarchar(125)'),
-             buildtime=@TmpBuildTime.value('val[1]','nvarchar(125)'),
-             prophase=@TmpProPhase.value('val[1]','nvarchar(125)'),
+			 title=@TmpTitle, -- 标题
+             time=@TmpTime,
+             address=@TmpAddress, -- 项目地址
+             rate=@TmpRate,
+             buildArea=@TmpBuildArea,
+             description=@TmpDescription,
+             pronum=@TmpPronum,
+             protype=@TmpProtype,
+             buildtime=@TmpBuildTime,
+             prophase=@TmpProPhase,
              proarea=@TmpArea,
              modifyTime=sysdatetimeoffset()
            WHERE sign=@sId;
