@@ -888,7 +888,10 @@ BEGIN
 		@TmpProPhase xml,
 		@TmpArea1 xml,
         @TmpArea2 xml,
-        @TmpArea nvarchar(125);
+        @TmpArea nvarchar(125),
+		@tId varchar(30),
+		@createTime datetime;
+		
 	set @TmpXML = CONVERT(xml,@xml);
 	--错误位置
 	set @procName = '[oceanLoadDb_Upp_Type1]';
@@ -924,7 +927,8 @@ BEGIN
 	set @TmpArea1 = (select @TmpXML.query('/root/titles[code="SZXS"]/val[1]'));
 	set @TmpArea2 = (select @TmpXML.query('/root/titles[code="SQ"]/val[1]'));
 	set @TmpArea = @TmpArea1.value('val[1]','nvarchar(125)') + @TmpArea2.value('val[1]','nvarchar(125)') ;
-    -- set @TmpArea = (select @TmpXML.value('data(/root/titles[13]/val)[1]','nvarchar(125)')) + ' ' + (select @TmpXML.value('data(/root/titles[14]/val)[1]','nvarchar(125)'));
+	set @createTime=sysdatetime();
+	EXEC dbo.springTimeId @createTime,'oceanLoadDb',@tId output;
 
 
 	-- insert @tab
@@ -959,13 +963,15 @@ BEGIN
             buildArea, -- 建筑面积
             description, -- 项目概况
 			state,
+			tId,
 			sign,
 			isDel,
             pronum, -- 编号
             protype, -- 项目类型
             buildtime, -- 建设周期
             prophase, -- 项目阶段
-            proarea -- 地区（省直辖市+市区）
+            proarea, -- 地区（省直辖市+市区）
+			createTime
             )
         Values(
                 lower(newid()),
@@ -976,13 +982,15 @@ BEGIN
                 @TmpBuildArea.value('val[1]','nvarchar(125)'), -- 建筑面积
                 @TmpDescription.value('val[1]','nvarchar(125)'), -- 项目概况
 				0,
+				@tId,
 				@sId,
 				0,
                 @TmpPronum.value('val[1]','nvarchar(125)'), -- 编号
                 @TmpProtype.value('val[1]','nvarchar(125)'), -- 项目类型
                 @TmpBuildTime.value('val[1]','nvarchar(125)'), -- 建设周期
                 @TmpProPhase.value('val[1]','nvarchar(125)'), -- 项目阶段
-                @TmpArea  -- 地区（省直辖市+市区）
+                @TmpArea,  -- 地区（省直辖市+市区）
+				@createTime
            );
     END;
 	ELSE
