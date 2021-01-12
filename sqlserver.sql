@@ -926,7 +926,7 @@ BEGIN
 
 	IF @isexist is null
         BEGIN
-        -- insert
+        -- insert dbo.eqProject
         Insert Into dbo.eqProject
             (
             sId,
@@ -966,6 +966,31 @@ BEGIN
                 @TmpArea,  -- 地区（省直辖市+市区）
 				@createTime
            );
+		-- insert dbo.eqProOther
+		declare 
+			@cnt INT,
+			@toCnt INT,
+			@name nvarchar(50),
+			@cnt_users INT,
+			@toCnt_users INT;
+		select
+			@cnt = 1,
+			@toCnt =  @x.value('count(/root/contacts)','INT');
+
+		WHILE @cnt <= @toCnt BEGIN
+			SELECT
+    			@name = CONVERT(NVARCHAR(125), @x.query('data(/root/contacts[position()=sql:variable("@cnt")]/name[1])')),
+				@cnt_users = 1,
+				@toCnt_users = @x.value('count(/root/contacts[position()=sql:variable("@cnt")]/users)','INT');
+				
+			PRINT 'Processing Child Element: ' + CAST(@cnt AS VARCHAR)
+			PRINT 'Child element: ' + CAST(@name AS VARCHAR(100))
+			PRINT 'users count: ' + CAST(@toCnt_users AS VARCHAR)
+			PRINT ''
+			-- incremet the counter variable
+			SELECT @cnt = @cnt + 1
+		END;
+
     END;
 	ELSE
 		BEGIN
