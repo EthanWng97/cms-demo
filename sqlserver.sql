@@ -877,21 +877,22 @@ BEGIN
         @position bigint,
 		@isexist nvarchar(36),
 		@TmpXML xml,
-		@TmpTime xml,
-        @TmpAddress xml,
-		@TmpRate xml,
-		@TmpBuildArea xml,
-		@TmpDescription xml,
-		@TmpPronum xml,
-		@TmpProtype xml,
-		@TmpBuildTime xml,
-		@TmpProPhase xml,
-		@TmpArea1 xml,
-        @TmpArea2 xml,
-        @TmpArea nvarchar(125),
+		@TmpTitle nvarchar(256),
+		@TmpTime datetime,
+        @TmpAddress nvarchar(256),
+		@TmpRate nvarchar(50),
+		@TmpBuildArea nvarchar(256),
+		@TmpDescription nvarchar(512),
+		@TmpPronum nvarchar(36),
+		@TmpProtype nvarchar(36),
+		@TmpBuildTime nvarchar(50),
+		@TmpProPhase nvarchar(36),
+		@TmpArea1 nvarchar(36),
+        @TmpArea2 nvarchar(36),
+        @TmpArea nvarchar(36),
 		@tId varchar(30),
 		@createTime datetime;
-		
+
 	set @TmpXML = CONVERT(xml,@xml);
 	--错误位置
 	set @procName = '[oceanLoadDb_Upp_Type1]';
@@ -900,51 +901,24 @@ BEGIN
 
 	begin transaction;
 	BEGIN TRY
-	
-	-- declare @tab table(
-	-- 	time datetime,
-	-- 	address nvarchar(256),
-	-- 	rate nvarchar(50),
-	-- 	buildArea nvarchar(256),
-	-- 	description nvarchar(512),
-	-- 	pronum nvarchar(36),
-	-- 	protype nvarchar(36),
-	-- 	buildtime nvarchar(50),
-	-- 	prophase nvarchar(36),
-	-- 	proarea nvarchar(50)
- 	-- )
-    -- insert @tab(address)
-	
-	set @TmpTime = (select @TmpXML.query('/root/titles[code="FBSJ"]/val[1]'));
-    set @TmpAddress = (select @TmpXML.query('/root/titles[code="XMDZ"]/val[1]'));
-	set @TmpRate = (select @TmpXML.query('/root/titles[code="ZTZE"]/val[1]'));
-	set @TmpBuildArea = (select @TmpXML.query('/root/titles[code="JZMJ"]/val[1]'));
-	set @TmpDescription = (select @TmpXML.query('/root/infos[code="XMGK"]/val[1]'));
-	set @TmpPronum = (select @TmpXML.query('/root/titles[code="XMBH"]/val[1]'));
-	set @TmpProtype = (select @TmpXML.query('/root/titles[code="XMLX"]/val[1]'));
-	set @TmpBuildTime = (select @TmpXML.query('/root/titles[code="JSZQ"]/val[1]'));
-	set @TmpProPhase = (select @TmpXML.query('/root/titles[code="XMJD"]/val[1]'));
-	set @TmpArea1 = (select @TmpXML.query('/root/titles[code="SZXS"]/val[1]'));
-	set @TmpArea2 = (select @TmpXML.query('/root/titles[code="SQ"]/val[1]'));
-	set @TmpArea = @TmpArea1.value('val[1]','nvarchar(125)') + @TmpArea2.value('val[1]','nvarchar(125)') ;
+
+	set @TmpTitle = @TmpXML.value('(root/name)[1]','nvarchar(256)');-- 标题
+	set @TmpTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
+    set @TmpAddress = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/titles[code="XMDZ"]/val[1])'));
+	set @TmpRate = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/titles[code="ZTZE"]/val[1])'));
+	set @TmpBuildArea = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/titles[code="JZMJ"]/val[1])'));
+	set @TmpDescription = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/infos[code="XMGK"]/val[1])'));
+	set @TmpPronum = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMBH"]/val[1])'));
+	set @TmpProtype = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMLX"]/val[1])'));
+	set @TmpBuildTime = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/titles[code="JSZQ"]/val[1])'));
+	set @TmpProPhase = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMJD"]/val[1])'));
+	set @TmpArea1 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SZXS"]/val[1])'));
+	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
+	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetime();
 	EXEC dbo.springTimeId @createTime,'oceanLoadDb',@tId output;
 
-
-	-- insert @tab
-	-- 	(time,address,rate, buildArea, description, pronum, protype, buildtime, prophase, proarea)
-	-- SELECT
-	-- 	@TmpTime.value('val[1]','nvarchar(125)') as time,-- 发布时间
-	-- 	@TmpAddress.value('val[1]','nvarchar(125)') as address,-- 项目地址
-	-- 	@TmpRate.value('val[1]','nvarchar(125)') as rate,-- 总投资额
-	-- 	@TmpBuildArea.value('val[1]','nvarchar(125)') as buildArea,-- 建筑面积
-	-- 	@TmpDescription.value('val[1]','nvarchar(125)') as description, -- 项目概况
-	-- 	@TmpPronum.value('val[1]','nvarchar(125)') as pronum, -- 项目编号
-	-- 	@TmpProtype.value('val[1]','nvarchar(125)') as protype, -- 项目类型
-	-- 	@TmpBuildTime.value('val[1]','nvarchar(125)') as buildtime, -- 建设周期
-	-- 	@TmpProPhase.value('val[1]','nvarchar(125)') as prophase, -- 项目阶段
-	--  @TmpArea as proarea
-	-- from @TmpXML.nodes('/root') as T(C);
+	set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
 	select @isexist=sign
 	from [dbo].[eqProject]
