@@ -877,7 +877,17 @@ BEGIN
         @position bigint,
 		@isexist nvarchar(36),
 		@TmpXML xml,
+		@TmpTime xml,
         @TmpAddress xml,
+		@TmpRate xml,
+		@TmpBuildArea xml,
+		@TmpDescription xml,
+		@TmpPronum xml,
+		@TmpProtype xml,
+		@TmpBuildTime xml,
+		@TmpProPhase xml,
+		@TmpArea1 xml,
+        @TmpArea2 xml,
         @TmpArea nvarchar(125);
 	set @TmpXML = CONVERT(xml,@xml);
 	--错误位置
@@ -887,79 +897,112 @@ BEGIN
 
 	begin transaction;
 	BEGIN TRY
+	
+	-- declare @tab table(
+	-- 	time datetime,
+	-- 	address nvarchar(256),
+	-- 	rate nvarchar(50),
+	-- 	buildArea nvarchar(256),
+	-- 	description nvarchar(512),
+	-- 	pronum nvarchar(36),
+	-- 	protype nvarchar(36),
+	-- 	buildtime nvarchar(50),
+	-- 	prophase nvarchar(36),
+	-- 	proarea nvarchar(50)
+ 	-- )
+    -- insert @tab(address)
+	
+	set @TmpTime = (select @TmpXML.query('/root/titles[code="FBSJ"]/val[1]'));
+    set @TmpAddress = (select @TmpXML.query('/root/titles[code="XMDZ"]/val[1]'));
+	set @TmpRate = (select @TmpXML.query('/root/titles[code="ZTZE"]/val[1]'));
+	set @TmpBuildArea = (select @TmpXML.query('/root/titles[code="JZMJ"]/val[1]'));
+	set @TmpDescription = (select @TmpXML.query('/root/infos[code="XMGK"]/val[1]'));
+	set @TmpPronum = (select @TmpXML.query('/root/titles[code="XMBH"]/val[1]'));
+	set @TmpProtype = (select @TmpXML.query('/root/titles[code="XMLX"]/val[1]'));
+	set @TmpBuildTime = (select @TmpXML.query('/root/titles[code="JSZQ"]/val[1]'));
+	set @TmpProPhase = (select @TmpXML.query('/root/titles[code="XMJD"]/val[1]'));
+	set @TmpArea1 = (select @TmpXML.query('/root/titles[code="SZXS"]/val[1]'));
+	set @TmpArea2 = (select @TmpXML.query('/root/titles[code="SQ"]/val[1]'));
+	set @TmpArea = @TmpArea1.value('val[1]','nvarchar(125)') + @TmpArea2.value('val[1]','nvarchar(125)') ;
+    -- set @TmpArea = (select @TmpXML.value('data(/root/titles[13]/val)[1]','nvarchar(125)')) + ' ' + (select @TmpXML.value('data(/root/titles[14]/val)[1]','nvarchar(125)'));
+
+
+	-- insert @tab
+	-- 	(time,address,rate, buildArea, description, pronum, protype, buildtime, prophase, proarea)
+	-- SELECT
+	-- 	@TmpTime.value('val[1]','nvarchar(125)') as time,-- 发布时间
+	-- 	@TmpAddress.value('val[1]','nvarchar(125)') as address,-- 项目地址
+	-- 	@TmpRate.value('val[1]','nvarchar(125)') as rate,-- 总投资额
+	-- 	@TmpBuildArea.value('val[1]','nvarchar(125)') as buildArea,-- 建筑面积
+	-- 	@TmpDescription.value('val[1]','nvarchar(125)') as description, -- 项目概况
+	-- 	@TmpPronum.value('val[1]','nvarchar(125)') as pronum, -- 项目编号
+	-- 	@TmpProtype.value('val[1]','nvarchar(125)') as protype, -- 项目类型
+	-- 	@TmpBuildTime.value('val[1]','nvarchar(125)') as buildtime, -- 建设周期
+	-- 	@TmpProPhase.value('val[1]','nvarchar(125)') as prophase, -- 项目阶段
+	--  @TmpArea as proarea
+	-- from @TmpXML.nodes('/root') as T(C);
+
 	select @isexist=sign
 	from [dbo].[eqProject]
 	where sign=@sId
-	
-	declare @tab table(
-		time datetime,
-		address nvarchar(256),
-		rate nvarchar(50),
-		buildArea nvarchar(256),
-		description nvarchar(512),
-		pronum nvarchar(36),
-		protype nvarchar(36),
-		buildtime nvarchar(50),
-		prophase nvarchar(36),
-		proarea nvarchar(50)
- 	)
-    -- insert @tab(address)
-    set @TmpAddress = (select @TmpXML.query('/root/titles[name="项目地址"]/val[1]'));
 
-    set @TmpArea = (select @TmpXML.value('data(/root/titles[13]/val)[1]','nvarchar(125)')) + ' ' + (select @TmpXML.value('data(/root/titles[14]/val)[1]','nvarchar(125)'));
-
-
-	insert @tab
-		(time,address,rate, buildArea, description, pronum, protype, buildtime, prophase, proarea)
-	SELECT
-		C.value('titles[2]/val[1]','nvarchar(125)') as time,-- 发布时间
-		@TmpAddress.value('val[1]','nvarchar(125)') as address,-- 项目地址
-		C.value('titles[5]/val[1]','nvarchar(125)') as rate,-- 总投资额
-		C.value('titles[10]/val[1]','nvarchar(125)') as buildArea,-- 建筑面积
-		C.value('infos[1]/val[1]','nvarchar(125)') as description, -- 项目概况
-		C.value('titles[1]/val[1]','nvarchar(125)') as pronum, -- 项目编号
-		C.value('titles[3]/val[1]','nvarchar(125)') as protype, -- 项目类型
-		C.value('titles[4]/val[1]','nvarchar(125)') as buildtime, -- 建设周期
-		C.value('titles[7]/val[1]','nvarchar(125)') as prophase, -- 项目阶段
-		@TmpArea as proarea
-	-- 地区（省直辖市+市区）
-	from @TmpXML.nodes('/root') as T(C);
-
-	-- IF @isexist is null
-    --     BEGIN
-    --     -- insert
-    --     Insert Into dbo.eqProject
-    --         (
-    --         sId,
-    --         time, -- 发布时间
-    --         address, -- 项目地址
-    --         rate, -- 总投资额
-    --         buildArea, -- 建筑面积
-    --         description, -- 项目概况
-    --         foreignKey, -- 编号
-    --         dropDownTree, -- 项目类型
-    --         numberBox, -- 建设周期
-    --         numberSpinner, -- 项目阶段
-    --         timeSpinner, -- 地区（省直辖市+市区）
-    --         )
-    --     Values(
-    --             lower(newid()),
-    --             time, -- 发布时间
-    --             address, -- 项目地址
-    --             rate, -- 总投资额
-    --             buildArea, -- 建筑面积
-    --             description, -- 项目概况
-    --             foreignKey, -- 编号
-    --             dropDownTree, -- 项目类型
-    --             numberBox, -- 建设周期
-    --             numberSpinner, -- 项目阶段
-    --             timeSpinner,  -- 地区（省直辖市+市区）
-    --        );
-    -- END;
-	-- ELSE
-	-- 	BEGIN
-    --     -- update
-    --     END;
+	IF @isexist is null
+        BEGIN
+        -- insert
+        Insert Into dbo.eqProject
+            (
+            sId,
+			title,
+            time, -- 发布时间
+            address, -- 项目地址
+            rate, -- 总投资额
+            buildArea, -- 建筑面积
+            description, -- 项目概况
+			state,
+			sign,
+			isDel,
+            pronum, -- 编号
+            protype, -- 项目类型
+            buildtime, -- 建设周期
+            prophase, -- 项目阶段
+            proarea -- 地区（省直辖市+市区）
+            )
+        Values(
+                lower(newid()),
+				@TmpXML.value('(root/name)[1]','nvarchar(36)'), -- 标题
+                @TmpTime.value('val[1]','nvarchar(125)'), -- 发布时间
+                @TmpAddress.value('val[1]','nvarchar(125)'), -- 项目地址
+                @TmpRate.value('val[1]','nvarchar(125)'), -- 总投资额
+                @TmpBuildArea.value('val[1]','nvarchar(125)'), -- 建筑面积
+                @TmpDescription.value('val[1]','nvarchar(125)'), -- 项目概况
+				0,
+				@sId,
+				0,
+                @TmpPronum.value('val[1]','nvarchar(125)'), -- 编号
+                @TmpProtype.value('val[1]','nvarchar(125)'), -- 项目类型
+                @TmpBuildTime.value('val[1]','nvarchar(125)'), -- 建设周期
+                @TmpProPhase.value('val[1]','nvarchar(125)'), -- 项目阶段
+                @TmpArea  -- 地区（省直辖市+市区）
+           );
+    END;
+	ELSE
+		BEGIN
+        -- update
+		     Update dbo.eqProject Set
+			 title=@TmpXML.value('(root/name)[1]','nvarchar(36)'), -- 标题
+             time=@TmpTime.value('val[1]','nvarchar(125)'),
+             address=@TmpAddress.value('val[1]','nvarchar(125)'), -- 项目地址
+             rate=@TmpRate.value('val[1]','nvarchar(125)'),
+             buildArea=@TmpBuildArea.value('val[1]','nvarchar(125)'),
+             description=@TmpDescription.value('val[1]','nvarchar(125)'),
+             pronum=@TmpPronum.value('val[1]','nvarchar(125)'),
+             protype=@TmpProtype.value('val[1]','nvarchar(125)'),
+             buildtime=@TmpBuildTime.value('val[1]','nvarchar(125)'),
+             prophase=@TmpProPhase.value('val[1]','nvarchar(125)'),
+             proarea=@TmpArea,
+             modifyTime=sysdatetimeoffset()
+           WHERE sign=@sId;
+        END;
     commit transaction;
     set @error='0';
 END TRY
