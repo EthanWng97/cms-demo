@@ -865,7 +865,7 @@ GO
 ALTER PROCEDURE [dbo].[oceanLoadDb_Upp_Type1]
 	@sId varchar(36),
 	@json nvarchar(max),
-	@xml nvarchar(max),
+	@xml xml,
 	@modifyUser varchar(36),
 	@sTamp timestamp,
 	@error varchar(500) OUTPUT
@@ -909,7 +909,8 @@ BEGIN
 		@toCnt_users INT,
 		@Userexist nvarchar(36);
 
-	set @TmpXML = CONVERT(xml,@xml);
+	-- set @TmpXML = CONVERT(xml,@xml);
+	set @TmpXML = @xml;
 	--错误位置
 	set @procName = '[oceanLoadDb_Upp_Type1]';
 	set @language = @error;
@@ -932,6 +933,7 @@ BEGIN
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetime();
+	
 	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
 
 	-- set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
