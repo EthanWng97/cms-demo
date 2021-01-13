@@ -972,15 +972,15 @@ BEGIN
 		declare 
 			@cnt INT,
 			@toCnt INT,
-			@TmpCortype nvarchar(50),
-			@TmpTitle nvarchar(50),
-			@TmpName nvarchar(50),
-			@TmpQq nvarchar(50),
-			@TmpMobileP nvarchar(50),
-			@TmpPhone nvarchar(50),
-			@TmpAddress nvarchar(50),
-			@TmpPositio nvarchar(50),
-			@TmpRemark nvarchar(MAX),
+			@TmpUserCortype nvarchar(50),
+			@TmpUserTitle nvarchar(50),
+			@TmpUserName nvarchar(50),
+			@TmpUserQq nvarchar(50),
+			@TmpUserMobileP nvarchar(50),
+			@TmpUserPhone nvarchar(50),
+			@TmpUserAddress nvarchar(50),
+			@TmpUserPositio nvarchar(50),
+			@TmpUserRemark nvarchar(MAX),
 			@cnt_users INT,
 			@toCnt_users INT;
 		select
@@ -989,37 +989,52 @@ BEGIN
 
 		WHILE @cnt <= @toCnt BEGIN
   		SELECT
-  		  	@TmpCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
-			@TmpTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
+  		  	@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
+			@TmpUserTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
 			@cnt_users = 1,
 			@toCnt_users = C.value('count(users)','INT')
-			from  @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
 			WHILE @cnt_users <= @toCnt_users BEGIN
 			select  
-				@TmpName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
-				@TmpQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
-				@TmpMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
-				@TmpPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
-				@TmpAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
-				@TmpPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
-				@TmpRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
+				@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
+				@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
+				@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
+				@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
+				@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
+				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
+				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
 			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
-			select 			@TmpCortype,
-			@TmpTitle,
-			@TmpName,
-			@TmpQq,
-			@TmpMobileP,
-			@TmpPhone,
-			@TmpAddress,
-			@TmpPositio,
-			@TmpRemark;
+			Insert Into dbo.eqProOther
+            (
+            sId,
+			pId,
+            title,
+            name, -- 项目地址
+            phone, -- 总投资额
+            mobilePhone, -- 建筑面积
+            qq, -- 项目概况
+			positio,
+			address,
+			cortype,
+			remark,
+			createTime
+            )
+        Values(
+				lower(newid()),
+                @TmpSid,
+				@TmpUserTitle, -- 标题
+                @TmpUserName, -- 发布时间
+                @TmpUserPhone, -- 项目地址
+                @TmpUserMobileP, -- 总投资额
+                @TmpUserQq, -- 建筑面积
+                @TmpUserPositio, --
+				@TmpUserAddress,
+				@TmpUserCortype,
+				@TmpUserRemark,
+				@createTime
+           );
 			SELECT @cnt_users = @cnt_users + 1;
 			END;
-				
-			--PRINT 'Processing Child Element: ' + CAST(@cnt AS VARCHAR)
-			--PRINT 'Child element: ' + CAST(@name AS VARCHAR(100))
-			--PRINT 'users count: ' + CAST(@toCnt_users AS VARCHAR)
-			PRINT ''
 			-- incremet the counter variable
 			SELECT @cnt = @cnt + 1
 		END;
