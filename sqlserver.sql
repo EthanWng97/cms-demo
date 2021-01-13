@@ -962,7 +962,9 @@ BEGIN
             buildtime, -- 建设周期
             prophase, -- 项目阶段
             proarea, -- 地区（省直辖市+市区）
-			createTime
+			createTime,
+			createUser,
+			modifyUser
             )
         Values(
                 @TmpSid,
@@ -981,7 +983,9 @@ BEGIN
                 @TmpBuildTime, -- 建设周期
                 @TmpProPhase, -- 项目阶段
                 @TmpArea,  -- 地区（省直辖市+市区）
-				@createTime
+				@createTime,
+				@modifyUser,
+				@modifyUser
            );
 		-- insert dbo.eqProOther
 		select
@@ -1018,7 +1022,9 @@ BEGIN
 			address,
 			cortype,
 			remark,
-			createTime
+			createTime,
+			createUser,
+			modifyUser
             )
         Values(
 				lower(newid()),
@@ -1032,7 +1038,9 @@ BEGIN
 				@TmpUserAddress,
 				@TmpUserCortype,
 				@TmpUserRemark,
-				@createTime
+				@createTime,
+				@modifyUser,
+				@modifyUser
            );
 			SELECT @cnt_users = @cnt_users + 1;
 			END;
@@ -1060,7 +1068,8 @@ BEGIN
         buildtime=@TmpBuildTime,
         prophase=@TmpProPhase,
         proarea=@TmpArea,
-        modifyTime=sysdatetimeoffset()
+        modifyTime=sysdatetimeoffset(),
+		modifyUser=@modifyUser
         WHERE sign=@sId;
         -- update dbo.eqProOther
 		select
@@ -1108,7 +1117,9 @@ BEGIN
 				address,
 				cortype,
 				remark,
-				createTime
+				createTime,
+				createUser,
+				modifyUser
         	    )
         	Values(
 					lower(newid()),
@@ -1122,7 +1133,9 @@ BEGIN
 					@TmpUserAddress,
 					@TmpUserCortype,
 					@TmpUserRemark,
-					@createTime
+					@createTime,
+					@modifyUser,
+					@modifyUser
         	   );
 			END;
 			ELSE
@@ -1137,7 +1150,8 @@ BEGIN
         	 	address=@TmpUserAddress,
         	 	cortype=@TmpUserCortype,
         	 	remark=@TmpUserRemark,
-        	 	modifyTime=sysdatetimeoffset()
+        	 	modifyTime=sysdatetimeoffset(),
+				modifyUser=@modifyUser
         	WHERE pId=@TmpSid AND name = @TmpUserName;
 			END;
 			
