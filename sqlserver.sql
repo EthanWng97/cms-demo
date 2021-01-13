@@ -970,7 +970,8 @@ BEGIN
 		declare 
 			@cnt INT,
 			@toCnt INT,
-			@name nvarchar(50),
+			@TmpCortype nvarchar(50),
+			@TmpTitle nvarchar(50),
 			@cnt_users INT,
 			@toCnt_users INT;
 		select
@@ -978,10 +979,18 @@ BEGIN
 			@toCnt =  @x.value('count(/root/contacts)','INT');
 
 		WHILE @cnt <= @toCnt BEGIN
-			SELECT
-    			@name = CONVERT(NVARCHAR(125), @x.query('data(/root/contacts[position()=sql:variable("@cnt")]/name[1])')),
-				@cnt_users = 1,
-				@toCnt_users = @x.value('count(/root/contacts[position()=sql:variable("@cnt")]/users)','INT');
+  		SELECT
+  		  	@TmpCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
+			@TmpTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
+			@cnt_users = 1,
+			@toCnt_users = C.value('count(users)','INT')
+			from  @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+			WHILE @cnt_users <= @toCnt_users BEGIN
+			select  
+				@TmpName = CONVERT(NVARCHAR(125), C.query('data(users[position()=sql:variable("@cnt_users")]/vals[code="XM"]/val[1])'))
+				
+			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+			END;
 				
 			PRINT 'Processing Child Element: ' + CAST(@cnt AS VARCHAR)
 			PRINT 'Child element: ' + CAST(@name AS VARCHAR(100))
