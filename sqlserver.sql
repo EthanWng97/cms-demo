@@ -889,10 +889,25 @@ BEGIN
 		@TmpBuildTime nvarchar(50),
 		@TmpProPhase nvarchar(36),
 		@TmpArea1 nvarchar(36),
-        @TmpArea2 nvarchar(36),
-        @TmpArea nvarchar(36),
+		@TmpArea2 nvarchar(36),
+		@TmpArea nvarchar(36),
 		@tId varchar(30),
-		@createTime datetime;
+		@createTime datetime,
+
+		@cnt INT,
+		@toCnt INT,
+		@TmpUserCortype nvarchar(50),
+		@TmpUserTitle nvarchar(50),
+		@TmpUserName nvarchar(50),
+		@TmpUserQq nvarchar(50),
+		@TmpUserMobileP nvarchar(50),
+		@TmpUserPhone nvarchar(50),
+		@TmpUserAddress nvarchar(50),
+		@TmpUserPositio nvarchar(50),
+		@TmpUserRemark nvarchar(MAX),
+		@cnt_users INT,
+		@toCnt_users INT,
+		@Userexist nvarchar(36);
 
 	set @TmpXML = CONVERT(xml,@xml);
 	--错误位置
@@ -919,14 +934,14 @@ BEGIN
 	set @createTime=sysdatetime();
 	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
 
-	set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
+	-- set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
 	select @isexist=sign
 	from [dbo].[eqProject]
 	where sign=@sId
 
 	IF @isexist is null
-        BEGIN
+    BEGIN
 		set @TmpSid = lower(newid());
         -- insert dbo.eqProject
         Insert Into dbo.eqProject
@@ -969,23 +984,9 @@ BEGIN
 				@createTime
            );
 		-- insert dbo.eqProOther
-		declare 
-			@cnt INT,
-			@toCnt INT,
-			@TmpUserCortype nvarchar(50),
-			@TmpUserTitle nvarchar(50),
-			@TmpUserName nvarchar(50),
-			@TmpUserQq nvarchar(50),
-			@TmpUserMobileP nvarchar(50),
-			@TmpUserPhone nvarchar(50),
-			@TmpUserAddress nvarchar(50),
-			@TmpUserPositio nvarchar(50),
-			@TmpUserRemark nvarchar(MAX),
-			@cnt_users INT,
-			@toCnt_users INT;
 		select
 			@cnt = 1,
-			@toCnt =  @x.value('count(/root/contacts)','INT');
+			@toCnt =  @TmpXML.value('count(/root/contacts)','INT');
 
 		WHILE @cnt <= @toCnt BEGIN
   		SELECT
@@ -993,7 +994,7 @@ BEGIN
 			@TmpUserTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
 			@cnt_users = 1,
 			@toCnt_users = C.value('count(users)','INT')
-			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
 			WHILE @cnt_users <= @toCnt_users BEGIN
 			select  
 				@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
@@ -1003,7 +1004,7 @@ BEGIN
 				@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
 				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
 				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
-			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
+			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
 			Insert Into dbo.eqProOther
             (
             sId,
@@ -1041,23 +1042,111 @@ BEGIN
 
     END;
 	ELSE
+	BEGIN
+		select @TmpSid = sId
+		from [dbo].[eqProject]
+		where sign=@sId;
+
+        -- update dbo.eqProject
+		Update dbo.eqProject Set
+		title=@TmpTitle, -- 标题
+        time=@TmpTime,
+        address=@TmpAddress, -- 项目地址
+        rate=@TmpRate,
+        buildArea=@TmpBuildArea,
+        description=@TmpDescription,
+        pronum=@TmpPronum,
+        protype=@TmpProtype,
+        buildtime=@TmpBuildTime,
+        prophase=@TmpProPhase,
+        proarea=@TmpArea,
+        modifyTime=sysdatetimeoffset()
+        WHERE sign=@sId;
+        -- update dbo.eqProOther
+		select
+			@cnt = 1,
+			@toCnt =  @TmpXML.value('count(/root/contacts)','INT');
+
+		WHILE @cnt <= @toCnt 
 		BEGIN
-        -- update
-		     Update dbo.eqProject Set
-			 title=@TmpTitle, -- 标题
-             time=@TmpTime,
-             address=@TmpAddress, -- 项目地址
-             rate=@TmpRate,
-             buildArea=@TmpBuildArea,
-             description=@TmpDescription,
-             pronum=@TmpPronum,
-             protype=@TmpProtype,
-             buildtime=@TmpBuildTime,
-             prophase=@TmpProPhase,
-             proarea=@TmpArea,
-             modifyTime=sysdatetimeoffset()
-           WHERE sign=@sId;
-        END;
+  			SELECT
+  			@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
+			@TmpUserTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
+			@cnt_users = 1,
+			@toCnt_users = C.value('count(users)','INT')
+			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+			WHILE @cnt_users <= @toCnt_users BEGIN
+			select  
+				@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
+				@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
+				@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
+				@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
+				@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
+				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
+				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
+			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
+			
+			-- insert or update dbo.eqProOther
+			
+			select @Userexist=pId
+			from [dbo].[eqProOther]
+			where pid=@TmpSid AND name = @TmpUserName;
+			
+			IF @Userexist is null
+			BEGIN
+			-- insert
+			Insert Into dbo.eqProOther
+        	    (
+        	    sId,
+				pId,
+        	    title,
+        	    name, -- 项目地址
+        	    phone, -- 总投资额
+        	    mobilePhone, -- 建筑面积
+        	    qq, -- 项目概况
+				positio,
+				address,
+				cortype,
+				remark,
+				createTime
+        	    )
+        	Values(
+					lower(newid()),
+        	        @TmpSid,
+					@TmpUserTitle, -- 标题
+        	        @TmpUserName, -- 发布时间
+        	        @TmpUserPhone, -- 项目地址
+        	        @TmpUserMobileP, -- 总投资额
+        	        @TmpUserQq, -- 建筑面积
+        	        @TmpUserPositio, --
+					@TmpUserAddress,
+					@TmpUserCortype,
+					@TmpUserRemark,
+					@createTime
+        	   );
+			END;
+			ELSE
+			BEGIN
+			-- update
+			Update dbo.eqProOther Set
+			 	title=@TmpUserTitle, -- 标题
+        	 	phone=@TmpUserPhone, -- 项目地址
+        	 	mobilePhone=@TmpUserMobileP,
+        	 	qq=@TmpUserQq,
+        	 	positio=@TmpUserPositio,
+        	 	address=@TmpUserAddress,
+        	 	cortype=@TmpUserCortype,
+        	 	remark=@TmpUserRemark,
+        	 	modifyTime=sysdatetimeoffset()
+        	WHERE pId=@TmpSid AND name = @TmpUserName;
+			END;
+			
+			SELECT @cnt_users = @cnt_users + 1;
+			END;
+			-- incremet the counter variable
+			SELECT @cnt = @cnt + 1
+		END;
+	END;
     commit transaction;
     set @error='0';
 END TRY
