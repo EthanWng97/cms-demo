@@ -876,6 +876,7 @@ BEGIN
         @language nvarchar(50),    --语言代码
         @position bigint,
 		@isexist nvarchar(36),
+		@TmpSid nvarchar(36),
 		@TmpXML xml,
 		@TmpTitle nvarchar(256),
 		@TmpTime datetime,
@@ -926,6 +927,7 @@ BEGIN
 
 	IF @isexist is null
         BEGIN
+		set @TmpSid = lower(newid());
         -- insert dbo.eqProject
         Insert Into dbo.eqProject
             (
@@ -948,7 +950,7 @@ BEGIN
 			createTime
             )
         Values(
-                lower(newid()),
+                @TmpSid,
 				@TmpTitle, -- 标题
                 @TmpTime, -- 发布时间
                 @TmpAddress, -- 项目地址
@@ -972,6 +974,13 @@ BEGIN
 			@toCnt INT,
 			@TmpCortype nvarchar(50),
 			@TmpTitle nvarchar(50),
+			@TmpName nvarchar(50),
+			@TmpQq nvarchar(50),
+			@TmpMobileP nvarchar(50),
+			@TmpPhone nvarchar(50),
+			@TmpAddress nvarchar(50),
+			@TmpPositio nvarchar(50),
+			@TmpRemark nvarchar(MAX),
 			@cnt_users INT,
 			@toCnt_users INT;
 		select
@@ -987,14 +996,29 @@ BEGIN
 			from  @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
 			WHILE @cnt_users <= @toCnt_users BEGIN
 			select  
-				@TmpName = CONVERT(NVARCHAR(125), C.query('data(users[position()=sql:variable("@cnt_users")]/vals[code="XM"]/val[1])'))
-				
-			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
+				@TmpName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
+				@TmpQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
+				@TmpMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
+				@TmpPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
+				@TmpAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
+				@TmpPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
+				@TmpRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
+			from @x.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
+			select 			@TmpCortype,
+			@TmpTitle,
+			@TmpName,
+			@TmpQq,
+			@TmpMobileP,
+			@TmpPhone,
+			@TmpAddress,
+			@TmpPositio,
+			@TmpRemark;
+			SELECT @cnt_users = @cnt_users + 1;
 			END;
 				
-			PRINT 'Processing Child Element: ' + CAST(@cnt AS VARCHAR)
-			PRINT 'Child element: ' + CAST(@name AS VARCHAR(100))
-			PRINT 'users count: ' + CAST(@toCnt_users AS VARCHAR)
+			--PRINT 'Processing Child Element: ' + CAST(@cnt AS VARCHAR)
+			--PRINT 'Child element: ' + CAST(@name AS VARCHAR(100))
+			--PRINT 'users count: ' + CAST(@toCnt_users AS VARCHAR)
 			PRINT ''
 			-- incremet the counter variable
 			SELECT @cnt = @cnt + 1
