@@ -1177,6 +1177,202 @@ END;
 GO
 
 
+USE [SpringCms]
+GO
+/****** Object:  StoredProcedure [dbo].[oceanLoadDb_Upp]    Script Date: 2021/1/8 10:15:53 ******/
+ALTER PROCEDURE [dbo].[oceanLoadDb_Upp_Type2]
+	@sId varchar(36),
+	@json nvarchar(max),
+	@xml xml,
+	@modifyUser varchar(36),
+	@sTamp timestamp,
+	@error varchar(500) OUTPUT
+AS
+
+BEGIN
+	declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint,
+		@isexist nvarchar(36),
+		@TmpSid nvarchar(36),
+		@TmpXML xml,
+
+		@TmpTitle nvarchar(50),
+		@TmpChar1 nvarchar(256),
+        @TmpDescription nvarchar(512),
+        @TmpArea nvarchar(512),
+        @TmpBody nvarchar(MAX),
+        @TmpSetupTime nvarchar(50),
+		@tId varchar(30),
+		@createTime datetime,
+
+		@TmpUserPhone nvarchar(50),
+		@TmpUserEmail nvarchar(128),
+		@TmpUserAddress nvarchar(50),
+		@TmpUserName nvarchar(50),
+
+		@isUserExist nvarchar(36);
+
+	-- set @TmpXML = CONVERT(xml,@xml);
+	set @TmpXML = @xml;
+	--错误位置
+	set @procName = '[oceanLoadDb_Upp_Type2]';
+	set @language = @error;
+	set @position = 1;
+
+	begin transaction;
+	BEGIN TRY
+
+	set @TmpTitle = @TmpXML.value('(root/name)[1]','nvarchar(256)');
+	set @TmpChar1 = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/detail[code="WZ"]/val[1])'));
+	set @TmpDescription = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/detail[code="summary"]/val[1])'));
+	set @TmpArea = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/baseInfo[code="JYFW"]/val[1])'));
+	set @TmpBody = '简介： ' + @TmpDescription + CHAR(10) + '经营范围： '  + @TmpArea;
+	set @TmpSetupTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="CLRQ"]/val[1])'));
+
+ 	set @createTime=sysdatetime();
+	
+	EXEC dbo.springTimeId @createTime,'cmsBrand',@tId output;
+
+    set @TmpUserPhone= CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/detail[code="DH"]/val[1])'));
+    set @TmpUserEmail= CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/detail[code="YX"]/val[1])'));
+    set @TmpUserAddress= CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/detail[code="DZ"]/val[1])'));
+    set @TmpUserName= CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="FDDBR"]/val[1])'));
+
+	select @isexist=sign
+	from [dbo].[cmsBrand1]
+	where sign=@sId
+
+	IF @isexist is null
+    BEGIN
+		set @TmpSid = lower(newid());
+		-- insert dbo.cmsBrand1
+		Insert Into dbo.cmsBrand1
+			(
+			sId,
+			title,
+			char1,
+			body,
+			setUpTime,
+			tId,
+			sign,
+			createTime,
+			createUser,
+			modifyUser
+			)
+		Values(
+				@TmpSid,
+				@TmpTitle,
+				@TmpChar1,
+				@TmpBody,
+				@TmpSetupTime,
+				@tId,
+				@sId,
+				@createTime,
+				@modifyUser,
+				@modifyUser
+           );
+		-- insert dbo.cmsBrandPeop1
+		Insert Into dbo.cmsBrandPeop1
+			(
+			sId,
+			pId,
+			name,
+			phone,
+			email,
+			address,
+			createTime,
+			createUser,
+			modifyUser
+			)
+		Values(
+				lower(newid()),
+				@TmpSid,
+				@TmpUserName,
+				@TmpUserPhone,
+				@TmpUserEmail,
+				@TmpUserAddress,
+				@createTime,
+				@modifyUser,
+				@modifyUser
+           );
+	END;
+	ELSE
+	BEGIN
+		select @TmpSid = sId
+		from [dbo].[cmsBrand1]
+		where sign=@sId;
+
+		-- update dbo.cmsBrand1
+		Update dbo.cmsBrand1 Set
+		title=@TmpTitle,
+        char1=@TmpChar1,
+        body=@TmpBody,
+        setUpTime=@TmpSetupTime,
+        tId=@tId,
+        modifyTime=sysdatetimeoffset(),
+		modifyUser=@modifyUser
+        WHERE sign=@sId;
+		-- insert or update dbo.cmsBrandPeop1
+
+		select @isUserExist=pId
+		from [dbo].[cmsBrandPeop1]
+		where pid=@TmpSid AND name = @TmpUserName;
+
+		IF @isUserExist is null
+			BEGIN
+			-- insert
+			Insert Into dbo.cmsBrandPeop1
+				(
+				sId,
+				pId,
+				name,
+				phone,
+				email,
+				address,
+				createTime,
+				createUser,
+				modifyUser
+				)
+			Values(
+					lower(newid()),
+					@TmpSid,
+					@TmpUserName,
+					@TmpUserPhone,
+					@TmpUserEmail,
+					@TmpUserAddress,
+					@createTime,
+					@modifyUser,
+					@modifyUser
+        	   );
+		END;
+			ELSE
+			BEGIN
+			-- update
+			Update dbo.cmsBrandPeop1 Set
+        	 	phone=@TmpUserPhone,
+        	 	email=@TmpUserEmail,
+        	 	address=@TmpUserAddress,
+        	 	modifyTime=sysdatetimeoffset(),
+				modifyUser=@modifyUser
+        	WHERE pId=@TmpSid AND name = @TmpUserName;
+		END;
+
+	END;
+    commit transaction;
+    set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      set @error='error:'+ERROR_MESSAGE();
+      --set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
+GO
+
+
 declare @xml xml,
         @DH varchar(100);
 select @xml=xml
