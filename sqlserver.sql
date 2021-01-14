@@ -907,7 +907,7 @@ BEGIN
 		@TmpUserRemark nvarchar(MAX),
 		@cnt_users INT,
 		@toCnt_users INT,
-		@Userexist nvarchar(36);
+		@isUserExist nvarchar(36);
 
 	-- set @TmpXML = CONVERT(xml,@xml);
 	set @TmpXML = @xml;
@@ -1016,10 +1016,10 @@ BEGIN
             sId,
 			pId,
             title,
-            name, -- 项目地址
-            phone, -- 总投资额
-            mobilePhone, -- 建筑面积
-            qq, -- 项目概况
+            name,
+            phone,
+            mobilePhone,
+            qq,
 			positio,
 			address,
 			cortype,
@@ -1031,12 +1031,12 @@ BEGIN
         Values(
 				lower(newid()),
                 @TmpSid,
-				@TmpUserTitle, -- 标题
-                @TmpUserName, -- 发布时间
-                @TmpUserPhone, -- 项目地址
-                @TmpUserMobileP, -- 总投资额
-                @TmpUserQq, -- 建筑面积
-                @TmpUserPositio, --
+				@TmpUserTitle,
+                @TmpUserName,
+                @TmpUserPhone,
+                @TmpUserMobileP,
+                @TmpUserQq,
+                @TmpUserPositio,
 				@TmpUserAddress,
 				@TmpUserCortype,
 				@TmpUserRemark,
@@ -1059,9 +1059,9 @@ BEGIN
 
         -- update dbo.eqProject
 		Update dbo.eqProject Set
-		title=@TmpTitle, -- 标题
+		title=@TmpTitle,
         time=@TmpTime,
-        address=@TmpAddress, -- 项目地址
+        address=@TmpAddress,
         rate=@TmpRate,
         buildArea=@TmpBuildArea,
         description=@TmpDescription,
@@ -1099,11 +1099,11 @@ BEGIN
 			
 			-- insert or update dbo.eqProOther
 			
-			select @Userexist=pId
+			select @isUserExist=pId
 			from [dbo].[eqProOther]
 			where pid=@TmpSid AND name = @TmpUserName;
 			
-			IF @Userexist is null
+			IF @isUserExist is null
 			BEGIN
 			-- insert
 			Insert Into dbo.eqProOther
@@ -1111,10 +1111,10 @@ BEGIN
         	    sId,
 				pId,
         	    title,
-        	    name, -- 项目地址
-        	    phone, -- 总投资额
-        	    mobilePhone, -- 建筑面积
-        	    qq, -- 项目概况
+        	    name,
+        	    phone,
+        	    mobilePhone,
+        	    qq,
 				positio,
 				address,
 				cortype,
@@ -1126,12 +1126,12 @@ BEGIN
         	Values(
 					lower(newid()),
         	        @TmpSid,
-					@TmpUserTitle, -- 标题
-        	        @TmpUserName, -- 发布时间
-        	        @TmpUserPhone, -- 项目地址
-        	        @TmpUserMobileP, -- 总投资额
-        	        @TmpUserQq, -- 建筑面积
-        	        @TmpUserPositio, --
+					@TmpUserTitle,
+        	        @TmpUserName,
+        	        @TmpUserPhone,
+        	        @TmpUserMobileP,
+        	        @TmpUserQq,
+        	        @TmpUserPositio,
 					@TmpUserAddress,
 					@TmpUserCortype,
 					@TmpUserRemark,
@@ -1144,8 +1144,8 @@ BEGIN
 			BEGIN
 			-- update
 			Update dbo.eqProOther Set
-			 	title=@TmpUserTitle, -- 标题
-        	 	phone=@TmpUserPhone, -- 项目地址
+			 	title=@TmpUserTitle,
+        	 	phone=@TmpUserPhone,
         	 	mobilePhone=@TmpUserMobileP,
         	 	qq=@TmpUserQq,
         	 	positio=@TmpUserPositio,
