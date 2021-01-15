@@ -790,6 +790,7 @@ BEGIN
 
 	begin transaction;
 	BEGIN TRY
+	declare @TmpXml xml =  CONVERT(xml,@xml);
      if @sId is null
 	   begin
 		set @sId=lower(newid());
@@ -825,30 +826,30 @@ BEGIN
 					 modifyUser=@modifyUser, 
 					 modifyTime=sysdatetimeoffset()
 				   WHERE sId=@sId;
-
-		if type=1
-			begin
-			EXEC oceanLoadDb_Upp_Type1
-                   	@sId,
-                   	@json,
-                   	@xml,
-					@createUser,
-					@createTime,
-					@modifyUser,
-					@modifyTime,
-					@sTamp,
-                   @return_error OUTPUT;
-		end;
-		else if type=2
-			begin
-
-			end;
-
 	end;
-     commit transaction;
-     set @error='0';
-END
-	TRY
+	if type=1
+	begin
+		EXEC oceanLoadDb_Upp_Type1
+            @sId,
+            @json,
+            @TmpXml,
+			@modifyUser,
+			@sTamp,
+            @error OUTPUT;
+	end;
+	else if type=2
+	begin
+		EXEC oceanLoadDb_Upp_Type2
+            @sId,
+          	@json,
+        	@TmpXml,
+			@modifyUser,
+			@sTamp,
+            @error OUTPUT;
+	end;
+    commit transaction;
+    set @error='0';
+END TRY
 
 BEGIN CATCH
 	rollback transaction;
