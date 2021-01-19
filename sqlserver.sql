@@ -1200,6 +1200,8 @@ BEGIN
 
 		@TmpTitle nvarchar(50),
 		@TmpChar1 nvarchar(256),
+		@TmpSocode nvarchar(50),
+		@TmpIndustry nvarchar(512),
         @TmpDescription nvarchar(512),
         @TmpArea nvarchar(512),
         @TmpBody nvarchar(MAX),
@@ -1228,7 +1230,9 @@ BEGIN
 	set @TmpChar1 = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/detail[code="WZ"]/val[1])'));
 	set @TmpDescription = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/detail[code="summary"]/val[1])'));
 	set @TmpArea = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/baseInfo[code="JYFW"]/val[1])'));
-	set @TmpBody = '简介： ' + @TmpDescription + CHAR(10) + '经营范围： '  + @TmpArea;
+	set @TmpSocode = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/baseInfo[code="TYSHXYDM"]/val[1])'));
+	set @TmpIndustry = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/baseInfo[code="HY"]/val[1])'));
+	set @TmpBody = '简介： ' + @TmpDescription; -- + CHAR(10) + '经营范围： '  + @TmpArea;
 	set @TmpSetupTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="CLRQ"]/val[1])'));
 
  	set @createTime=sysdatetime();
@@ -1252,6 +1256,9 @@ BEGIN
 			(
 			sId,
 			title,
+			mode,
+			socode,
+			industry,
 			char1,
 			body,
 			setUpTime,
@@ -1264,6 +1271,9 @@ BEGIN
 		Values(
 				@TmpSid,
 				@TmpTitle,
+				@TmpArea,
+				@TmpSocode,
+				@TmpIndustry,
 				@TmpChar1,
 				@TmpBody,
 				@TmpSetupTime,
@@ -1307,6 +1317,9 @@ BEGIN
 		-- update dbo.cmsBrand1
 		Update dbo.cmsBrand1 Set
 		title=@TmpTitle,
+		mode=@TmpArea,
+		socode=@TmpSocode,
+		industry=@TmpIndustry,
         char1=@TmpChar1,
         body=@TmpBody,
         setUpTime=@TmpSetupTime,
