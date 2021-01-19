@@ -1214,6 +1214,12 @@ BEGIN
 		@TmpUserAddress nvarchar(50),
 		@TmpUserName nvarchar(50),
 
+        @TmpStaffContact nvarchar(50),
+        @TmpStaffDepart nvarchar(50), 
+
+        @cnt INT,
+		@toCnt INT,
+        @isStaffExist nvarchar(36),
 		@isUserExist nvarchar(36);
 
 	-- set @TmpXML = CONVERT(xml,@xml);
@@ -1307,6 +1313,38 @@ BEGIN
 				@modifyUser,
 				@modifyUser
            );
+
+		-- insert into dbo.cmsBrandPeop1 with container_staff
+		select
+			@cnt = 1,
+			@toCnt =  @TmpXML.value('count(/root/container_staff)','INT');
+		WHILE @cnt <= @toCnt 
+        BEGIN
+			SELECT
+				@TmpStaffContact = CONVERT(NVARCHAR(50), C.query('data(NAME[1])')),
+				@TmpStaffDepart = CONVERT(NVARCHAR(50), C.query('data(ZW[1])'))
+			from @TmpXML.nodes('/root/container_staff[position()=sql:variable("@cnt")]') T(C);
+			Insert Into dbo.cmsBrandPeop1
+				(
+				sId,
+				pId,
+				contact,
+				department,
+				createTime,
+				createUser,
+				modifyUser
+				)
+			Values(
+					lower(newid()),
+					@TmpSid,
+					@TmpStaffContact,
+					@TmpStaffDepart,
+					@createTime,
+					@modifyUser,
+					@modifyUser
+               );
+			SELECT @cnt = @cnt + 1
+		END;
 	END;
 	ELSE
 	BEGIN
@@ -1372,6 +1410,52 @@ BEGIN
         	WHERE pId=@TmpSid AND name = @TmpUserName;
 		END;
 
+		-- insert into or update dbo.cmsBrandPeop1 with container_staff
+		select
+			@cnt = 1,
+			@toCnt =  @TmpXML.value('count(/root/container_staff)','INT');
+		WHILE @cnt <= @toCnt 
+        BEGIN
+			SELECT
+				@TmpStaffContact = CONVERT(NVARCHAR(50), C.query('data(NAME[1])')),
+				@TmpStaffDepart = CONVERT(NVARCHAR(50), C.query('data(ZW[1])'))
+			from @TmpXML.nodes('/root/container_staff[position()=sql:variable("@cnt")]') T(C);
+
+			select @isStaffExist=pId
+			from [dbo].[cmsBrandPeop1]
+			where pid=@TmpSid AND contact = @TmpStaffContact;
+			IF @isStaffExist is null
+			BEGIN
+				Insert Into dbo.cmsBrandPeop1
+					(
+					sId,
+					pId,
+					contact,
+					department,
+					createTime,
+					createUser,
+					modifyUser
+					)
+				Values(
+						lower(newid()),
+						@TmpSid,
+						@TmpStaffContact,
+						@TmpStaffDepart,
+						@createTime,
+						@modifyUser,
+						@modifyUser
+                   );
+			END;
+            ELSE
+            BEGIN
+				Update dbo.cmsBrandPeop1 Set
+        	     	department=@TmpStaffDepart,
+        	     	modifyTime=sysdatetimeoffset(),
+			    	modifyUser=@modifyUser
+        	    WHERE pId=@TmpSid AND contact = @TmpStaffContact;
+			END;
+			SELECT @cnt = @cnt + 1
+		END;
 	END;
     commit transaction;
     set @error='0';
