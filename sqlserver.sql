@@ -940,14 +940,14 @@ BEGIN
 	-- set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
 	select @isexist=sign
-	from [dbo].[eqProject]
+	from [SpringEq].[dbo].[eqProject]
 	where sign=@sId
 
 	IF @isexist is null
     BEGIN
 		set @TmpSid = lower(newid());
         -- insert dbo.eqProject
-        Insert Into dbo.eqProject
+        Insert Into SpringEq.dbo.eqProject
             (
             sId,
 			title,
@@ -1012,7 +1012,7 @@ BEGIN
 				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
 				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
 			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
-			Insert Into dbo.eqProOther
+			Insert Into SpringEq.dbo.eqProOther
             (
             sId,
 			pId,
@@ -1055,11 +1055,11 @@ BEGIN
 	ELSE
 	BEGIN
 		select @TmpSid = sId
-		from [dbo].[eqProject]
+		from [SpringEq].[dbo].[eqProject]
 		where sign=@sId;
 
         -- update dbo.eqProject
-		Update dbo.eqProject Set
+		Update SpringEq.dbo.eqProject Set
 		title=@TmpTitle,
         time=@TmpTime,
         address=@TmpAddress,
@@ -1101,13 +1101,13 @@ BEGIN
 			-- insert or update dbo.eqProOther
 			
 			select @isUserExist=pId
-			from [dbo].[eqProOther]
+			from [SpringEq].[dbo].[eqProOther]
 			where pid=@TmpSid AND name = @TmpUserName;
 			
 			IF @isUserExist is null
 			BEGIN
 			-- insert
-			Insert Into dbo.eqProOther
+			Insert Into SpringEq.dbo.eqProOther
         	    (
         	    sId,
 				pId,
@@ -1144,7 +1144,7 @@ BEGIN
 			ELSE
 			BEGIN
 			-- update
-			Update dbo.eqProOther Set
+			Update SpringEq.dbo.eqProOther Set
 			 	title=@TmpUserTitle,
         	 	phone=@TmpUserPhone,
         	 	mobilePhone=@TmpUserMobileP,
@@ -1173,7 +1173,6 @@ BEGIN CATCH
       set @error='error:'+ERROR_MESSAGE();
       --set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
 END CATCH;
-
 END;
 GO
 
@@ -1251,14 +1250,14 @@ BEGIN
     set @TmpUserName= CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="FDDBR"]/val[1])'));
 
 	select @isexist=sign
-	from [dbo].[cmsBrand1]
+	from [dbo].[cmsBrand]
 	where sign=@sId
 
 	IF @isexist is null
     BEGIN
 		set @TmpSid = lower(newid());
-		-- insert dbo.cmsBrand1
-		Insert Into dbo.cmsBrand1
+		-- insert dbo.cmsBrand
+		Insert Into dbo.cmsBrand
 			(
 			sId,
 			title,
@@ -1289,8 +1288,8 @@ BEGIN
 				@modifyUser,
 				@modifyUser
            );
-		-- insert dbo.cmsBrandPeop1
-		Insert Into dbo.cmsBrandPeop1
+		-- insert dbo.cmsBrandPeop
+		Insert Into dbo.cmsBrandPeop
 			(
 			sId,
 			pId,
@@ -1314,7 +1313,7 @@ BEGIN
 				@modifyUser
            );
 
-		-- insert into dbo.cmsBrandPeop1 with container_staff
+		-- insert into dbo.cmsBrandPeop with container_staff
 		select
 			@cnt = 1,
 			@toCnt =  @TmpXML.value('count(/root/container_staff)','INT');
@@ -1324,7 +1323,7 @@ BEGIN
 				@TmpStaffContact = CONVERT(NVARCHAR(50), C.query('data(NAME[1])')),
 				@TmpStaffDepart = CONVERT(NVARCHAR(50), C.query('data(ZW[1])'))
 			from @TmpXML.nodes('/root/container_staff[position()=sql:variable("@cnt")]') T(C);
-			Insert Into dbo.cmsBrandPeop1
+			Insert Into dbo.cmsBrandPeop
 				(
 				sId,
 				pId,
@@ -1349,11 +1348,11 @@ BEGIN
 	ELSE
 	BEGIN
 		select @TmpSid = sId
-		from [dbo].[cmsBrand1]
+		from [dbo].[cmsBrand]
 		where sign=@sId;
 
-		-- update dbo.cmsBrand1
-		Update dbo.cmsBrand1 Set
+		-- update dbo.cmsBrand
+		Update dbo.cmsBrand Set
 		title=@TmpTitle,
 		mode=@TmpArea,
 		socode=@TmpSocode,
@@ -1365,16 +1364,16 @@ BEGIN
         modifyTime=sysdatetimeoffset(),
 		modifyUser=@modifyUser
         WHERE sign=@sId;
-		-- insert or update dbo.cmsBrandPeop1
+		-- insert or update dbo.cmsBrandPeop
 
 		select @isUserExist=pId
-		from [dbo].[cmsBrandPeop1]
+		from [dbo].[cmsBrandPeop]
 		where pid=@TmpSid AND name = @TmpUserName;
 
 		IF @isUserExist is null
 			BEGIN
 			-- insert
-			Insert Into dbo.cmsBrandPeop1
+			Insert Into dbo.cmsBrandPeop
 				(
 				sId,
 				pId,
@@ -1401,7 +1400,7 @@ BEGIN
 			ELSE
 			BEGIN
 			-- update
-			Update dbo.cmsBrandPeop1 Set
+			Update dbo.cmsBrandPeop Set
         	 	phone=@TmpUserPhone,
         	 	email=@TmpUserEmail,
         	 	address=@TmpUserAddress,
@@ -1410,7 +1409,7 @@ BEGIN
         	WHERE pId=@TmpSid AND name = @TmpUserName;
 		END;
 
-		-- insert into or update dbo.cmsBrandPeop1 with container_staff
+		-- insert into or update dbo.cmsBrandPeop with container_staff
 		select
 			@cnt = 1,
 			@toCnt =  @TmpXML.value('count(/root/container_staff)','INT');
@@ -1422,11 +1421,11 @@ BEGIN
 			from @TmpXML.nodes('/root/container_staff[position()=sql:variable("@cnt")]') T(C);
 
 			select @isStaffExist=pId
-			from [dbo].[cmsBrandPeop1]
+			from [dbo].[cmsBrandPeop]
 			where pid=@TmpSid AND contact = @TmpStaffContact;
 			IF @isStaffExist is null
 			BEGIN
-				Insert Into dbo.cmsBrandPeop1
+				Insert Into dbo.cmsBrandPeop
 					(
 					sId,
 					pId,
@@ -1448,7 +1447,7 @@ BEGIN
 			END;
             ELSE
             BEGIN
-				Update dbo.cmsBrandPeop1 Set
+				Update dbo.cmsBrandPeop Set
         	     	department=@TmpStaffDepart,
         	     	modifyTime=sysdatetimeoffset(),
 			    	modifyUser=@modifyUser
