@@ -1269,6 +1269,11 @@ BEGIN
 			setUpTime,
 			tId,
 			sign,
+			isDel,
+			recom,
+			pptj,
+			sytj,
+			type,
 			createTime,
 			createUser,
 			modifyUser
@@ -1284,6 +1289,11 @@ BEGIN
 				@TmpSetupTime,
 				@tId,
 				@sId,
+				1,
+				0,
+				0,
+				0,
+				1,
 				@createTime,
 				@modifyUser,
 				@modifyUser
@@ -1293,6 +1303,7 @@ BEGIN
 			(
 			sId,
 			pId,
+			title,
 			name,
 			phone,
 			email,
@@ -1304,6 +1315,7 @@ BEGIN
 		Values(
 				lower(newid()),
 				@TmpSid,
+				@TmpTitle,
 				@TmpUserName,
 				@TmpUserPhone,
 				@TmpUserEmail,
@@ -1327,6 +1339,7 @@ BEGIN
 				(
 				sId,
 				pId,
+				title,
 				contact,
 				department,
 				createTime,
@@ -1336,6 +1349,7 @@ BEGIN
 			Values(
 					lower(newid()),
 					@TmpSid,
+					@TmpTitle,
 					@TmpStaffContact,
 					@TmpStaffDepart,
 					@createTime,
@@ -1377,6 +1391,7 @@ BEGIN
 				(
 				sId,
 				pId,
+				title,
 				name,
 				phone,
 				email,
@@ -1388,6 +1403,7 @@ BEGIN
 			Values(
 					lower(newid()),
 					@TmpSid,
+					@TmpTitle,
 					@TmpUserName,
 					@TmpUserPhone,
 					@TmpUserEmail,
@@ -1429,6 +1445,7 @@ BEGIN
 					(
 					sId,
 					pId,
+					title,
 					contact,
 					department,
 					createTime,
@@ -1438,6 +1455,7 @@ BEGIN
 				Values(
 						lower(newid()),
 						@TmpSid,
+						@TmpTitle,
 						@TmpStaffContact,
 						@TmpStaffDepart,
 						@createTime,
