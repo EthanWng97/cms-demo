@@ -1,0 +1,2 @@
+RESTORE DATABASE [Ocean] FROM  DISK = N'\\vmware-host\Shared Folders\Desktop\sqlserver\beifen\ocean.bak' WITH  FILE = 1,  NOUNLOAD,  REPLACE,  STATS = 10
+RESTORE DATABASE [OceanCms] FROM  DISK = N'\\vmware-host\Shared Folders\Desktop\sqlserver\beifen\OceanCms.bak' WITH  FILE = 1,  NOUNLOAD,  REPLACE,  STATS = 10
