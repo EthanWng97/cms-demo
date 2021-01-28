@@ -43,7 +43,7 @@ DECLARE
        @sId varchar(36),
        @textBox nvarchar(50),
        @checkBox bit,
-       @dateBox datetime,
+       @dateBox datetimeoffset(7),
        @richTextBox nvarchar(256),
        @dropDownList int,
        @foreignKey varchar(36),
@@ -51,7 +51,7 @@ DECLARE
        @numberBox decimal(18,2),
        @numberSpinner int,
        @timeSpinner nvarchar(10),
-       @dateTimeBox datetime,
+       @dateTimeBox datetimeoffset(7),
        @sTamp timestamp,
        @xmlinfo xml,
        @info nvarchar(MAX),
@@ -877,7 +877,7 @@ BEGIN
 		@TmpSid nvarchar(36),
 		@TmpXML xml,
 		@TmpTitle nvarchar(256),
-		@TmpTime datetime,
+		@TmpTime datetimeoffset(7),
         @TmpAddress nvarchar(256),
 		@TmpRate nvarchar(50),
 		@TmpBuildArea nvarchar(256),
@@ -890,7 +890,7 @@ BEGIN
 		@TmpArea2 nvarchar(36),
 		@TmpArea nvarchar(36),
 		@tId varchar(30),
-		@createTime datetime,
+		@createTime datetimeoffset(7),
 
 		@cnt INT,
 		@toCnt INT,
@@ -932,7 +932,7 @@ BEGIN
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
 	set @TmpEdition = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/BBLX[code="BBLX"]/val[1])'));
 	set @TmpArea = @TmpArea1 + @TmpArea2;
-	set @createTime=sysdatetime();
+	set @createTime=sysdatetimeoffset();
 	
 	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
 
@@ -1178,7 +1178,7 @@ END TRY
 
 BEGIN CATCH
       rollback transaction;
-      set @error='error:'+ERROR_MESSAGE();
+      set @error='error1:'+ERROR_MESSAGE();
       --set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
 END CATCH;
 END;
@@ -1213,7 +1213,7 @@ BEGIN
         @TmpBody nvarchar(MAX),
         @TmpSetupTime nvarchar(50),
 		@tId varchar(30),
-		@createTime datetime,
+		@createTime datetimeoffset(7),
 
 		@TmpUserPhone nvarchar(50),
 		@TmpUserEmail nvarchar(128),
@@ -1247,7 +1247,7 @@ BEGIN
 	set @TmpBody = '简介： ' + @TmpDescription; -- + CHAR(10) + '经营范围： '  + @TmpArea;
 	set @TmpSetupTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="CLRQ"]/val[1])'));
 
- 	set @createTime=sysdatetime();
+ 	set @createTime=sysdatetimeoffset();
 	
 	EXEC dbo.springTimeId @createTime,'cmsBrand',@tId output;
 
@@ -1487,7 +1487,7 @@ END TRY
 
 BEGIN CATCH
       rollback transaction;
-      set @error='error:'+ERROR_MESSAGE();
+      set @error='error2:'+ERROR_MESSAGE();
       --set @error = @procName+':'+dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
 END CATCH;
 
