@@ -834,7 +834,6 @@ BEGIN
             @json,
             @TmpXml,
 			@modifyUser,
-			@sTamp,
             @error OUTPUT;
 	end;
 	else if type=2
@@ -844,7 +843,6 @@ BEGIN
           	@json,
         	@TmpXml,
 			@modifyUser,
-			@sTamp,
             @error OUTPUT;
 	end;
     commit transaction;
@@ -868,7 +866,6 @@ ALTER PROCEDURE [dbo].[oceanLoadDb_Upp_Type1]
 	@json nvarchar(max),
 	@xml xml,
 	@modifyUser varchar(36),
-	@sTamp timestamp,
 	@error varchar(500) OUTPUT
 AS
 
@@ -908,6 +905,7 @@ BEGIN
 		@TmpUserRemark nvarchar(MAX),
 		@cnt_users INT,
 		@toCnt_users INT,
+		@TmpEdition nvarchar(50),
 		@isUserExist nvarchar(36);
 
 	-- set @TmpXML = CONVERT(xml,@xml);
@@ -932,6 +930,7 @@ BEGIN
 	set @TmpProPhase = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMJD"]/val[1])'));
 	set @TmpArea1 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SZXS"]/val[1])'));
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
+	set @TmpEdition = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/BBLX[code="BBLX"]/val[1])'));
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetime();
 	
@@ -951,6 +950,10 @@ BEGIN
             (
             sId,
 			title,
+			int1,
+			type,
+			recom,
+			edition,
             time, -- 发布时间
             address, -- 项目地址
             rate, -- 总投资额
@@ -972,6 +975,10 @@ BEGIN
         Values(
                 @TmpSid,
 				@TmpTitle, -- 标题
+				0,
+				1,
+				1,
+				@TmpEdition,
                 @TmpTime, -- 发布时间
                 @TmpAddress, -- 项目地址
                 @TmpRate, -- 总投资额
@@ -1061,6 +1068,7 @@ BEGIN
         -- update dbo.eqProject
 		Update SpringEq.dbo.eqProject Set
 		title=@TmpTitle,
+		edition=@TmpEdition,
         time=@TmpTime,
         address=@TmpAddress,
         rate=@TmpRate,
@@ -1185,7 +1193,6 @@ ALTER PROCEDURE [dbo].[oceanLoadDb_Upp_Type2]
 	@json nvarchar(max),
 	@xml xml,
 	@modifyUser varchar(36),
-	@sTamp timestamp,
 	@error varchar(500) OUTPUT
 AS
 
