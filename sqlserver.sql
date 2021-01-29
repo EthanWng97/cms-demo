@@ -934,19 +934,19 @@ BEGIN
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetimeoffset();
 	
-	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
+	EXEC dbo.springTimeId @createTime,'dbo.eqProject',@tId output;
 
 	-- set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
 	select @isexist=sign
-	from [SpringEq].[dbo].[eqProject]
+	from [dbo].[eqProject]
 	where sign=@sId
 
 	IF @isexist is null
     BEGIN
 		set @TmpSid = lower(newid());
         -- insert dbo.eqProject
-        Insert Into SpringEq.dbo.eqProject
+        Insert Into dbo.eqProject
             (
             sId,
 			title,
@@ -1019,7 +1019,7 @@ BEGIN
 				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
 				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
 			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
-			Insert Into SpringEq.dbo.eqProOther
+			Insert Into dbo.eqProOther
             (
             sId,
 			pId,
@@ -1062,11 +1062,11 @@ BEGIN
 	ELSE
 	BEGIN
 		select @TmpSid = sId
-		from [SpringEq].[dbo].[eqProject]
+		from [dbo].[eqProject]
 		where sign=@sId;
 
         -- update dbo.eqProject
-		Update SpringEq.dbo.eqProject Set
+		Update dbo.eqProject Set
 		title=@TmpTitle,
 		edition=@TmpEdition,
         time=@TmpTime,
@@ -1109,13 +1109,13 @@ BEGIN
 			-- insert or update dbo.eqProOther
 			
 			select @isUserExist=pId
-			from [SpringEq].[dbo].[eqProOther]
+			from [dbo].[eqProOther]
 			where pid=@TmpSid AND name = @TmpUserName;
 			
 			IF @isUserExist is null
 			BEGIN
 			-- insert
-			Insert Into SpringEq.dbo.eqProOther
+			Insert Into dbo.eqProOther
         	    (
         	    sId,
 				pId,
@@ -1152,7 +1152,7 @@ BEGIN
 			ELSE
 			BEGIN
 			-- update
-			Update SpringEq.dbo.eqProOther Set
+			Update dbo.eqProOther Set
 			 	title=@TmpUserTitle,
         	 	phone=@TmpUserPhone,
         	 	mobilePhone=@TmpUserMobileP,
@@ -1208,7 +1208,7 @@ BEGIN
 		@TmpChar1 nvarchar(256),
 		@TmpSocode nvarchar(50),
 		@TmpIndustry nvarchar(512),
-        @TmpDescription nvarchar(512),
+        @TmpDescription nvarchar(MAX),
         @TmpArea nvarchar(MAX),
         @TmpBody nvarchar(MAX),
         @TmpSetupTime nvarchar(50),
@@ -1240,11 +1240,11 @@ BEGIN
 
 	set @TmpTitle = @TmpXML.value('(root/name)[1]','nvarchar(256)');
 	set @TmpChar1 = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/detail[code="WZ"]/val[1])'));
-	set @TmpDescription = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/detail[code="summary"]/val[1])'));
+	set @TmpDescription = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/detail[code="summary"]/val[1])'));
 	set @TmpArea = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/baseInfo[code="JYFW"]/val[1])'));
 	set @TmpSocode = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/baseInfo[code="TYSHXYDM"]/val[1])'));
 	set @TmpIndustry = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/baseInfo[code="HY"]/val[1])'));
-	set @TmpBody = '简介： ' + @TmpDescription; + CHAR(10) + '经营范围： '  + @TmpArea;
+	set @TmpBody = '简介： ' + @TmpDescription + CHAR(10) + '经营范围： '  + @TmpArea;
 	set @TmpSetupTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="CLRQ"]/val[1])'));
 
  	set @createTime=sysdatetimeoffset();
@@ -1287,7 +1287,6 @@ BEGIN
 		Values(
 				@TmpSid,
 				@TmpTitle,
-				@TmpArea,
 				@TmpSocode,
 				@TmpIndustry,
 				@TmpChar1,
