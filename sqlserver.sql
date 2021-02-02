@@ -889,7 +889,8 @@ BEGIN
 		@TmpArea1 nvarchar(36),
 		@TmpArea2 nvarchar(36),
 		@TmpArea nvarchar(36),
-		@TMpProjectSummary nvarchar(MAX),
+		@TmpProgress nvarchar(MAX),
+		@TmpBody nvarchar(MAX),
 		@tId varchar(30),
 		@createTime datetimeoffset(7),
 
@@ -932,7 +933,9 @@ BEGIN
 	set @TmpArea1 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SZXS"]/val[1])'));
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
 	set @TmpEdition = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/BBLX[code="BBLX"]/val[1])'));
-	set @TMpProjectSummary = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/infos[code="XMGK"]/val[1])'));
+	set @TmpProgress = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/infos2[code="JZXQ"]/val[1])'));
+	set @TmpBody = '进展详情： '  + @TmpProgress;
+
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetimeoffset();
 	
@@ -970,7 +973,6 @@ BEGIN
 			buildtime, -- 建设周期
 			prophase, -- 项目阶段
 			proarea, -- 地区（省直辖市+市区）
-			body2,
 			createTime,
 			createUser,
 			modifyUser
@@ -996,10 +998,19 @@ BEGIN
 				@TmpBuildTime, -- 建设周期
 				@TmpProPhase, -- 项目阶段
 				@TmpArea, -- 地区（省直辖市+市区）
-				@TMpProjectSummary,
 				@createTime,
 				@modifyUser,
 				@modifyUser
+           );
+		-- insert into dbo.eqhtmlInfo
+		Insert Into dbo.eqhtmlInfo
+			(
+			sId,
+			body
+			)
+		Values(
+				@TmpSid,
+				@TmpBody
            );
 		-- insert dbo.eqProOther
 		select
@@ -1083,10 +1094,13 @@ BEGIN
         buildtime=@TmpBuildTime,
         prophase=@TmpProPhase,
         proarea=@TmpArea,
-		body2=@TMpProjectSummary,
         modifyTime=sysdatetimeoffset(),
 		modifyUser=@modifyUser
         WHERE sign=@sId;
+		-- update dbo.eqhtmlInfo
+		Update dbo.eqhtmlInfo Set
+		body=@TmpBody
+        WHERE sId=@sId;
 		-- update dbo.eqProOther
 		select
 			@cnt = 1,
@@ -1217,6 +1231,7 @@ BEGIN
         @TmpArea nvarchar(MAX),
         @TmpBody nvarchar(MAX),
         @TmpSetupTime nvarchar(50),
+		@TmpCapital nvarchar(50),
 		@tId varchar(30),
 		@createTime datetimeoffset(7),
 
@@ -1251,6 +1266,7 @@ BEGIN
 	set @TmpIndustry = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/baseInfo[code="HY"]/val[1])'));
 	set @TmpBody = '简介： ' + @TmpDescription + CHAR(10) + '经营范围： '  + @TmpArea;
 	set @TmpSetupTime = CONVERT(NVARCHAR(125), @TmpXML.query('data(/root/baseInfo[code="CLRQ"]/val[1])'));
+	set @TmpCapital = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/baseInfo[code="ZCZB"]/val[1])'));
 
  	set @createTime=sysdatetimeoffset();
 	
@@ -1280,6 +1296,7 @@ BEGIN
 			setUpTime,
 			tId,
 			sign,
+			capital,
 			isDel,
 			recom,
 			pptj,
@@ -1299,6 +1316,7 @@ BEGIN
 				@TmpSetupTime,
 				@tId,
 				@sId,
+				@TmpCapital,
 				1,
 				0,
 				0,
@@ -1384,6 +1402,7 @@ BEGIN
         body=@TmpBody,
         setUpTime=@TmpSetupTime,
         tId=@tId,
+		capital=@TmpCapital,
         modifyTime=sysdatetimeoffset(),
 		modifyUser=@modifyUser
         WHERE sign=@sId;
