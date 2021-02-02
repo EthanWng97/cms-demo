@@ -881,7 +881,7 @@ BEGIN
         @TmpAddress nvarchar(256),
 		@TmpRate nvarchar(50),
 		@TmpBuildArea nvarchar(256),
-		@TmpDescription nvarchar(512),
+		@TmpDescription nvarchar(MAX),
 		@TmpPronum nvarchar(36),
 		@TmpProtype nvarchar(36),
 		@TmpBuildTime nvarchar(50),
@@ -889,13 +889,14 @@ BEGIN
 		@TmpArea1 nvarchar(36),
 		@TmpArea2 nvarchar(36),
 		@TmpArea nvarchar(36),
+		@TMpProjectSummary nvarchar(MAX),
 		@tId varchar(30),
 		@createTime datetimeoffset(7),
 
 		@cnt INT,
 		@toCnt INT,
 		@TmpUserCortype nvarchar(50),
-		@TmpUserTitle nvarchar(50),
+		@TmpUserTitle nvarchar(MAX),
 		@TmpUserName nvarchar(50),
 		@TmpUserQq nvarchar(50),
 		@TmpUserMobileP nvarchar(50),
@@ -923,7 +924,7 @@ BEGIN
     set @TmpAddress = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/titles[code="XMDZ"]/val[1])'));
 	set @TmpRate = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/titles[code="ZTZE"]/val[1])'));
 	set @TmpBuildArea = CONVERT(NVARCHAR(256), @TmpXML.query('data(/root/titles[code="JZMJ"]/val[1])'));
-	set @TmpDescription = CONVERT(NVARCHAR(512), @TmpXML.query('data(/root/infos[code="XMGK"]/val[1])'));
+	set @TmpDescription = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/infos[code="XMGK"]/val[1])'));
 	set @TmpPronum = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMBH"]/val[1])'));
 	set @TmpProtype = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="XMLX"]/val[1])'));
 	set @TmpBuildTime = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/titles[code="JSZQ"]/val[1])'));
@@ -931,10 +932,11 @@ BEGIN
 	set @TmpArea1 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SZXS"]/val[1])'));
 	set @TmpArea2 = CONVERT(NVARCHAR(36), @TmpXML.query('data(/root/titles[code="SQ"]/val[1])'));
 	set @TmpEdition = CONVERT(NVARCHAR(50), @TmpXML.query('data(/root/BBLX[code="BBLX"]/val[1])'));
+	set @TMpProjectSummary = CONVERT(NVARCHAR(MAX), @TmpXML.query('data(/root/infos[code="XMGK"]/val[1])'));
 	set @TmpArea = @TmpArea1 + @TmpArea2;
 	set @createTime=sysdatetimeoffset();
 	
-	EXEC dbo.springTimeId @createTime,'dbo.eqProject',@tId output;
+	EXEC dbo.springTimeId @createTime,'eqProject',@tId output;
 
 	-- set @tmp = CONVERT(NVARCHAR(MAX),@TmpXML.query('data(/root/titles[code="FBSJ"]/val[1])'));
 
@@ -945,54 +947,56 @@ BEGIN
 	IF @isexist is null
     BEGIN
 		set @TmpSid = lower(newid());
-        -- insert dbo.eqProject
-        Insert Into dbo.eqProject
-            (
-            sId,
+		-- insert dbo.eqProject
+		Insert Into dbo.eqProject
+			(
+			sId,
 			title,
 			int1,
 			type,
 			recom,
 			edition,
-            time, -- 发布时间
-            address, -- 项目地址
-            rate, -- 总投资额
-            buildArea, -- 建筑面积
-            description, -- 项目概况
+			time, -- 发布时间
+			address, -- 项目地址
+			rate, -- 总投资额
+			buildArea, -- 建筑面积
+			description, -- 项目概况
 			state,
 			tId,
 			sign,
 			isDel,
-            pronum, -- 编号
-            protype, -- 项目类型
-            buildtime, -- 建设周期
-            prophase, -- 项目阶段
-            proarea, -- 地区（省直辖市+市区）
+			pronum, -- 编号
+			protype, -- 项目类型
+			buildtime, -- 建设周期
+			prophase, -- 项目阶段
+			proarea, -- 地区（省直辖市+市区）
+			body2,
 			createTime,
 			createUser,
 			modifyUser
-            )
-        Values(
-                @TmpSid,
+			)
+		Values(
+				@TmpSid,
 				@TmpTitle, -- 标题
 				0,
 				1,
 				1,
 				@TmpEdition,
-                @TmpTime, -- 发布时间
-                @TmpAddress, -- 项目地址
-                @TmpRate, -- 总投资额
-                @TmpBuildArea, -- 建筑面积
-                @TmpDescription, --
+				@TmpTime, -- 发布时间
+				@TmpAddress, -- 项目地址
+				@TmpRate, -- 总投资额
+				@TmpBuildArea, -- 建筑面积
+				@TmpDescription, --
 				0,
 				@tId,
 				@sId,
 				0,
-                @TmpPronum, -- 编号
-                @TmpProtype, -- 项目类型
-                @TmpBuildTime, -- 建设周期
-                @TmpProPhase, -- 项目阶段
-                @TmpArea,  -- 地区（省直辖市+市区）
+				@TmpPronum, -- 编号
+				@TmpProtype, -- 项目类型
+				@TmpBuildTime, -- 建设周期
+				@TmpProPhase, -- 项目阶段
+				@TmpArea, -- 地区（省直辖市+市区）
+				@TMpProjectSummary,
 				@createTime,
 				@modifyUser,
 				@modifyUser
@@ -1003,69 +1007,69 @@ BEGIN
 			@toCnt =  @TmpXML.value('count(/root/contacts)','INT');
 
 		WHILE @cnt <= @toCnt BEGIN
-  		SELECT
-  		  	@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
-			@TmpUserTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
-			@cnt_users = 1,
-			@toCnt_users = C.value('count(users)','INT')
+			SELECT
+				@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
+				@TmpUserTitle = CONVERT(NVARCHAR(MAX), C.query('data(entname[1])')),
+				@cnt_users = 1,
+				@toCnt_users = C.value('count(users)','INT')
 			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
 			WHILE @cnt_users <= @toCnt_users BEGIN
-			select  
-				@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
-				@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
-				@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
-				@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
-				@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
-				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
-				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
-			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
-			Insert Into dbo.eqProOther
-            (
-            sId,
-			pId,
-            title,
-            name,
-            phone,
-            mobilePhone,
-            qq,
-			positio,
-			address,
-			cortype,
-			remark,
-			createTime,
-			createUser,
-			modifyUser
-            )
-        Values(
-				lower(newid()),
-                @TmpSid,
-				@TmpUserTitle,
-                @TmpUserName,
-                @TmpUserPhone,
-                @TmpUserMobileP,
-                @TmpUserQq,
-                @TmpUserPositio,
-				@TmpUserAddress,
-				@TmpUserCortype,
-				@TmpUserRemark,
-				@createTime,
-				@modifyUser,
-				@modifyUser
+				select
+					@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
+					@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
+					@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
+					@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
+					@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
+					@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
+					@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
+				from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
+				Insert Into dbo.eqProOther
+					(
+					sId,
+					pId,
+					title,
+					name,
+					phone,
+					mobilePhone,
+					qq,
+					positio,
+					address,
+					cortype,
+					remark,
+					createTime,
+					createUser,
+					modifyUser
+					)
+				Values(
+						lower(newid()),
+						@TmpSid,
+						@TmpUserTitle,
+						@TmpUserName,
+						@TmpUserPhone,
+						@TmpUserMobileP,
+						@TmpUserQq,
+						@TmpUserPositio,
+						@TmpUserAddress,
+						@TmpUserCortype,
+						@TmpUserRemark,
+						@createTime,
+						@modifyUser,
+						@modifyUser
            );
-			SELECT @cnt_users = @cnt_users + 1;
+				SELECT @cnt_users = @cnt_users + 1;
 			END;
 			-- incremet the counter variable
 			SELECT @cnt = @cnt + 1
 		END;
 
-    END;
+	END;
 	ELSE
 	BEGIN
 		select @TmpSid = sId
 		from [dbo].[eqProject]
 		where sign=@sId;
 
-        -- update dbo.eqProject
+		-- update dbo.eqProject
 		Update dbo.eqProject Set
 		title=@TmpTitle,
 		edition=@TmpEdition,
@@ -1079,80 +1083,81 @@ BEGIN
         buildtime=@TmpBuildTime,
         prophase=@TmpProPhase,
         proarea=@TmpArea,
+		body2=@TMpProjectSummary,
         modifyTime=sysdatetimeoffset(),
 		modifyUser=@modifyUser
         WHERE sign=@sId;
-        -- update dbo.eqProOther
+		-- update dbo.eqProOther
 		select
 			@cnt = 1,
 			@toCnt =  @TmpXML.value('count(/root/contacts)','INT');
 
 		WHILE @cnt <= @toCnt 
 		BEGIN
-  			SELECT
-  			@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
-			@TmpUserTitle = CONVERT(NVARCHAR(50), C.query('data(entname[1])')),
-			@cnt_users = 1,
-			@toCnt_users = C.value('count(users)','INT')
+			SELECT
+				@TmpUserCortype = CONVERT(NVARCHAR(50), C.query('data(name[1])')),
+				@TmpUserTitle = CONVERT(NVARCHAR(MAX), C.query('data(entname[1])')),
+				@cnt_users = 1,
+				@toCnt_users = C.value('count(users)','INT')
 			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]') T(C);
 			WHILE @cnt_users <= @toCnt_users BEGIN
-			select  
-				@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
-				@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
-				@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
-				@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
-				@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
-				@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
-				@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
-			from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
-			
-			-- insert or update dbo.eqProOther
-			
-			select @isUserExist=pId
-			from [dbo].[eqProOther]
-			where pid=@TmpSid AND name = @TmpUserName;
-			
-			IF @isUserExist is null
+				select
+					@TmpUserName = CONVERT(NVARCHAR(50), C.query('data(vals[code="XM"]/val[1])')),
+					@TmpUserQq = CONVERT(NVARCHAR(50), C.query('data(vals[code="BM"]/val[1])')),
+					@TmpUserMobileP = CONVERT(NVARCHAR(50), C.query('data(vals[code="SJ"]/val[1])')),
+					@TmpUserPhone = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZJ"]/val[1])')),
+					@TmpUserAddress = CONVERT(NVARCHAR(50), C.query('data(vals[code="DZ"]/val[1])')),
+					@TmpUserPositio = CONVERT(NVARCHAR(50), C.query('data(vals[code="ZW"]/val[1])')),
+					@TmpUserRemark = CONVERT(NVARCHAR(MAX), C.query('data(vals[code="BZ"]/val[1])'))
+				from @TmpXML.nodes('/root/contacts[position()=sql:variable("@cnt")]/users[position()=sql:variable("@cnt_users")]') T(C);
+
+				-- insert or update dbo.eqProOther
+
+				select @isUserExist=pId
+				from [dbo].[eqProOther]
+				where pid=@TmpSid AND name = @TmpUserName;
+
+				IF @isUserExist is null
 			BEGIN
-			-- insert
-			Insert Into dbo.eqProOther
-        	    (
-        	    sId,
-				pId,
-        	    title,
-        	    name,
-        	    phone,
-        	    mobilePhone,
-        	    qq,
-				positio,
-				address,
-				cortype,
-				remark,
-				createTime,
-				createUser,
-				modifyUser
-        	    )
-        	Values(
-					lower(newid()),
-        	        @TmpSid,
-					@TmpUserTitle,
-        	        @TmpUserName,
-        	        @TmpUserPhone,
-        	        @TmpUserMobileP,
-        	        @TmpUserQq,
-        	        @TmpUserPositio,
-					@TmpUserAddress,
-					@TmpUserCortype,
-					@TmpUserRemark,
-					@createTime,
-					@modifyUser,
-					@modifyUser
+					-- insert
+					Insert Into dbo.eqProOther
+						(
+						sId,
+						pId,
+						title,
+						name,
+						phone,
+						mobilePhone,
+						qq,
+						positio,
+						address,
+						cortype,
+						remark,
+						createTime,
+						createUser,
+						modifyUser
+						)
+					Values(
+							lower(newid()),
+							@TmpSid,
+							@TmpUserTitle,
+							@TmpUserName,
+							@TmpUserPhone,
+							@TmpUserMobileP,
+							@TmpUserQq,
+							@TmpUserPositio,
+							@TmpUserAddress,
+							@TmpUserCortype,
+							@TmpUserRemark,
+							@createTime,
+							@modifyUser,
+							@modifyUser
         	   );
-			END;
+				END;
 			ELSE
 			BEGIN
-			-- update
-			Update dbo.eqProOther Set
+					-- update
+					Update dbo.eqProOther Set
 			 	title=@TmpUserTitle,
         	 	phone=@TmpUserPhone,
         	 	mobilePhone=@TmpUserMobileP,
@@ -1164,9 +1169,9 @@ BEGIN
         	 	modifyTime=sysdatetimeoffset(),
 				modifyUser=@modifyUser
         	WHERE pId=@TmpSid AND name = @TmpUserName;
-			END;
-			
-			SELECT @cnt_users = @cnt_users + 1;
+				END;
+
+				SELECT @cnt_users = @cnt_users + 1;
 			END;
 			-- incremet the counter variable
 			SELECT @cnt = @cnt + 1
