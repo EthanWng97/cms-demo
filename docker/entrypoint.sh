@@ -1,4 +1,4 @@
-#echo entrypoint.sh
+# entrypoint.sh
 
 echo 'starting database setup'
 ./sqlfiles/setup-database.sh &
