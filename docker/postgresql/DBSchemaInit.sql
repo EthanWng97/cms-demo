@@ -1,5 +1,5 @@
 -- DBSchemaInit.sql
--- CREATE SCHEMA dbo;
+CREATE SCHEMA dbo;
 
 CREATE TABLE dbo.springTb
 (
@@ -25,12 +25,11 @@ modifyTime timestamp with time zone default now(),
 sTamp varchar NULL
 );
 
--- COPY dbo
--- .springtb 
--- FROM '/root/springtb.csv'
--- csv
--- HEADER
--- NULL 'NULL'
+COPY dbo.springtb 
+FROM '/postgresql/springtb.csv'
+csv
+HEADER
+NULL 'NULL';
 
 CREATE TABLE dbo.springField
 (
