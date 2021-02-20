@@ -471,18 +471,20 @@ BEGIN
     --     where tbName like tabname)
     -- delete  FROM  dbo.springFileTableRel where tbName like tabname
 	delete from dbo.springTb where sId=_sid RETURNING sId INTO _tmp;
-	if _tmp is null Then
-		_tmp := '0';
-	end if;
 --     EXECUTE 'delete from dbo.springTb where sId=$1 RETURNING *' INTO _tmp USING _sId;
-    if _pId is null Then
-	    update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
-    else
-		update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
+    if _tmp is null THEN
+    -- sid not exist
+        _error:='00001';
+        _eInfo:= 'sid not exist';
+    ELSE
+        if _pId is null Then
+	        update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
+        else
+	    	update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
+        END IF;
+        _error:='00000';
+        _eInfo:= 'successful delete: ' ||  _tmp;
     END IF;
-
-    _error:='00000';
-    _eInfo:= 'successful delete: ' ||  _tmp;
     exception
         When Others Then
             rollback;
@@ -625,7 +627,7 @@ BEGIN
 
     DROP TABLE _OutInfo;
 	_error:='00000';
-    _eInfo:= 'successful completion';
+    _eInfo:= 'Execution Complete';
     exception
         When Others Then
             get stacked diagnostics _eInfo:= MESSAGE_TEXT,
