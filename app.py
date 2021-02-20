@@ -11,7 +11,7 @@ from sqlalchemy_mptt.mixins import BaseNestedSets
 
 Base = declarative_base()
 engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@198.13.60.74:5433/wangyifan",
+    "postgresql+psycopg2://postgres:19971004@198.13.60.74:5432/postgres",
     pool_size=50,
     max_overflow=20,
 )
@@ -144,10 +144,9 @@ def _fetch_action_data(action_json):
     sql_string = ""
     sql_string = _construct_call_sqlstring()
     # return db_session.execute(sql_string).fetchall()
-    return db_session.execute(
+    result = db_session.execute(
         sql_string,
         {
-            "_userId": action_json["_userId"],
             "_userId": action_json["_userId"],
             "_userName": action_json["_userName"],
             "_info": action_json["_info"],
@@ -155,7 +154,9 @@ def _fetch_action_data(action_json):
             "_error": action_json["_error"],
             "_eInfo": action_json["_eInfo"],
         },
-    ).fetchall()
+    )
+    db_session.commit()
+    return result
 
 
 # 创建flask的应用对象
