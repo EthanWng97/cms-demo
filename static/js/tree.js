@@ -23,6 +23,7 @@ var setting = {
         beforeRemove: beforeRemove,  // determine whether the node can be deleted
         beforeRename: beforeRename,   // determine whether the node can be renamed
         onRemove: onRemove,
+        onRightClick: onRightClick,
         // onRename: onRename,
         // beforeDrag: beforeDrag,
     }

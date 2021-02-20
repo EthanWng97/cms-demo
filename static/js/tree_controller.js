@@ -94,3 +94,62 @@ function onRemove(event, treeId, treeNode){
         }
     });
 }
+
+function onRightClick(event, treeId, treeNode) {
+    // alert(treeNode ? treeNode.tId + ", " + treeNode.name : "isRoot");
+    console.log(treeNode.name);
+    var type = '';
+    var x = event.clientX;
+    var y = event.clientY;
+    // if (!treeNode) {
+    //     type = 'root';
+    //     window.tree.cancelSelectedNode();
+    // } else if (treeNode && !treeNode.noR) { // noR 属性为 true 表示禁止右键菜单
+    //     window.tree.selectNode(treeNode);
+    // }
+    // window.tree.selectNode(treeNode);
+
+    // 不同节点显示的菜单可能不一样
+    // if ('root' === type) {
+    //     $('#menu-item-delete').hide();
+    //     $('#menu-item-rename').hide();
+    // } else {
+    //     $('#menu-item-delete').show();
+    //     $('#menu-item-rename').show();
+    // }
+
+    $('#directory-tree-menu').css({ left: x + 'px', top: y + 'px' }).show();
+
+    $(document).on('mousedown', function (event) {
+        if (!(event.target.id == 'directory-tree-menu' || $(event.target).parents('#directory-tree-menu').length > 0)) {
+            hideMenu();
+        }
+    });
+}
+function hideMenu() {
+    $('#directory-tree-menu').hide();
+    $(document).off('mousedown');
+}
+
+// $('#menu-item-addRoot').on("click", function (event) {
+//     hideMenu();
+//     console.log("添加根");
+// });
+$("#menu-item-addRoot").click(function (event) {
+    hideMenu();
+    console.log("添加根");
+});
+
+
+            // <li id="menu-item-addRoot">添加根[表]</li>
+            // <li id="menu-item-addTable">添加[列表]</li>
+            // <li id="menu-item-addRela">添加[关联]</li>
+            // <li id="menu-item-modify">修改</li>
+            // <li id="menu-item-delete">删除</li>
+            // <li id="menu-item-clip">剪切[表]</li>
+            // <li id="menu-item-sort">排序</li>
+            // <li id="menu-item-translate">翻译</li>
+            // <li id="menu-item-edit">编辑</li>
+            // <li id="menu-item-manageList">列表分组管理</li>
+            // <li id="menu-item-procedure">存储过程</li>
+            // <li id="menu-item-exportModel">模型导出</li>
