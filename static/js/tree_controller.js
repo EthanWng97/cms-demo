@@ -96,31 +96,13 @@ function onRemove(event, treeId, treeNode){
 }
 
 function onRightClick(event, treeId, treeNode) {
-    // alert(treeNode ? treeNode.tId + ", " + treeNode.name : "isRoot");
-    console.log(treeNode.name);
     var type = '';
     var x = event.clientX;
     var y = event.clientY;
-    // if (!treeNode) {
-    //     type = 'root';
-    //     window.tree.cancelSelectedNode();
-    // } else if (treeNode && !treeNode.noR) { // noR 属性为 true 表示禁止右键菜单
-    //     window.tree.selectNode(treeNode);
-    // }
-    // window.tree.selectNode(treeNode);
-
-    // 不同节点显示的菜单可能不一样
-    // if ('root' === type) {
-    //     $('#menu-item-delete').hide();
-    //     $('#menu-item-rename').hide();
-    // } else {
-    //     $('#menu-item-delete').show();
-    //     $('#menu-item-rename').show();
-    // }
 
     $('#directory-tree-menu').css({ left: x + 'px', top: y + 'px' }).show();
-    if (treeNode.name == '数据模型') $('#menu-item-addRoot').hide();
-    else $('#menu-item-addRoot').show();
+    // if (treeNode.name == '数据模型') $('#menu-item-addRoot').hide();
+    // else $('#menu-item-addRoot').show();
 
     $(document).on('mousedown', function (event) {
         if (!(event.target.id == 'directory-tree-menu' || $(event.target).parents('#directory-tree-menu').length > 0)) {
