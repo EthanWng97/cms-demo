@@ -131,11 +131,7 @@ function hideMenu() {
     $(document).off('mousedown');
 }
 
-// $('#menu-item-addRoot').on("click", function (event) {
-//     hideMenu();
-//     console.log("添加根");
-// });
-$("#menu-item-addRoot").click(function (event) {
+$(document).on('click', '#menu-item-addRoot', function () {
     hideMenu();
     console.log("添加根");
 });
