@@ -135,17 +135,47 @@ $(document).on('click', '#menu-item-addRoot', function () {
     hideMenu();
     console.log("添加根");
 });
-
-
-            // <li id="menu-item-addRoot">添加根[表]</li>
-            // <li id="menu-item-addTable">添加[列表]</li>
-            // <li id="menu-item-addRela">添加[关联]</li>
-            // <li id="menu-item-modify">修改</li>
-            // <li id="menu-item-delete">删除</li>
-            // <li id="menu-item-clip">剪切[表]</li>
-            // <li id="menu-item-sort">排序</li>
-            // <li id="menu-item-translate">翻译</li>
-            // <li id="menu-item-edit">编辑</li>
-            // <li id="menu-item-manageList">列表分组管理</li>
-            // <li id="menu-item-procedure">存储过程</li>
-            // <li id="menu-item-exportModel">模型导出</li>
+$(document).on('click', '#menu-item-addTable', function () {
+    hideMenu();
+    console.log("添加[列表]");
+});
+$(document).on('click', '#menu-item-addRela', function () {
+    hideMenu();
+    console.log("添加[关联]");
+});
+$(document).on('click', '#menu-item-modify', function () {
+    hideMenu();
+    console.log("修改");
+});
+$(document).on('click', '#menu-item-delete', function () {
+    hideMenu();
+    console.log("删除");
+});
+$(document).on('click', '#menu-item-clip', function () {
+    hideMenu();
+    console.log("剪切[表]");
+});
+$(document).on('click', '#menu-item-sort', function () {
+    hideMenu();
+    console.log("排序");
+});
+$(document).on('click', '#menu-item-translate', function () {
+    hideMenu();
+    console.log("翻译");
+});
+$(document).on('click', '#menu-item-edit', function () {
+    hideMenu();
+    console.log("编辑");
+});
+$(document).on('click', '#menu-item-manageList', function () {
+    hideMenu();
+    console.log("列表分组管理");
+});
+$(document).on('click', '#menu-item-procedure', function () {
+    hideMenu();
+    console.log("存储过程");
+});
+$(document).on('click', '#menu-item-exportModel', function () {
+    hideMenu();
+    console.log("模型导出");
+});
