@@ -119,6 +119,8 @@ function onRightClick(event, treeId, treeNode) {
     // }
 
     $('#directory-tree-menu').css({ left: x + 'px', top: y + 'px' }).show();
+    if (treeNode.name == '数据模型') $('#menu-item-addRoot').hide();
+    else $('#menu-item-addRoot').show();
 
     $(document).on('mousedown', function (event) {
         if (!(event.target.id == 'directory-tree-menu' || $(event.target).parents('#directory-tree-menu').length > 0)) {
