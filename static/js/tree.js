@@ -1,6 +1,7 @@
 var tree = {
     zTree: '',
-    pNode: '',
+    pTreeId: '',
+    pTreeNode: '',
     setting: {
         views: {
             // addHoverDom: addHoverDom, //当鼠标移动到节点上时，显示用户自定义控件
