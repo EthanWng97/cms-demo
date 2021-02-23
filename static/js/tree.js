@@ -31,24 +31,24 @@ var tree = {
             // beforeDrag: beforeDrag,
         }
     },
-    onLoadTree: function () {
-        $.ajax({
-            cache: true,
-            url: "getunionjson",
-            type: "POST",
-            dataType: "json",
-            async: true,
-            success: function (data) {
-                zNodes = data["0"];
-                tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
-                tree.preLoadNode(tree.zTree.getNodes());
-            },
-            error: function (error) {
-                console.log(error);
-            },
-        });
+    // onLoadTree: function () {
+    //     $.ajax({
+    //         cache: true,
+    //         url: "getunionjson",
+    //         type: "POST",
+    //         dataType: "json",
+    //         async: true,
+    //         success: function (data) {
+    //             zNodes = data["0"];
+    //             tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
+    //             tree.preLoadNode(tree.zTree.getNodes());
+    //         },
+    //         error: function (error) {
+    //             console.log(error);
+    //         },
+    //     });
 
-    },
+    // },
     preLoadNode: function (rawData) {
         if (rawData == undefined) rawData = tree.zTree.getNodes();
         var data_list = [];
@@ -160,5 +160,5 @@ function wrapAjax(myJson) {
 // }
 
 $(function () {
-    tree.onLoadTree();
+    onLoadTree();
 });

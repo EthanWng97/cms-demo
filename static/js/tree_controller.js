@@ -1,3 +1,22 @@
+function onLoadTree() {
+    $.ajax({
+        cache: true,
+        url: "getunionjson",
+        type: "POST",
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            zNodes = data["0"];
+            tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
+            tree.preLoadNode(tree.zTree.getNodes());
+        },
+        error: function (error) {
+            console.log(error);
+        },
+    });
+
+}
+
 function expandNode(event, treeId, treeNode) {
     if (!treeNode.isParent) return;
     var data = treeNode.children;
