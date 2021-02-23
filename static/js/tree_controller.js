@@ -76,7 +76,6 @@ function onRemove(event, treeId, treeNode){
         "pId": treeNode.pId,  //父节点
         "name": treeNode.name,
     };
-    console.log(data);
     var info_json = {
         "action": "del",
         "sId": treeNode.id,
@@ -114,13 +113,20 @@ function onRemove(event, treeId, treeNode){
         dataType: "json",
         data: { action: JSON.stringify(jsonObj) },
         // timeout: 1000, //超时时间设置，单位毫秒
-        success: function (res) {
-            layer.msg(res.msg)
+        success: function (data) {
+            layer.msg(data[0].info[0]._einfo);
+            tree.zTree.removeNode(treeNode);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert("请求对象XMLHttpRequest: " + XMLHttpRequest);
+            alert("错误类型textStatus: " + textStatus);
+            alert("异常对象errorThrown: " + errorThrown);
         }
     });
 }
 function onRightClick(event, treeId, treeNode) {
-    tree.pNode = treeNode;
+    tree.pTreeId = treeId;
+    tree.pTreeNode = treeNode;
     var type = '';
     var x = event.clientX;
     var y = event.clientY;
@@ -159,6 +165,7 @@ $(document).on('click', '#menu-item-modify', function () {
 $(document).on('click', '#menu-item-delete', function () {
     hideMenu();
     console.log("删除");
+    if (beforeRemove(tree.pTreeId, tree.pTreeNode)) onRemove(event, tree.pTreeId, tree.pTreeNode);
 });
 $(document).on('click', '#menu-item-clip', function () {
     hideMenu();
