@@ -181,14 +181,17 @@ def get_action(action_json):
     # isJson = _is_json(action_json)
     action_json = json.loads(action_json)
     groups = _fetch_action_data(action_json)
-    print(groups)
-    result = {}
+    # print(groups)
+    result = []
     for i in groups:
-        print(i._info)
-        print(i._entity)
-        print(i._error)
-        print(i._einfo)
-    # return json.dumps(result)
+        _dict = {
+            "info": i._info,
+            "entity": i._entity,
+            "error": i._error,
+            "einfo": i._einfo,
+        }
+        result.append(_dict)
+    return result
 
 
 @app.route("/getunionjson", methods=["GET", "POST"])
