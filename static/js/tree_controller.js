@@ -1,3 +1,9 @@
+function expandNode(event, treeId, treeNode) {
+    if (!treeNode.isParent) return;
+    var data = treeNode.children;
+    tree.preLoadNode(data);
+};
+
 function beforeRename(treeId, treeNode, newName, isCancel) {
     if (isCancel == true) return
     if (newName.length == 0) {
@@ -94,8 +100,8 @@ function onRemove(event, treeId, treeNode){
         }
     });
 }
-
 function onRightClick(event, treeId, treeNode) {
+    tree.pNode = treeNode;
     var type = '';
     var x = event.clientX;
     var y = event.clientY;
