@@ -26,14 +26,46 @@
 li#menu-item-exportModel {
     margin-top: 1px;
 }
+
 li#sep {
-     list-style:none;
-     width:100%;
-     height:1px;
-     background:rgb(100, 100, 100);
-     overflow:hidden;
-     line-height:1px;
-     margin:0px;
-     padding:0px;
-     font-size:0px;
+    list-style: none;
+    width: 100%;
+    height: 1px;
+    background: rgb(100, 100, 100);
+    overflow: hidden;
+    line-height: 1px;
+    margin: 0px;
+    padding: 0px;
+    font-size: 0px;
+}
+
+.layui-form-item {
+    height: 25px;
+}
+
+label.layui-form-label {
+    display: inline-block;
+    width: 30%;
+    text-align: left;
+}
+
+/* 
+.layui-input-inline {
+    display: inline-block;
+    padding-left: 30%;
+    width: 70%;
+    text-align: right;
+} */
+
+.layui-input-block {
+    display: inline-block;
+    width: 69%;
+}
+
+select.tbtype {
+    width: 100%;
+}
+
+input.layui-input {
+    width: 100%;
 }
