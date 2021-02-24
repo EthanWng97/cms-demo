@@ -656,3 +656,7 @@ CALL dbo.springTb_Action(_userId=>'120912', _userName=> 'wangyifan', _info=>'[
 		"sTamp": "2020-11-12 04:17:43.635664",
         "queue":1
     }]', _entity=>'123', _error=>'123', _eInfo=>'123');
+
+select column_name
+from information_schema.columns
+where table_schema='dbo' and table_name='springtb'
