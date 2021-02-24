@@ -159,6 +159,16 @@ def _fetch_action_data(action_json):
     return result
 
 
+def _fetch_row_data(table, sid):
+    sql_string = "select * from dbo." + table + "where sid = '" + sid + "'"
+    resultproxy = db_session.execute(sql_string).fetchall()
+    result = {}
+    for rowproxy in resultproxy:
+        for column, value in rowproxy.items():
+            result[column] = value
+    return result
+
+
 # 创建flask的应用对象
 # __name__表示当前的模块名称
 # 模块名: flask以这个模块所在的目录为根目录，默认这个目录中的static为静态目录，templates为模板目录
