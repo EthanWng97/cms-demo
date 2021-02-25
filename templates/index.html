@@ -13,6 +13,7 @@
     <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.all.min.js"></script>
     <script type="text/javascript" src="/static/layer_v3.1.1/layer.js"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/tree_controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
 
     <!-- <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.excheck.js"></script> -->
 </head>
@@ -40,120 +41,6 @@
     </div>
     <!-- <div class="site-text" style="margin: 5%; display: none" id="window" target="test123"> -->
     <form class="layui-form" style="margin: 5%; display: none" id="information" method="post" lay-filter="example">
-        <div class="layui-form-item">
-            <label class="layui-form-label">表类型</label>
-            <div class="layui-input-block">
-                <select name="tbtype" lay-verify="required" class="tbtype">
-                    <option value=""></option>
-                    <option value="0">表</option>
-                    <option value="1">文件夹</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">名称</label>
-            <div class="layui-input-block">
-                <input type="text" id="name" name="name" lay-verify="title" placeholder="请输入名称" autocomplete="off"
-                    class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">简称</label>
-            <div class="layui-input-block">
-                <input type="text" id="shortname" name="shortname" lay-verify="title" placeholder="请输入简称"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">描述</label>
-            <div class="layui-input-block">
-                <input type="text" id="description" name="description" lay-verify="title" placeholder="请输入描述"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">英文描述</label>
-            <div class="layui-input-block">
-                <input type="text" id="descriptionen" name="descriptionen" lay-verify="title" placeholder="请输入英文描述"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">实际表名称</label>
-            <div class="layui-input-block">
-                <input type="text" id="tbname" name="tbname" lay-verify="title" placeholder="请输入实际表名称"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">拓展类型字段名称</label>
-            <div class="layui-input-block">
-                <input type="text" id="filename" name="filename" lay-verify="title" placeholder="请输入拓展类型字段名称"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">类型值</label>
-            <div class="layui-input-block">
-                <input type="text" id="fileno" name="fileno" lay-verify="title" placeholder="请输入类型值" autocomplete="off"
-                    class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">是否有文档附件</label>
-            <div class="layui-input-block">
-                <input type="checkbox" id="isfile" name="isfile" lay-skin="primary" checked>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">文档附件目录编码</label>
-            <div class="layui-input-block">
-                <input type="text" id="filepathno" name="filepathno" lay-verify="title" placeholder="请输入文档附件目录编码"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">存储过程名称</label>
-            <div class="layui-input-block">
-                <input type="text" id="storedprocname" name="storedprocname" lay-verify="title" placeholder="请输入存储过程名称"
-                    autocomplete="off" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">备注</label>
-            <div class="layui-input-block">
-                <input type="text" id="remark" name="remark" lay-verify="title" placeholder="请输入备注" autocomplete="off"
-                    class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">创建人</label>
-            <div class="layui-input-block">
-                <input type="text" id="createuser" name="createuser" lay-verify="title" autocomplete="off"
-                    class="layui-input" readonly="readonly">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">创建时间</label>
-            <div class="layui-input-block">
-                <input type="text" id="createtime" name="createtime" lay-verify="title" autocomplete="off"
-                    class="layui-input" readonly="readonly">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">修改人</label>
-            <div class="layui-input-block">
-                <input type="text" id="remark" name="remark" lay-verify="title" autocomplete="off" class="layui-input"
-                    readonly="readonly">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">修改时间</label>
-            <div class="layui-input-block">
-                <input type="text" id="modifytime" name="modifytime" lay-verify="title" autocomplete="off"
-                    class="layui-input" readonly="readonly">
-            </div>
-        </div>
     </form>
     <!-- </div> -->
 </body>
