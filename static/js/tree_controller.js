@@ -148,6 +148,7 @@ function hideMenu() {
 }
 
 function loadFormData(database, treeNode) {
+    $("#information").empty();
     var jsonObj = {
         "_db": database,
         "_sid": treeNode.id,
@@ -244,7 +245,7 @@ function createForm(data) {
 }
 
 $(document).on('click', '#menu-item-addRoot', function () {
-    hideMenu();
+    hideMenu(); 
     console.log("添加根");
 });
 $(document).on('click', '#menu-item-addTable', function () {
