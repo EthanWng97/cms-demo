@@ -3,8 +3,8 @@ var tbtype = '<div class="layui-form-item">' +
     '<div class="layui-input-block">' +
     '<select id="tbtype" name="tbtype" lay-verify="required" class="tbtype">' +
     '<option value=""></option>' +
-    '<option value="0">表</option>' +
-    '<option value="1">文件夹</option>' +
+    '<option value="0">文件夹</option>' +
+    '<option value="1">表</option>' +
     '</select>' +
     '</div>' +
     '</div>';
@@ -58,18 +58,18 @@ var tbname = '<div class="layui-form-item">' +
 
 
 
-var filename = '<div class="layui-form-item">' +
+var fieldname = '<div class="layui-form-item">' +
     '<label class="layui-form-label">拓展类型字段名称</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="filename" name="filename" lay-verify="title" placeholder="请输入拓展类型字段名称" autocomplete="off"' +
+    '<input type="text" id="fieldname" name="fieldname" lay-verify="title" placeholder="请输入拓展类型字段名称" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
-var fileno = '<div class="layui-form-item">' +
+var fieldno = '<div class="layui-form-item">' +
     '<label class="layui-form-label">类型值</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="fileno" name="fileno" lay-verify="title" placeholder="请输入类型值" autocomplete="off"' +
+    '<input type="text" id="fieldno" name="fieldno" lay-verify="title" placeholder="请输入类型值" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';

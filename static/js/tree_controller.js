@@ -186,10 +186,10 @@ function createForm(data) {
             $("#information").append(descriptionen);
         else if (val == 'tbname')
             $("#information").append(tbname);
-        else if (val == 'filename')
-            $("#information").append(filename);
-        else if (val == 'fileno')
-            $("#information").append(fileno);
+        else if (val == 'fieldname')
+            $("#information").append(fieldname);
+        else if (val == 'fieldno')
+            $("#information").append(fieldno);
         else if (val == 'isfile')
             $("#information").append(isfile);
         else if (val == 'filepathno')
@@ -225,10 +225,10 @@ function createForm(data) {
             $('#description').val(data['description']);
             $('#descriptionen').val(data['descriptionen']);
             $('#tbname').val(data['tbname']);
-            $('#filename').val(data['filename']);
+            $('#fieldname').val(data['fieldname']);
             data['isfile'] == 1 ? $('#isfile').prop("checked", true): $('#isfile').prop("checked", false);
 
-            $('#fileno').val(data['fileno']);
+            $('#fieldno').val(data['fieldno']);
             $('#filepathno').val(data['filepathno']);
             $('#storedprocname').val(data['storedprocname']);
             $('#remark').val(data['remark']);
