@@ -1,4 +1,5 @@
 import json
+import datetime
 from sys import setswitchinterval
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine, Column, Integer, String
@@ -159,13 +160,21 @@ def _fetch_action_data(action_json):
     return result
 
 
+def _data_converter(data):
+    if isinstance(data, datetime.datetime):
+        return data.__str__()
+    else:
+        return data
+
+
 def _fetch_row_data(table, sid):
-    sql_string = "select * from dbo." + table + "where sid = '" + sid + "'"
+    sql_string = "select * from dbo." + table + " where sid='" + sid + "'"
     resultproxy = db_session.execute(sql_string).fetchall()
     result = {}
     for rowproxy in resultproxy:
         for column, value in rowproxy.items():
-            result[column] = value
+            result[column] = _data_converter(value)
+    # print(json.dumps(result))
     return result
 
 
