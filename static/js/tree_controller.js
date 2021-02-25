@@ -238,8 +238,12 @@ function createForm(data) {
             $('#modifytime').val(data["modifytime"]);
             $('#price').val("price");
         }
-        , yes: function () {
+        , yes: function (index, layero) {
+            // construct info_json
+            console.log($('#shortname').val());
+            console.log(tree.pTreeNode);
             alert("ss")
+            layer.close(index);
         }
     });
 }
