@@ -105,10 +105,13 @@ def _construct_select_sqlstring(sid):
         )
 
 
-def _construct_call_sqlstring():
-    return text(
-        "CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);"
-    )
+def _construct_sqlstring(type):
+    if type == "call":
+        return text(
+            "CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);"
+        )
+    elif type == "row":
+        return text("select * from dbo.springtb where sid=:_sid;")
 
 
 def _fetch_tree_data(sid, isJson=False):
@@ -143,7 +146,7 @@ def _exec_procedure(proc_name, params):
 
 def _fetch_action_data(action_json):
     sql_string = ""
-    sql_string = _construct_call_sqlstring()
+    sql_string = _construct_sqlstring("call")
     # return db_session.execute(sql_string).fetchall()
     result = db_session.execute(
         sql_string,
@@ -167,14 +170,16 @@ def _data_converter(data):
         return data
 
 
-def _fetch_row_data(table, sid):
-    sql_string = "select * from dbo." + table + " where sid='" + sid + "'"
-    resultproxy = db_session.execute(sql_string).fetchall()
-    result = {}
-    for rowproxy in resultproxy:
-        for column, value in rowproxy.items():
-            result[column] = _data_converter(value)
-    # print(json.dumps(result))
+def _fetch_row_data(row_json):
+    sql_string = ""
+    sql_string = _construct_sqlstring("row")
+    result = db_session.execute(
+        sql_string,
+        {
+            # "_db": row_json["_db"],
+            "_sid": row_json["_sid"],
+        },
+    )
     return result
 
 
@@ -213,6 +218,16 @@ def get_action(action_json):
     return result
 
 
+def get_rowdata(row_json):
+    row_json = json.loads(row_json)
+    resultproxy = _fetch_row_data(row_json)
+    result = {}
+    for rowproxy in resultproxy:
+        for column, value in rowproxy.items():
+            result[column] = _data_converter(value)
+    return result
+
+
 @app.route("/getunionjson", methods=["GET", "POST"])
 def get_union_json():
     sid = request.form.get("sId")
@@ -233,6 +248,14 @@ def dataset():
     action_json = request.form.get("action")
     isJson = _is_json(action_json)
     result = get_action(action_json)
+    return json.dumps(result)
+
+
+@app.route("/dataset/rowdata", methods=["GET", "POST"])
+def rowdata():
+    row_json = request.form.get("row")
+    isJson = _is_json(row_json)
+    result = get_rowdata(row_json)
     return json.dumps(result)
 
 
