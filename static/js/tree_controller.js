@@ -70,8 +70,8 @@ function beforeRemove(treeId, treeNode) {
     return true;
 }
 
-function onRemove(event, treeId, treeNode){
-        var data = {
+function onRemove(event, treeId, treeNode) {
+    var data = {
         "sId": treeNode.id,
         "pId": treeNode.pId,  //父节点
         "name": treeNode.name,
@@ -93,8 +93,9 @@ function onRemove(event, treeId, treeNode){
         "storedProcName": "teststoredProcName",
         "remark": "testremark",
         "sTamp": "2020-11-12 04:17:43.635664",
-        "queue": 1};
-    
+        "queue": 1
+    };
+
     var data_list = [];
     data_list.push(info_json);
     var jsonObj = {
@@ -146,6 +147,102 @@ function hideMenu() {
     $(document).off('mousedown');
 }
 
+function loadFormData(database, treeNode) {
+    var jsonObj = {
+        "_db": database,
+        "_sid": treeNode.id,
+    };
+
+    $.ajax({
+        cache: true,
+        url: "dataset/rowdata",
+        type: 'post',
+        dataType: "json",
+        data: { row: JSON.stringify(jsonObj) },
+        async: true,
+        success: function (data) {
+            // console.log(data)
+            createForm(data);
+
+        },
+        error: function (error) {
+            console.log(error);
+        },
+    });
+}
+function createForm(data) {
+    for (var val in data) {
+        console.log(val + " " + data[val]);//输出如:name
+        if(val == 'tbtype')
+            $("#information").append(tbtype);
+        else if (val == 'name')
+            $("#information").append(name);
+        else if (val == 'shortname')
+            $("#information").append(shortname);
+        else if (val == 'description')
+            $("#information").append(description);
+        else if (val == 'descriptionen')
+            $("#information").append(descriptionen);
+        else if (val == 'tbname')
+            $("#information").append(tbname);
+        else if (val == 'filename')
+            $("#information").append(filename);
+        else if (val == 'fileno')
+            $("#information").append(fileno);
+        else if (val == 'isfile')
+            $("#information").append(isfile);
+        else if (val == 'filepathno')
+            $("#information").append(filepathno);
+        else if (val == 'storedprocname')
+            $("#information").append(storedprocname);
+        else if (val == 'remark')
+            $("#information").append(remark);
+        else if (val == 'createuser')
+            $("#information").append(createuser);
+        else if (val == 'createtime')
+            $("#information").append(createtime);
+        else if (val == 'modifyuser')
+            $("#information").append(modifyuser);
+        else if (val == 'modifytime')
+            $("#information").append(modifytime);
+    };
+    console.log(data['name']);
+    layer.open({
+        type: 1 //Page层类型
+        , skin: 'layui-layer-lan'
+        , area: ['500px', '600px']
+        , title: ['表', 'font-size:18px']
+        , btn: ['确定', '取消']
+        , shadeClose: true
+        , shade: 0 //遮罩透明度
+        , maxmin: false //允许全屏最小化
+        , content: $("#information")
+        , success: function () {
+            $('#tbtype').val(data['tbtype']);
+            $('#name').val(data['name']);
+            $('#shortname').val(data['shortname']);
+            $('#description').val(data['description']);
+            $('#descriptionen').val(data['descriptionen']);
+            $('#tbname').val(data['tbname']);
+            $('#filename').val(data['filename']);
+            data['isfile'] == 1 ? $('#isfile').prop("checked", true): $('#isfile').prop("checked", false);
+
+            $('#fileno').val(data['fileno']);
+            $('#filepathno').val(data['filepathno']);
+            $('#storedprocname').val(data['storedprocname']);
+            $('#remark').val(data['remark']);
+            $('#createuser').val(data['createuser']);
+            $('#createtime').val(data['createtime']);
+            $('#modifyuser').val(data["modifyuser"]);
+            $('#modifytime').val(data["modifytime"]);
+            $('#price').val("price");
+        }
+        , yes: function () {
+            alert("ss")
+        }
+    });
+}
+
 $(document).on('click', '#menu-item-addRoot', function () {
     hideMenu();
     console.log("添加根");
@@ -161,6 +258,7 @@ $(document).on('click', '#menu-item-addRela', function () {
 $(document).on('click', '#menu-item-modify', function () {
     hideMenu();
     console.log("修改");
+    loadFormData('springtb', tree.pTreeNode)
 });
 $(document).on('click', '#menu-item-delete', function () {
     hideMenu();
