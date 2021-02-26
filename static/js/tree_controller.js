@@ -62,6 +62,71 @@ function beforeRename(treeId, treeNode, newName, isCancel) {
 //     // });
 // }
 
+function createActionJson(type, treeNode) {
+    // var info_json = {
+    //     "action": "del",
+    //     "sId": treeNode.id,
+    //     "pId": treeNode.pId,
+    //     "tbType": 0,
+    //     "name": "testname",
+    //     "shortName": "testshortName",
+    //     "description": "testdescription",
+    //     "descriptionEn": "testdescriptionEn",
+    //     "tbName": "testtbName",
+    //     "fieldName": "testfieldName",
+    //     "fieldNo": 123,
+    //     "isFile": 0,
+    //     "filePathNo": "testfilePathNo",
+    //     "storedProcName": "teststoredProcName",
+    //     "remark": "testremark",
+    //     "sTamp": "2020-11-12 04:17:43.635664",
+    //     "queue": 1
+    // };
+
+    // var data_list = [];
+    // data_list.push(info_json);
+    // var jsonObj = {
+    //     "_userId": "",
+    //     "_userName": "",
+    //     "_info": JSON.stringify(data_list),
+    //     "_entity": "123",
+    //     "_error": "123",
+    //     "_eInfo": "123"
+    // };
+    var info_json = {
+        "action": type,
+        "sId": tree.pTreeNode.id,
+        "pId": tree.pTreeNode.pId,
+        "tbType": $('#tbtype').val(),
+        "name": $('#name').val(),
+        "shortName": $('#shortname').val(),
+        "description": $('#description').val(),
+        "descriptionEn": $('#descriptionen').val(),
+        "tbName": $('#tbname').val(),
+        "fieldName": $('#fieldname').val(),
+        "fieldNo": $('#fieldno').val(),
+        "isFile": $('#isfile').val(),
+        "filePathNo": $('#filepathno').val(),
+        "storedProcName": $('#storedprocname').val(),
+        "remark": $('#remark').val(),
+        // "sTamp": "2020-11-12 04:17:43.635664",
+        // "queue": 1
+    };
+
+    var data_list = [];
+    data_list.push(info_json);
+    var jsonObj = {
+        "_userId": "123",
+        "_userName": "123",
+        "_info": JSON.stringify(data_list),
+        "_entity": "123",
+        "_error": "123",
+        "_eInfo": "123"
+    };
+    console.log(JSON.stringify(jsonObj));
+    return JSON.stringify(jsonObj);
+
+}
 function beforeRemove(treeId, treeNode) {
     if (treeNode.children != undefined) {
         layer.msg("请先删除子项表。");
@@ -76,43 +141,13 @@ function onRemove(event, treeId, treeNode) {
         "pId": treeNode.pId,  //父节点
         "name": treeNode.name,
     };
-    var info_json = {
-        "action": "del",
-        "sId": treeNode.id,
-        "pId": treeNode.pId,
-        "tbType": 0,
-        "name": "testname",
-        "shortName": "testshortName",
-        "description": "testdescription",
-        "descriptionEn": "testdescriptionEn",
-        "tbName": "testtbName",
-        "fieldName": "testfieldName",
-        "fieldNo": 123,
-        "isFile": 0,
-        "filePathNo": "testfilePathNo",
-        "storedProcName": "teststoredProcName",
-        "remark": "testremark",
-        "sTamp": "2020-11-12 04:17:43.635664",
-        "queue": 1
-    };
-
-    var data_list = [];
-    data_list.push(info_json);
-    var jsonObj = {
-        "_userId": "",
-        "_userName": "",
-        "_info": JSON.stringify(data_list),
-        "_entity": "123",
-        "_error": "123",
-        "_eInfo": "123"
-    };
-
+    jsonObj = createActionJson(type = "del");
     $.ajax({
         cache: true,
         url: "dataset",
         type: 'post',
         dataType: "json",
-        data: { action: JSON.stringify(jsonObj) },
+        data: { action: jsonObj },
         // timeout: 1000, //超时时间设置，单位毫秒
         success: function (data) {
             layer.msg(data[0].info[0]._einfo);
@@ -173,8 +208,8 @@ function loadFormData(database, treeNode) {
 }
 function createForm(data) {
     for (var val in data) {
-        console.log(val + " " + data[val]);//输出如:name
-        if(val == 'tbtype')
+        // console.log(val + " " + data[val]);//输出如:name
+        if (val == 'tbtype')
             $("#information").append(tbtype);
         else if (val == 'name')
             $("#information").append(name);
@@ -226,7 +261,7 @@ function createForm(data) {
             $('#descriptionen').val(data['descriptionen']);
             $('#tbname').val(data['tbname']);
             $('#fieldname').val(data['fieldname']);
-            data['isfile'] == 1 ? $('#isfile').prop("checked", true): $('#isfile').prop("checked", false);
+            data['isfile'] == 1 ? $('#isfile').prop("checked", true) : $('#isfile').prop("checked", false);
 
             $('#fieldno').val(data['fieldno']);
             $('#filepathno').val(data['filepathno']);
@@ -242,14 +277,15 @@ function createForm(data) {
             // construct info_json
             console.log($('#shortname').val());
             console.log(tree.pTreeNode);
-            alert("ss")
+            // alert("ss")
             layer.close(index);
+            createActionJson(type = "update");
         }
     });
 }
 
 $(document).on('click', '#menu-item-addRoot', function () {
-    hideMenu(); 
+    hideMenu();
     console.log("添加根");
 });
 $(document).on('click', '#menu-item-addTable', function () {
