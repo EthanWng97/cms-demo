@@ -97,15 +97,15 @@ function createActionJson(type, treeNode) {
         "action": type,
         "sId": tree.pTreeNode.id,
         "pId": tree.pTreeNode.pId,
-        "tbType": $('#tbtype').val(),
+        "tbType": parseInt($('#tbtype').val()),
         "name": $('#name').val(),
         "shortName": $('#shortname').val(),
         "description": $('#description').val(),
         "descriptionEn": $('#descriptionen').val(),
         "tbName": $('#tbname').val(),
         "fieldName": $('#fieldname').val(),
-        "fieldNo": $('#fieldno').val(),
-        "isFile": $('#isfile').val(),
+        "fieldNo": parseInt($('#fieldno').val()),
+        "isFile": parseInt($('#isfile').val()),
         "filePathNo": $('#filepathno').val(),
         "storedProcName": $('#storedprocname').val(),
         "remark": $('#remark').val(),
@@ -123,7 +123,6 @@ function createActionJson(type, treeNode) {
         "_error": "123",
         "_eInfo": "123"
     };
-    console.log(JSON.stringify(jsonObj));
     return JSON.stringify(jsonObj);
 
 }
@@ -274,12 +273,25 @@ function createForm(data) {
             $('#price').val("price");
         }
         , yes: function (index, layero) {
-            // construct info_json
-            console.log($('#shortname').val());
-            console.log(tree.pTreeNode);
-            // alert("ss")
+            jsonObj = createActionJson(type = "update");
+            console.log(jsonObj)
+            $.ajax({
+                cache: true,
+                url: "dataset",
+                type: 'post',
+                dataType: "json",
+                data: { action: jsonObj },
+                // timeout: 1000, //超时时间设置，单位毫秒
+                success: function (data) {
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("请求对象XMLHttpRequest: " + XMLHttpRequest);
+                    alert("错误类型textStatus: " + textStatus);
+                    alert("异常对象errorThrown: " + errorThrown);
+                }
+            });
             layer.close(index);
-            createActionJson(type = "update");
         }
     });
 }
