@@ -1583,3 +1583,143 @@ ALTER TABLE [dbo].[eqProOther] ADD  CONSTRAINT [DF_eqProOther_createTime]  DEFAU
 GO
 
 ALTER TABLE [dbo].[eqProOther] ADD  CONSTRAINT [DF_eqProOther_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
+
+
+USE [Ocean]
+GO
+/****** Object:  StoredProcedure [dbo].[springTb_Upp]    Script Date: 26/2/2021 下午 3:24:45 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[springTb_Upp]
+	@sId varchar(36),
+	@tbType int,
+	@name nvarchar(50),
+	@shortName nvarchar(50),
+	@description nvarchar(256),
+	@descriptionEn nvarchar(256),
+	@tbName nvarchar(50),
+	@fieldName nvarchar(50),
+	@fieldNo int,
+	@isFile bit,
+	@filePathNo varchar(36),
+	@storedProcName nvarchar(256),
+	@remark nvarchar(MAX),
+	@modifyUser nvarchar(50),
+	@sTamp timestamp,
+	@error nvarchar(500) OUTPUT
+AS
+
+BEGIN
+	declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50), --语言
+        @position bigint;
+	--错误位置
+	set @procName = 'springTb_Upp';
+	set @language = @error;
+	set @position = 1;
+
+	declare
+        @pId varchar(36),
+        @ctbType varchar(36);
+	select @pId = pId
+	from springTb
+	where sId=@sId;
+
+	--判断与父项的连接是否允许----------
+	exec dbo.SpringCheckRel2 'springTb','tbType',@pId,@tbType,@error output;
+	if @error != '0'
+	return;
+	set @error = @language;
+	-------------------------------------
+	--判断与子项的连接是否允许-----------
+	DECLARE table_cur CURSOR FOR
+	select tbType
+	from springTb
+	where pId=@sId;
+	OPEN table_cur;
+	FETCH NEXT FROM table_cur INTO @ctbType;
+	WHILE @@fetch_status = 0
+	BEGIN
+		exec dbo.SpringCheckRel 'springTb','tbType',@tbType,@CtbType,@error output;
+		if @error != '0'
+			begin
+			CLOSE table_cur;
+			DEALLOCATE table_cur;
+			return;
+		end;
+		set @error = @language;
+		FETCH NEXT FROM table_cur INTO @ctbType;
+	END;
+	CLOSE table_cur;
+	DEALLOCATE table_cur;
+	------------------------------------
+
+	--表名默认与名称相同
+	if @tbType=1 and @tbName is null	
+	set @tbName=@name;
+	if @tbType=1 and @storedProcName is null 	
+	set @storedProcName=@tbName + '_Action';
+
+
+	set @error = '';
+	if @name='' or @name is null   -- 名称不能为空...
+	begin
+		set @position = 1;
+		set @error=dbo.SpringSpTranslation_Error(@procName,@language,@position,'','','','','');
+		return;
+	end;
+
+	if @tbType=1 -- 名称已经存在
+	begin
+		if exists (select *
+		from SpringTb
+		where sId!=@sId and tbType=1 and name=@name)
+	    	begin
+			set @position = 2;
+			if @error=''
+					set @error=dbo.SpringSpTranslation_Error(@procName,@language,@position,@name,'','','','');
+			    else
+			    	set @error=@error+char(10)+dbo.SpringSpTranslation_Error(@procName,@language,@position,@name,'','','','');
+		end;
+	end;
+
+	if @error!=''
+	return;
+
+
+	begin transaction;
+
+	BEGIN TRY
+     Update springTb set
+			tbType=@tbType,
+			name=@name,
+			shortName=@shortName,
+			description=@description,
+			descriptionEn=@descriptionEn,
+			tbName=@tbName,
+			fieldName=@fieldName,
+			fieldNo=@fieldNo,
+			isFile=@isFile,
+			filePathNo=@filePathNo,
+			storedProcName=@storedProcName,
+			remark=@remark,
+			modifyUser=@modifyUser,
+			modifyTime=sysdatetimeoffset()
+         where sId=@sId;    
+     commit transaction;
+      
+     set @error='0';
+END TRY
+
+BEGIN CATCH
+      rollback transaction;
+      --set @error='error:'+ERROR_MESSAGE();
+      set @error = dbo.SpringSpTranslation_Error(@procName,@language,999,Convert(varchar(150),@position),ERROR_MESSAGE(),'','','');
+END CATCH;
+
+END;
+
+
+SET ANSI_NULLS OFF
