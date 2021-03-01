@@ -660,3 +660,21 @@ CALL dbo.springTb_Action(_userId=>'120912', _userName=> 'wangyifan', _info=>'[
 select column_name
 from information_schema.columns
 where table_schema='dbo' and table_name='springtb'
+
+
+CREATE TABLE dbo.springTbTypeRel
+(
+    sId varchar(36) NOT NULL,
+    tbId  varchar(36) NULL,
+    pNo bigint NULL,
+    cNo bigint NULL,
+    name  varchar(50) NULL,
+    description varchar NULL,
+    descriptionEn varchar NULL,
+    Remark varchar NULL,
+    queue bigint NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL
+)

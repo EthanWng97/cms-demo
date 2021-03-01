@@ -31,6 +31,24 @@ csv
 HEADER
 NULL 'NULL';
 
+CREATE TABLE dbo.springTbTypeRel
+(
+    sId varchar(36) NOT NULL,
+    tbId  varchar(36) NULL,
+    pNo bigint NULL,
+    cNo bigint NULL,
+    name  varchar(50) NULL,
+    description varchar NULL,
+    descriptionEn varchar NULL,
+    Remark varchar NULL,
+    queue bigint NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL
+)
+
+
 CREATE TABLE dbo.springField
 (
     sId varchar(36) NOT NULL,
