@@ -65,8 +65,62 @@ CREATE TABLE dbo.springDbInfo(
 	isEdit smallint NULL
 );
 
-COPY dbo.springDbInfo 
+COPY dbo.springDbInfo
 FROM '/postgresql/springDbInfo.csv'
+csv
+HEADER
+NULL 'NULL';
+
+CREATE TABLE dbo.springSpTranslation(
+	sId varchar(36) NOT NULL,
+	spId varchar(36) NULL,
+	language bigint NULL,
+	position bigint NULL,
+	description varchar NULL,
+	descriptionEn varchar NULL,
+	errInfo1 varchar NULL,
+	errAdd1 varchar NULL,
+	errInfo2 varchar NULL,
+	errAdd2 varchar NULL,
+	errInfo3 varchar NULL,
+	errAdd3 varchar NULL,
+	errInfo4 varchar NULL,
+	errAdd4 varchar NULL,
+	errInfo5 varchar NULL,
+	errAdd5 varchar NULL,
+	queue int NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+);
+
+COPY dbo.springSpTranslation
+FROM '/postgresql/springSpTranslation.csv'
+csv
+HEADER
+NULL 'NULL';
+
+CREATE TABLE dbo.springSp
+(
+    sId varchar(36) NOT NULL,
+    tbId varchar(36) NOT NULL,
+    name varchar(50) NOT NULL,
+    description varchar NULL,
+    descriptionEn varchar NULL,
+    type int NULL,
+    remark varchar NULL,
+    queue int NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+);
+
+COPY dbo.springSp
+FROM '/postgresql/springSp.csv'
 csv
 HEADER
 NULL 'NULL';
