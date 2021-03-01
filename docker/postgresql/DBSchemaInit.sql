@@ -49,6 +49,12 @@ CREATE TABLE dbo.springTbTypeRel
     sTamp varchar NULL
 );
 
+COPY dbo.springtbtyperel 
+FROM '/postgresql/springTbTypeRel.csv'
+csv
+HEADER
+NULL 'NULL';
+
 
 CREATE TABLE dbo.springField
 (
