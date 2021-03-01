@@ -1723,3 +1723,537 @@ END;
 
 
 SET ANSI_NULLS OFF
+
+
+USE [OceanCms]
+GO
+/****** Object:  StoredProcedure [dbo].[springCheckRel]    Script Date: 1/3/2021 上午 10:41:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		ocean
+-- Create date: 20121020
+-- Description:	判断关联是否合法
+--              用在修改中，判断当前的修改是否影响与子节点的关联
+--表名、分类类型、父类型值,子类型值、返回值
+-- =============================================
+ALTER PROCEDURE [dbo].[springCheckRel]
+	    @editTbName nvarchar(50),
+        @typeName nvarchar(50),
+        @pType bigint,
+        @cType bigint,
+        @error nvarchar(500) output
+AS
+BEGIN
+
+
+
+declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;          --错误位置
+set @procName = 'SpringCheckRel';
+set @language = @error;
+set @position = 1;
+
+DECLARE @Count int;
+
+DECLARE @PName nvarchar(50),
+        @CName nvarchar(50);
+
+select @editTbName,@typeName,@pType,@cType
+
+--如果REL定义为空，不判断关联
+select @Count = count(*) from dbo.springTbTypeRel where tbID in 
+			 (select sId from dbo.springTb where Name = @editTbName);
+if @Count =0
+begin
+	set @error = '0';
+	return;
+end;
+
+if (@pType is null and @cType is null)
+	select @Count = count(*) from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = @editTbName)
+				 and pNO is null and cNO is null;
+else if (@pType is null and not(@cType is null))
+	select @Count = count(*) from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = @editTbName)
+				 and pNO is null and cNO = @cType;
+else if (not(@pType is null) and @cType is null)
+	select @Count = count(*) from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = @editTbName)
+				 and pNO= @pType and cNO is null;
+else
+	select @Count = count(*) from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = @editTbName)
+				 and pNO = @pType and cNO = @cType;
+    
+if @Count = 0
+   begin
+       if @pType is null
+           set @pName = 'Root';
+       else
+		   set @pName=dbo.SpringFdNameByNo(@language,@editTbName,@typeName,@pType);
+	   
+       set @CName = dbo.SpringFdNameByNo(@language,@editTbName,@typeName,@cType);
+       --不能添加[PName->CName]的连接...
+        set @error =  dbo.SpringSpTranslation_Error(@procName,@language,@position,@PName,@CName,'','','');
+   end;
+else
+   set @error = '0';
+END
+
+
+USE [OceanCms]
+GO
+/****** Object:  StoredProcedure [dbo].[springCheckRel2]    Script Date: 1/3/2021 上午 10:43:14 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		ocean
+-- Create date: 20121020
+-- Description:	判断当前修改的节点与父亲的关联是否合法
+--              用在添加、修改、粘贴处理中
+--表名、分类类型、父ID,子类型值、返回值
+-- =============================================
+ALTER PROCEDURE [dbo].[springCheckRel2]
+	    @editTbName nvarchar(50),
+        @typeName nvarchar(50),
+        @pId varchar(36),
+        @cType bigint,
+        @error nvarchar(500) output
+AS
+BEGIN
+
+declare @procName nvarchar(50),    --存储过程名称
+        @language nvarchar(50),    --语言代码
+        @position bigint;          --错误位置
+set @procName = 'SpringCheckRel2';
+set @language = @error;
+set @position = 1;
+
+
+DECLARE @pType bigint,
+        @sql nvarchar(4000),
+        @Count int;
+
+if @pId is null
+	set @pType = null;
+else
+    begin
+		set @sql = 'select @pType=' + @typeName + ' from ' + @editTbName + ' where sId=''' + @pId +'''';
+        EXEC sp_executesql @sql,N'@pType bigint output',@pType output;
+    end;
+
+exec dbo.SpringCheckRel
+	    @editTbName,
+        @typeName,
+        @pType,
+        @cType,
+        @error output;
+END
+
+
+USE [OceanCms]
+GO
+/****** Object:  UserDefinedFunction [dbo].[SpringSpTranslation_Error]    Script Date: 1/3/2021 上午 10:47:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		dengzw
+-- Create date: 2010-02-28
+-- Description:	根据存储过程名称，国家编码，位置，5个添加的变量，取得返回错误提示
+-- 约定：存储过程中@error默认输入的是国家代码
+-- =============================================
+ALTER FUNCTION [dbo].[SpringSpTranslation_Error] 
+(
+	@procName nvarchar(50),
+    @language nvarchar(50),
+    @position bigint,
+    @errAdd1 nvarchar(255),
+	@errAdd2 nvarchar(255),
+	@errAdd3 nvarchar(255),
+	@errAdd4 nvarchar(255),
+	@errAdd5 nvarchar(255)
+)
+RETURNS nvarchar(500)
+AS
+BEGIN
+    if @language =''
+		set @language=null;
+		
+	if @errAdd1 is null
+	   set @errAdd1='';
+	if @errAdd2 is null
+	   set @errAdd2='';
+	if @errAdd3 is null
+	   set @errAdd3='';
+	if @errAdd4 is null
+	   set @errAdd4='';
+	if @errAdd5 is null
+	   set @errAdd5='';
+
+
+	-- 取得语言编码
+	DECLARE @errInfo1 nvarchar(255),
+			@errInfo2 nvarchar(255),
+			@errInfo3 nvarchar(255),
+			@errInfo4 nvarchar(255),
+			@errInfo5 nvarchar(255),
+            @Return nvarchar(500),
+            @isEdit bit;
+            
+    select @isEdit=isEdit from dbo.springDbInfo;
+    if  @isEdit is null
+        set @isEdit=0;
+
+    if @language is null
+		select  @errInfo1 = errInfo1,
+				@errInfo2 = errInfo2,
+				@errInfo3 = errInfo3,
+				@errInfo4 = errInfo4,
+				@errInfo5 = errInfo5
+			from    dbo.springSpTranslation sptrn 
+				inner join dbo.SpringSp sp on sptrn.spId=sp.sId
+			where  sp.name=@procName and sptrn.language is null and sptrn.Position = @position;
+    else
+		select  @errInfo1 = errInfo1,
+				@errInfo2 = errInfo2,
+				@errInfo3 = errInfo3,
+				@errInfo4 = errInfo4,
+				@errInfo5 = errInfo5
+			from    dbo.springSpTranslation sptrn 
+				inner join dbo.SpringSp sp on sptrn.spId=sp.sId
+			where  sp.name=@procName and sptrn.language = @language and sptrn.Position = @position;
+    
+   DECLARE  @languageCode nvarchar(50);
+    
+    if @errInfo1 is null and @errInfo2 is null and @errInfo3 is null and @errInfo4 is null and @errInfo5 is null
+		begin
+		    if @language is null
+				set @language='默认';
+
+				return 'Stored procedure['+@procName+']:language['+@language+',]position[' + Convert(nvarchar(50),@position)+'],Undefined Translation!';	
+        end;
+        
+        
+	if @errInfo1 is null
+		set @errInfo1 = '';
+	if @errInfo2 is null
+		set @errInfo2 = '';
+	if @errInfo3 is null
+		set @errInfo3 = '';
+	if @errInfo4 is null
+		set @errInfo4 = '';
+	if @errInfo5 is null
+		set @errInfo5 = '';
+    
+   if @isEdit=1 
+	   set @Return = 'Stored procedure['+@procName+']:' + @errInfo1 + @errAdd1 + @errInfo2 + @errAdd2 + @errInfo3 + @errAdd3 +@errInfo4 + @errAdd4 + @errInfo5 + @errAdd5;
+   else	 
+       set @Return = @errInfo1 + @errAdd1 + @errInfo2 + @errAdd2 + @errInfo3 + @errAdd3 +@errInfo4 + @errAdd4 + @errInfo5 + @errAdd5;  
+
+   return @Return;
+END
+
+
+USE [OceanCms]
+GO
+
+/****** Object:  Table [dbo].[springTbTypeRel]    Script Date: 1/3/2021 上午 10:52:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[springTbTypeRel]
+(
+	[sId] [varchar](36) NOT NULL,
+	[tbId] [varchar](36) NULL,
+	[pNo] [bigint] NULL,
+	[cNo] [bigint] NULL,
+	[name] [nvarchar](50) NULL,
+	[description] [nvarchar](256) NULL,
+	[descriptionEn] [nvarchar](256) NULL,
+	[Remark] [nvarchar](max) NULL,
+	[queue] [bigint] NULL,
+	[createUser] [varchar](36) NULL,
+	[createTime] [datetimeoffset](7) NULL,
+	[modifyUser] [varchar](36) NULL,
+	[modifyTime] [datetimeoffset](7) NULL,
+	[sTamp] [timestamp] NULL,
+	CONSTRAINT [PK_Sys_Type_Rel] PRIMARY KEY CLUSTERED 
+(
+	[sId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[springTbTypeRel] ADD  CONSTRAINT [DF_springTypeRel_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+ALTER TABLE [dbo].[springTbTypeRel] ADD  CONSTRAINT [DF_springTypeRel_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'description'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'中文介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'descriptionEn'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'备注' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'Remark'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'显示顺序' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'queue'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'createUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'createTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'modifyUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'modifyTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'时间戳' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springTbTypeRel', @level2type=N'COLUMN',@level2name=N'sTamp'
+GO
+
+
+USE [OceanCms]
+GO
+
+/****** Object:  Table [dbo].[springDbInfo]    Script Date: 1/3/2021 上午 10:57:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[springDbInfo](
+	[sId] [varchar](36) NOT NULL,
+	[sysDB] [bit] NULL,
+	[name] [nvarchar](50) NULL,
+	[description] [nvarchar](256) NULL,
+	[descriptionEn] [nvarchar](256) NULL,
+	[Version] [nvarchar](256) NULL,
+	[isEdit] [bit] NULL,
+ CONSTRAINT [PK_springDbInfo] PRIMARY KEY CLUSTERED 
+(
+	[sId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'系统数据库，1-是,0-否' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springDbInfo', @level2type=N'COLUMN',@level2name=N'sysDB'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'数据库名称' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springDbInfo', @level2type=N'COLUMN',@level2name=N'name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'数据库描述' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springDbInfo', @level2type=N'COLUMN',@level2name=N'description'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'数据库英文描述' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springDbInfo', @level2type=N'COLUMN',@level2name=N'descriptionEn'
+GO
+
+
+USE [OceanCms]
+GO
+
+/****** Object:  Table [dbo].[springSpTranslation]    Script Date: 1/3/2021 上午 10:59:42 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[springSpTranslation](
+	[sId] [varchar](36) NOT NULL,
+	[spId] [varchar](36) NULL,
+	[language] [bigint] NULL,
+	[position] [bigint] NULL,
+	[description] [nvarchar](256) NULL,
+	[descriptionEn] [nvarchar](256) NULL,
+	[errInfo1] [nvarchar](256) NULL,
+	[errAdd1] [nvarchar](256) NULL,
+	[errInfo2] [nvarchar](256) NULL,
+	[errAdd2] [nvarchar](256) NULL,
+	[errInfo3] [nvarchar](256) NULL,
+	[errAdd3] [nvarchar](256) NULL,
+	[errInfo4] [nvarchar](256) NULL,
+	[errAdd4] [nvarchar](256) NULL,
+	[errInfo5] [nvarchar](256) NULL,
+	[errAdd5] [nvarchar](256) NULL,
+	[queue] [int] NULL,
+	[createUser] [varchar](36) NULL,
+	[createTime] [datetimeoffset](7) NULL,
+	[modifyUser] [varchar](36) NULL,
+	[modifyTime] [datetimeoffset](7) NULL,
+	[sTamp] [timestamp] NULL,
+ CONSTRAINT [PK_Sys_StoredProc_Translation] PRIMARY KEY CLUSTERED 
+(
+	[sId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[springSpTranslation] ADD  CONSTRAINT [DF_springSpTranslation_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+ALTER TABLE [dbo].[springSpTranslation] ADD  CONSTRAINT [DF_springSpTranslation_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'存储过程' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'spId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'语言内码' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'language'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'位置' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'position'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'description'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'descriptionEn'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'说明1' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errInfo1'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'加入1' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errAdd1'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'说明2' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errInfo2'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'加入2' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errAdd2'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'说明3' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errInfo3'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'加入3' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errAdd3'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'说明4' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errInfo4'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'加入4' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errAdd4'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'说明5' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errInfo5'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'加入5' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'errAdd5'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'排序' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'queue'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'createUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'createTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'modifyUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'modifyTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'时间戳' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSpTranslation', @level2type=N'COLUMN',@level2name=N'sTamp'
+GO
+
+
+
+USE [OceanCms]
+GO
+
+/****** Object:  Table [dbo].[springSp]    Script Date: 1/3/2021 上午 11:04:17 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[springSp]
+(
+	[sId] [varchar](36) NOT NULL,
+	[tbId] [varchar](36) NOT NULL,
+	[name] [nvarchar](50) NOT NULL,
+	[description] [nvarchar](256) NULL,
+	[descriptionEn] [nvarchar](256) NULL,
+	[type] [int] NULL,
+	[remark] [nvarchar](max) NULL,
+	[queue] [int] NULL,
+	[createUser] [varchar](36) NULL,
+	[createTime] [datetimeoffset](7) NULL,
+	[modifyUser] [varchar](36) NULL,
+	[modifyTime] [datetimeoffset](7) NULL,
+	[sTamp] [timestamp] NULL,
+	CONSTRAINT [PK_Sys_StoredProcedures] PRIMARY KEY CLUSTERED 
+(
+	[sId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[springSp] ADD  CONSTRAINT [DF_SpringSp_createTime]  DEFAULT (getdate()) FOR [createTime]
+GO
+
+ALTER TABLE [dbo].[springSp] ADD  CONSTRAINT [DF_SpringSp_modifyTime]  DEFAULT (getdate()) FOR [modifyTime]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'自增主键' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'sId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'对应表的ID号' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'tbId'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'名称' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'description'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'中文介绍' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'descriptionEn'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'存储过程类型' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'type'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'备注' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'remark'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'排序' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'queue'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'createUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'创建时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'createTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改人' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'modifyUser'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'修改时间' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'modifyTime'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'时间戳' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'springSp', @level2type=N'COLUMN',@level2name=N'sTamp'
+GO
+
+
