@@ -26,7 +26,7 @@ sTamp varchar NULL
 );
 
 COPY dbo.springtb 
-FROM '/postgresql/springtb.csv'
+FROM '/postgresql/springTb.csv'
 csv
 HEADER
 NULL 'NULL';
@@ -46,7 +46,7 @@ CREATE TABLE dbo.springTbTypeRel
     createTime timestamp with time zone NULL,
     modifyUser varchar(36) NULL,
     modifyTime timestamp with time zone NULL
-)
+);
 
 
 CREATE TABLE dbo.springField

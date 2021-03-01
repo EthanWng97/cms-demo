@@ -11,7 +11,7 @@ ENV POSTGRES_DB postgres
 RUN mkdir postgresql
 
 COPY DBSchemaInit.sql ./docker-entrypoint-initdb.d/DBSchemaInit.sql
-COPY postgresql/springtb.csv ./postgresql/springtb.csv
+COPY postgresql ./postgresql
 
 RUN /etc/init.d/postgresql start
 
