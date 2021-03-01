@@ -1,0 +1,4 @@
+﻿sId,tbId,pNo,cNo,name,description,descriptionEn,Remark,queue,createUser,createTime,modifyUser,modifyTime,sTamp
+2dccb081-ba76-408c-84f1-dfa13e7e3c23,378ea5cb-0916-4cbc-a10c-8742d36e3d1c,0,0,文件夹->文件夹,文件夹->文件夹,NULL,NULL,2,,2012-10-15 10:59:43.0221957 +08:00,,2012-11-07 08:58:43.6681473 +08:00,0x00000000000007EA
+2f094be3-c8ed-4e69-aa99-a85699860bed,378ea5cb-0916-4cbc-a10c-8742d36e3d1c,0,1,文件夹->表,文件夹->表,NULL,NULL,3,,2012-10-15 10:59:43.0461971 +08:00,,2012-10-15 10:59:43.0461971 +08:00,0x00000000000007EB
+cfb9be85-5b00-4edf-bbc8-673fa6c3a194,378ea5cb-0916-4cbc-a10c-8742d36e3d1c,NULL,0,Null->文件夹,Null->文件夹,NULL,NULL,1,,2012-10-15 10:59:43.0211957 +08:00,,2012-10-15 10:59:43.0211957 +08:00,0x00000000000007EC
