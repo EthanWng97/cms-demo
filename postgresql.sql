@@ -676,5 +676,6 @@ CREATE TABLE dbo.springTbTypeRel
     createUser varchar(36) NULL,
     createTime timestamp with time zone NULL,
     modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
 )
