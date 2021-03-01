@@ -55,6 +55,21 @@ csv
 HEADER
 NULL 'NULL';
 
+CREATE TABLE dbo.springDbInfo(
+	sId varchar(36) NOT NULL,
+	sysDB smallint NULL,
+	name varchar(50) NULL,
+	description varchar NULL,
+	descriptionEn varchar NULL,
+	Version varchar NULL,
+	isEdit smallint NULL
+);
+
+COPY dbo.springDbInfo 
+FROM '/postgresql/springDbInfo.csv'
+csv
+HEADER
+NULL 'NULL';
 
 CREATE TABLE dbo.springField
 (
