@@ -759,3 +759,65 @@ BEGIN
    return _Return;
 END;
 $_Return$ LANGUAGE plpgsql;
+
+CREATE or REPLACE PROCEDURE dbo.springCheckRel(
+	    IN _editTbName varchar(50),
+        IN _typeName varchar(50),
+        IN _pType bigint,
+        IN _cType bigint,
+        INOUT _error varchar
+)
+AS $$
+declare 
+    _procName varchar := 'SpringCheckRel';    --存储过程名称
+    _language varchar := _error;   --语言代码
+    _position bigint := 1;          --错误位置
+    _Count int;
+    _PName varchar;
+    _CName varchar;
+
+BEGIN
+
+
+select _editTbName,_typeName,_pType,_cType;
+
+--如果REL定义为空，不判断关联
+select count(*) into _Count from dbo.springTbTypeRel where tbID in 
+			 (select sId from dbo.springTb where Name = _editTbName);
+if _Count =0 Then
+	_error := '0';
+	return;
+end if;
+
+if (_pType is null and _cType is null) Then
+	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = _editTbName)
+				 and pNO is null and cNO is null;
+ELSIF (_pType is null and not(_cType is null)) Then
+	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = _editTbName)
+				 and pNO is null and cNO = _cType;
+ELSIF (not(_pType is null) and _cType is null) Then
+	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = _editTbName)
+				 and pNO= _pType and cNO is null;
+else
+	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
+				 (select sId from dbo.springTb where Name = _editTbName)
+				 and pNO = _pType and cNO = _cType;
+end if;
+if _Count = 0 Then
+    if _pType is null Then
+            _pName := 'Root';
+    else
+		_pName:=dbo.SpringFdNameByNo(_language,_editTbName,_typeName,_pType);
+	   
+        _CName = dbo.SpringFdNameByNo(_language,_editTbName,_typeName,_cType);
+       --不能添加[PName->CName]的连接...
+        _error :=  dbo.SpringSpTranslation_Error(@procName,@language,@position,@PName,@CName,'','','');
+   end if;
+else
+    _error := '0';
+end if;
+END
+$$ LANGUAGE plpgsql;                        
