@@ -820,4 +820,40 @@ else
     _error := '0';
 end if;
 END
-$$ LANGUAGE plpgsql;                        
+$$ LANGUAGE plpgsql;
+
+
+CREATE or REPLACE PROCEDURE dbo.springCheckRel2(
+	    IN _editTbName varchar(50),
+        IN _typeName varchar(50),
+        IN _pId varchar(36),
+        IN _cType bigint,
+        INOUT _error varchar
+)
+AS $$
+
+declare _procName varchar := 'SpringCheckRel2';    --存储过程名称
+        _language varchar := _error;    --语言代码
+        _position bigint := 1;          --错误位置
+        _pType bigint;
+        _sql varchar;
+        _Count int;
+
+BEGIN
+
+if _pId is null Then
+	_pType := null;
+else
+    select _typeName into _pType from _editTbName where sId = _pId;
+	-- _sql := 'select @pType=' || @typeName || ' from ' || @editTbName || ' where sId=''' || @pId || '''';
+    -- EXEC sp_executesql @sql,N'@pType bigint output',@pType output;
+end if;
+
+CALL dbo.SpringCheckRel(
+	    _editTbName,
+        _typeName,
+        _pType,
+        _cType,
+        _error);
+END;
+$$ LANGUAGE plpgsql;
