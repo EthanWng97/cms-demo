@@ -857,3 +857,48 @@ CALL dbo.SpringCheckRel(
         _error);
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dbo.SpringFdNameByNo
+(
+    _language bigint,
+    _tbName varchar(50),
+    _field varchar(50),
+    _no bigint
+) 
+RETURNS varchar(50) as $_Name$
+
+declare _Name varchar(50);
+        _mID varchar(36);
+        _mCopyID varchar(36);
+        _MapTreeID varchar(36);
+BEGIN
+    _Name:='';
+    select m.sId, m.copyID, mapTreeID into _mID, _mCopyID, _MapTreeID
+    from dbo.springTb as tab inner join dbo.springFdList_m as m on tab.sId = m.tbID
+        inner join dbo.springField as field on m.fdId = field.sId
+    where tab.Name = _tbName and field.name = _Field;
+
+    if _mID is null Then
+		return null;
+    end if;
+
+    if _mCopyID is null and not(_MapTreeID is null) Then
+        _mID:=MapTreeID;
+    ELSIF not(@mCopyID is null) and @MapTreeID is null Then
+		_mID:=mCopyID;
+    end if;
+
+    if _language is null Then
+	    select _Name = (case when trn.name is null then d.name else trn.name end)
+    from dbo.springFdList_d as d
+        left outer join dbo.springTranslation as trn on d.sId=trn.sId and trn.language is null
+    where d.mId = _mID and d.no = _no;
+	else	
+		 select _Name = (case when trn.name is null then d.name else trn.name end)
+    from dbo.springFdList_d as d
+        left outer join dbo.springTranslation as trn on d.sId=trn.sId and trn.language = _language
+    where d.mId = _mID and d.no = _no;
+    end if;
+    return _Name;
+END;
+$_Name$ LANGUAGE plpgsql;
