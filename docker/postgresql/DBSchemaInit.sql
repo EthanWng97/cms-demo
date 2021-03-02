@@ -670,3 +670,92 @@ BEGIN
             _eInfo:= concat('error in main procedure: ',_eInfo);
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dbo.SpringSpTranslation_Error
+(
+	_procName varchar(50),
+    _language varchar(50),
+    _position bigint,
+    _errAdd1 varchar,
+	_errAdd2 varchar,
+	_errAdd3 varchar,
+	_errAdd4 varchar,
+	_errAdd5 varchar
+)
+RETURNS varchar as $_Return$
+	-- 取得语言编码
+	DECLARE _errInfo1 varchar;
+			_errInfo2 varchar;
+			_errInfo3 varchar;
+			_errInfo4 varchar;
+			_errInfo5 varchar;
+            _Return varchar;
+            _isEdit smallint;
+			_languageCode varchar(50);
+BEGIN
+    if _language ='' Then
+		_language:=null;
+	end if;
+	if _errAdd1 is null Then
+	    _errAdd1:='';
+    end if;
+	if _errAdd2 is null Then
+	    _errAdd2:='';
+	end if;
+    if _errAdd3 is null Then
+	    _errAdd3:='';
+	end if;
+    if _errAdd4 is null Then
+	    _errAdd4:='';
+	end if;
+    if _errAdd5 is null Then
+	    _errAdd5:='';
+    end if;
+
+    select isEdit into _isEdit from dbo.springDbInfo;
+    if  _isEdit is null Then
+        _isEdit:=0;
+    end if;
+
+    if _language is null Then
+		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    dbo.springSpTranslation as sptrn 
+				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
+			where  sp.name=_procName and sptrn.language is null and sptrn.Position = _position;
+    else
+		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    dbo.springSpTranslation as sptrn 
+				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
+			where  sp.name=_procName and sptrn.language = _language and sptrn.Position = _position;
+    end if;
+    if _errInfo1 is null and _errInfo2 is null and _errInfo3 is null and _errInfo4 is null and _errInfo5 is null Then
+		    if _language is null Then
+				_language:='默认';
+            end if;
+			return 'Stored procedure[' || _procName || ']:language[' || _language+',]position['  || _position  || '],Undefined Translation!';	
+    end if;
+        
+        
+	if _errInfo1 is null Then
+		_errInfo1 := '';
+    end if;
+	if _errInfo2 is null Then
+		_errInfo2 := '';
+    end if;
+	if _errInfo3 is null Then
+		_errInfo3 := '';
+	end if;
+    if _errInfo4 is null Then
+		_errInfo4 := '';
+	end if;
+    if _errInfo5 is null Then
+		_errInfo5 := '';
+    end if;
+   if _isEdit=1 Then
+	    _Return := 'Stored procedure[' || _procName || ']:' || _errInfo1 || _errAdd1 || _errInfo2 || _errAdd2 || _errInfo3 || _errAdd3 || _errInfo4 || _errAdd4 || _errInfo5 || _errAdd5;
+   else	 
+       _Return = _errInfo1 || _errAdd1 || _errInfo2 || _errAdd2 || _errInfo3 || _errAdd3 || _errInfo4 || _errAdd4 || _errInfo5 || _errAdd5;  
+	end if;
+   return _Return;
+END;
+$_Return$ LANGUAGE plpgsql;
