@@ -125,6 +125,88 @@ csv
 HEADER
 NULL 'NULL';
 
+CREATE TABLE dbo.springFdList_m
+(
+    sId varchar(36) NOT NULL,
+    tbId varchar(36) NULL,
+    fdId varchar(36) NULL,
+    name varchar(50) NULL,
+    isTree smallint NULL,
+    description varchar NULL,
+    descriptionEn varchar NULL,
+    copyId varchar(36) NULL,
+    mapTreeId varchar(36) NULL,
+    mapTreeLevel int NULL,
+    addWhere varchar NULL,
+    isTypeRel smallint NULL,
+    remark varchar NULL,
+    queue int NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+);
+
+COPY dbo.springFdList_m
+FROM '/postgresql/springFdList_m.csv'
+csv
+HEADER
+NULL 'NULL';
+
+CREATE TABLE dbo.springFdList_d
+(
+    sId varchar(36) NOT NULL,
+    mId varchar(36) NULL,
+    pId varchar(36) NULL,
+    no bigint NULL,
+    pathNo varchar NULL,
+    code varchar(50) NULL,
+    pathCode varchar NULL,
+    name varchar(50) NULL,
+    isDefault smallint NULL,
+    description varchar NULL,
+    descriptionEn varchar NULL,
+    remark varchar NULL,
+    treeLevel int NULL,
+    queue int NULL,
+    isDel smallint NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+);
+
+COPY dbo.springFdList_d
+FROM '/postgresql/springFdList_d.csv'
+csv
+HEADER
+NULL 'NULL';
+
+CREATE TABLE dbo.springTranslation
+(
+    tbName varchar(50) NULL,
+    path varchar(256) NULL,
+    sId varchar(36) NOT NULL,
+    language bigint NULL,
+    name varchar(50) NULL,
+    description varchar(256) NULL,
+    descriptionEn varchar(256) NULL,
+    remark varchar NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL
+);
+
+COPY dbo.springTranslation
+FROM '/postgresql/springTranslation.csv'
+csv
+HEADER
+NULL 'NULL';
+
 CREATE TABLE dbo.springField
 (
     sId varchar(36) NOT NULL,
