@@ -896,7 +896,7 @@ if _Count = 0 Then
 	   
         _CName = dbo.SpringFdNameByNo(_language,_editTbName,_typeName,_cType);
        --不能添加[PName->CName]的连接...
-        _error :=  dbo.SpringSpTranslation_Error(@procName,@language,@position,@PName,@CName,'','','');
+        _error :=  dbo.SpringSpTranslation_Error(_procName,_language,_position,_PName,_CName,'','','');
    end if;
 else
     _error := '0';
@@ -966,7 +966,7 @@ BEGIN
 
     if _mCopyID is null and not(_MapTreeID is null) Then
         _mID:=MapTreeID;
-    ELSIF not(@mCopyID is null) and @MapTreeID is null Then
+    ELSIF not(_mCopyID is null) and _MapTreeID is null Then
 		_mID:=mCopyID;
     end if;
 
@@ -984,3 +984,117 @@ BEGIN
     return _Name;
 END;
 $_Name$ LANGUAGE plpgsql;
+
+CREATE or REPLACE PROCEDURE dbo.springTb_Upp(
+    INOUT _sId varchar(36),
+    IN _pId varchar(36),
+    IN _tbType int,
+	IN _name varchar(50),
+	IN _shortName varchar(50),
+	IN _description varchar,
+	IN _descriptionEn varchar,
+	IN _tbName varchar(50),
+	IN _fieldName varchar(50),
+	IN _fieldNo int,
+	IN _isFile smallint,
+	IN _filePathNo varchar(36),
+	IN _storedProcName varchar,
+	IN _remark varchar,
+	IN _modifyUser varchar,
+    INOUT _error varchar,
+    INOUT _eInfo varchar
+)
+AS $$
+
+DECLARE 
+    _procName varchar(50) := 'springTb_Upp';    --存储过程名称
+    _language varchar(50):= _error;    --语言代码
+    _position bigint := 1;     --错误位置
+
+    _ctbType int;
+
+    _count int;
+    _pId varchar(36);
+    _tabname varchar;
+    _queue int;
+	_tmp varchar;
+
+BEGIN
+	--判断与父项的连接是否允许t----------
+    CALL dbo.SpringCheckRel2('springTb', 'tbType', _pId, _tbType, _eInfo);
+    if _eInfo != '0' THEN
+		return;
+	end if;
+	-------------------------------------
+	--判断与子项的连接是否允许-----------
+    for _ctbType in select tbType from dbo.springTb where pId=_sId
+    loop
+    	CALL dbo.SpringCheckRel('springTb', 'tbType', _tbType, _ctbType, _eInfo);
+		if _eInfo != '0' Then
+			return;
+		end if;
+		_error = _language;
+    END LOOP;
+	------------------------------------
+
+	--表名默认与名称相同
+	if _tbType=1 and _tbName is null Then
+	    _tbName:=_name;
+    end if;
+	if _tbType=1 and _storedProcName is null Then
+	_storedProcName:=_tbName || '_Action';
+    end if;
+
+    _error := '';
+	if _name='' or _name is null Then  -- 名称不能为空...
+		_position = 1;
+		_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,'','','','','');
+		return;
+	end if;
+
+	if _tbType=1 Then-- 名称已经存在
+		if exists (select *
+		from SpringTb
+		where sId!=_sId and tbType=1 and name=_name) Then
+			_position := 2;
+			if _error='' Then
+					_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+			    else
+			    	_error:=_error || chr(10) || dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+			end if;
+		end if;
+	end if;
+
+	if _error!='' Then
+	return;
+    end if;
+
+    Update springTb set
+			tbType=_tbType,
+			name=_name,
+			shortName=_shortName,
+			description=_description,
+			descriptionEn=_descriptionEn,
+			tbName=_tbName,
+			fieldName=_fieldName,
+			fieldNo=_fieldNo,
+			isFile=_isFile,
+			filePathNo=_filePathNo,
+			storedProcName=_storedProcName,
+			remark=_remark,
+			modifyUser=_modifyUser,
+			modifyTime=now()
+         where sId=_sId;
+
+    _error:='00000';
+    _eInfo:= 'successful update';
+
+    exception
+        When Others Then
+            rollback;
+            get stacked diagnostics _eInfo:= MESSAGE_TEXT,
+                                    _error:= RETURNED_SQLSTATE;
+            _eInfo:= concat('error in delete procedure: ',_eInfo);
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
