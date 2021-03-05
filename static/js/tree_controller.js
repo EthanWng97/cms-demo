@@ -105,7 +105,7 @@ function createActionJson(type, treeNode) {
         "tbName": $('#tbname').val(),
         "fieldName": $('#fieldname').val(),
         "fieldNo": parseInt($('#fieldno').val()),
-        "isFile": parseInt($('#isfile').val()),
+        "isFile": $("input:checkbox[name='isfile']:checked")? 1:0,
         "filePathNo": $('#filepathno').val(),
         "storedProcName": $('#storedprocname').val(),
         "remark": $('#remark').val(),
@@ -270,10 +270,9 @@ function createForm(data) {
             $('#createtime').val(data['createtime']);
             $('#modifyuser').val(data["modifyuser"]);
             $('#modifytime').val(data["modifytime"]);
-            $('#price').val("price");
         }
         , yes: function (index, layero) {
-            jsonObj = createActionJson(type = "update");
+            jsonObj = createActionJson(type = "upp");
             console.log(jsonObj)
             $.ajax({
                 cache: true,
