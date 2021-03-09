@@ -13,7 +13,7 @@ descriptionEn varchar(256) NULL,
 tbName varchar(50) NULL,
 fieldName varchar(50) NULL,
 fieldNo int NULL,
-isFile smallint NULL,
+isFile int NULL,
 filePathNo varchar(36) NULL,
 storedProcName varchar(256) NULL,
 remark varchar NULL,
@@ -57,12 +57,12 @@ NULL 'NULL';
 
 CREATE TABLE dbo.springDbInfo(
 	sId varchar(36) NOT NULL,
-	sysDB smallint NULL,
+	sysDB int NULL,
 	name varchar(50) NULL,
 	description varchar NULL,
 	descriptionEn varchar NULL,
 	Version varchar NULL,
-	isEdit smallint NULL
+	isEdit int NULL
 );
 
 COPY dbo.springDbInfo
@@ -74,7 +74,7 @@ NULL 'NULL';
 CREATE TABLE dbo.springSpTranslation(
 	sId varchar(36) NOT NULL,
 	spId varchar(36) NULL,
-	language bigint NULL,
+	language varchar NULL,
 	position bigint NULL,
 	description varchar NULL,
 	descriptionEn varchar NULL,
@@ -131,14 +131,14 @@ CREATE TABLE dbo.springFdList_m
     tbId varchar(36) NULL,
     fdId varchar(36) NULL,
     name varchar(50) NULL,
-    isTree smallint NULL,
+    isTree int NULL,
     description varchar NULL,
     descriptionEn varchar NULL,
     copyId varchar(36) NULL,
     mapTreeId varchar(36) NULL,
     mapTreeLevel int NULL,
     addWhere varchar NULL,
-    isTypeRel smallint NULL,
+    isTypeRel int NULL,
     remark varchar NULL,
     queue int NULL,
     createUser varchar(36) NULL,
@@ -164,13 +164,13 @@ CREATE TABLE dbo.springFdList_d
     code varchar(50) NULL,
     pathCode varchar NULL,
     name varchar(50) NULL,
-    isDefault smallint NULL,
+    isDefault int NULL,
     description varchar NULL,
     descriptionEn varchar NULL,
     remark varchar NULL,
     treeLevel int NULL,
     queue int NULL,
-    isDel smallint NULL,
+    isDel int NULL,
     createUser varchar(36) NULL,
     createTime timestamp with time zone NULL,
     modifyUser varchar(36) NULL,
@@ -211,27 +211,27 @@ CREATE TABLE dbo.springField
 (
     sId varchar(36) NOT NULL,
     tbId varchar(36) NULL,
-    isField smallint NULL,
+    isField int NULL,
     name varchar(50) NULL,
     description varchar(256) NULL,
     descriptionEn varchar(256) NULL,
     fdType varchar(50) NULL,
     length bigint NULL,
     decimal bigint NULL,
-    isNullable smallint NULL,
-    isUseable smallint NULL,
-    isForeignKey smallint NULL,
+    isNullable int NULL,
+    isUseable int NULL,
+    isForeignKey int NULL,
     fkTbId varchar(36) NULL,
     fkFieldId varchar(36) NULL,
     defaultValue varchar(500) NULL,
     uiType int NULL,
     uiMask varchar(100) NULL,
-    uiVisible smallint NULL,
-    uiReadOnly smallint NULL,
+    uiVisible int NULL,
+    uiReadOnly int NULL,
     uiWidth int NULL,
     uiDefault varchar(200) NULL,
-    isAddField smallint NULL,
-    isEditField smallint NULL,
+    isAddField int NULL,
+    isEditField int NULL,
     orderType int NULL,
     remark varchar NULL,
     queue int NULL,
@@ -271,7 +271,7 @@ BEGIN
     where pId=_sId;
 
     if _count>0 Then
-        _error:='00000';
+        _error :='00000';
         _eInfo :='请先删除子项表。';
         return;
     END IF;
@@ -342,7 +342,7 @@ DECLARE
     _rowoutput jsonb;
     -- parameter list
     _pId varchar;
-    _tbType smallint;
+    _tbType int;
     _name varchar(50);
     _shortName varchar(50);
     _description varchar;
@@ -350,7 +350,7 @@ DECLARE
     _tbName varchar(50);
     _fieldName varchar(50);
     _fieldNo int;
-    _isFile smallint;
+    _isFile int;
     _filePathNo varchar(36);
     _storedProcName varchar;
     _remark varchar;
@@ -377,7 +377,7 @@ BEGIN
             _action := _rowinfo->>'action';
             _sId := _rowinfo->>'sId';
             _pId := _rowinfo->>'pId';
-            _tbType := _rowinfo->>'tbtype';
+            _tbType := _rowinfo->>'tbType';
             _name := _rowinfo->>'name';
             _shortName := _rowinfo->>'shortName';
             _description := _rowinfo->>'description';
@@ -485,7 +485,7 @@ RETURNS varchar as $_Return$
 			_errInfo4 varchar;
 			_errInfo5 varchar;
             _Return varchar;
-            _isEdit smallint;
+            _isEdit int;
 			_languageCode varchar(50);
 BEGIN
     if _language ='' Then
@@ -527,7 +527,7 @@ BEGIN
 		    if _language is null Then
 				_language:='默认';
             end if;
-			return 'Stored procedure[' || _procName || ']:language[' || _language+',]position['  || _position  || '],Undefined Translation!';	
+			return 'Stored procedure[' || _procName || ']:language[' || _language || ',]position['  || _position  || '],Undefined Translation!';	
     end if;
         
         
@@ -558,24 +558,20 @@ $_Return$ LANGUAGE plpgsql;
 CREATE or REPLACE PROCEDURE dbo.springCheckRel(
 	    IN _editTbName varchar(50),
         IN _typeName varchar(50),
-        IN _pType bigint,
-        IN _cType bigint,
+        IN _pType int,
+        IN _cType int,
         INOUT _error varchar
 )
 AS $$
 declare 
     _procName varchar := 'SpringCheckRel';    --存储过程名称
     _language varchar := _error;   --语言代码
-    _position bigint := 1;          --错误位置
+    _position int := 1;          --错误位置
     _Count int;
     _PName varchar;
     _CName varchar;
 
 BEGIN
-
-
-select _editTbName,_typeName,_pType,_cType;
-
 --如果REL定义为空，不判断关联
 select count(*) into _Count from dbo.springTbTypeRel where tbID in 
 			 (select sId from dbo.springTb where Name = _editTbName);
@@ -622,15 +618,15 @@ CREATE or REPLACE PROCEDURE dbo.springCheckRel2(
 	    IN _editTbName varchar(50),
         IN _typeName varchar(50),
         IN _pId varchar(36),
-        IN _cType bigint,
+        IN _cType int,
         INOUT _error varchar
 )
 AS $$
 
 declare _procName varchar := 'SpringCheckRel2';    --存储过程名称
         _language varchar := _error;    --语言代码
-        _position bigint := 1;          --错误位置
-        _pType bigint;
+        _position int := 1;          --错误位置
+        _pType int;
         _sql varchar;
         _Count int;
 
@@ -639,8 +635,8 @@ BEGIN
 if _pId is null Then
 	_pType := null;
 else
-    select _typeName into _pType from _editTbName where sId = _pId;
-	-- _sql := 'select @pType=' || @typeName || ' from ' || @editTbName || ' where sId=''' || @pId || '''';
+    EXECUTE format('SELECT %s from dbo.%s where sId = ''%s''', _typeName, _editTbName, _pId)
+    INTO _pType;
     -- EXEC sp_executesql @sql,N'@pType bigint output',@pType output;
 end if;
 
@@ -655,10 +651,10 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION dbo.SpringFdNameByNo
 (
-    _language bigint,
+    _language varchar,
     _tbName varchar(50),
     _field varchar(50),
-    _no bigint
+    _no int
 ) 
 RETURNS varchar(50) as $_Name$
 
@@ -709,7 +705,7 @@ CREATE or REPLACE PROCEDURE dbo.springTb_Upp(
 	IN _tbName varchar(50),
 	IN _fieldName varchar(50),
 	IN _fieldNo int,
-	IN _isFile smallint,
+	IN _isFile int,
 	IN _filePathNo varchar(36),
 	IN _storedProcName varchar,
 	IN _remark varchar,
@@ -727,13 +723,12 @@ DECLARE
     _ctbType int;
 
     _count int;
-    _pId varchar(36);
     _tabname varchar;
     _queue int;
 	_tmp varchar;
 
 BEGIN
-	--判断与父项的连接是否允许t----------
+	--判断与父项的连接是否允许----------
     CALL dbo.SpringCheckRel2('springTb', 'tbType', _pId, _tbType, _eInfo);
     if _eInfo != '0' THEN
 		return;
@@ -746,7 +741,7 @@ BEGIN
 		if _eInfo != '0' Then
 			return;
 		end if;
-		_error = _language;
+		_error := _language;
     END LOOP;
 	------------------------------------
 
@@ -767,7 +762,7 @@ BEGIN
 
 	if _tbType=1 Then-- 名称已经存在
 		if exists (select *
-		from SpringTb
+		from dbo.springTb
 		where sId!=_sId and tbType=1 and name=_name) Then
 			_position := 2;
 			if _error='' Then
@@ -782,7 +777,7 @@ BEGIN
 	return;
     end if;
 
-    Update springTb set
+    Update dbo.springTb set
 			tbType=_tbType,
 			name=_name,
 			shortName=_shortName,
