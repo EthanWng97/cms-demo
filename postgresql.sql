@@ -755,3 +755,314 @@ FROM '/postgresql/springSp.csv'
 csv
 HEADER
 NULL 'NULL';
+
+CREATE or REPLACE PROCEDURE dbo.springTb_Upp(
+    INOUT _sId varchar(36),
+    IN _pId varchar(36),
+    IN _tbType int,
+	IN _name varchar(50),
+	IN _shortName varchar(50),
+	IN _description varchar,
+	IN _descriptionEn varchar,
+	IN _tbName varchar(50),
+	IN _fieldName varchar(50),
+	IN _fieldNo int,
+	IN _isFile smallint,
+	IN _filePathNo varchar(36),
+	IN _storedProcName varchar,
+	IN _remark varchar,
+	IN _modifyUser varchar,
+    INOUT _error varchar,
+    INOUT _eInfo varchar
+)
+AS $$
+
+DECLARE 
+    _procName varchar(50) := 'springTb_Upp';    --存储过程名称
+    _language varchar(50):= _error;    --语言代码
+    _position bigint := 1;     --错误位置
+
+    _ctbType int;
+
+    _count int;
+    _pId varchar(36);
+    _tabname varchar;
+    _queue int;
+	_tmp varchar;
+
+BEGIN
+	--判断与父项的连接是否允许----------
+    CALL dbo.SpringCheckRel2('springTb', 'tbType', _pId, _tbType, _eInfo);
+    if _eInfo != '0' THEN
+		return;
+	end if;
+	-------------------------------------
+	--判断与子项的连接是否允许-----------
+    for _ctbType in select tbType from dbo.springTb where pId=_sId
+    loop
+    	CALL dbo.SpringCheckRel('springTb', 'tbType', _tbType, _ctbType, _eInfo);
+		if _eInfo != '0' Then
+			return;
+		end if;
+		_error = _language;
+    END LOOP;
+	------------------------------------
+
+	--表名默认与名称相同
+	if _tbType=1 and _tbName is null Then
+	    _tbName:=_name;
+    end if;
+	if _tbType=1 and _storedProcName is null Then
+	_storedProcName:=_tbName || '_Action';
+    end if;
+
+    _error := '';
+	if _name='' or _name is null Then  -- 名称不能为空...
+		_position = 1;
+		_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,'','','','','');
+		return;
+	end if;
+
+	if _tbType=1 Then-- 名称已经存在
+		if exists (select *
+		from SpringTb
+		where sId!=@sId and tbType=1 and name=_name) Then
+			_position := 2;
+			if _error='' Then
+					_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+			    else
+			    	_error:=_error || chr(10) || dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+			end if;
+		end if;
+	end if;
+
+	if _error!='' Then
+	return;
+    end if;
+
+    Update springTb set
+			tbType=_tbType,
+			name=_name,
+			shortName=_shortName,
+			description=_description,
+			descriptionEn=_descriptionEn,
+			tbName=_tbName,
+			fieldName=_fieldName,
+			fieldNo=_fieldNo,
+			isFile=_isFile,
+			filePathNo=_filePathNo,
+			storedProcName=_storedProcName,
+			remark=_remark,
+			modifyUser=_modifyUser,
+			modifyTime=now()
+         where sId=_sId;
+
+    _error:='00000';
+    _eInfo:= 'successful update';
+
+    exception
+        When Others Then
+            rollback;
+            get stacked diagnostics _eInfo:= MESSAGE_TEXT,
+                                    _error:= RETURNED_SQLSTATE;
+            _eInfo:= concat('error in delete procedure: ',_eInfo);
+    COMMIT;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dbo.SpringSpTranslation_Error
+(
+	_procName varchar(50),
+    _language varchar(50),
+    _position bigint,
+    _errAdd1 varchar,
+	_errAdd2 varchar,
+	_errAdd3 varchar,
+	_errAdd4 varchar,
+	_errAdd5 varchar
+)
+RETURNS varchar as $_Return$
+	-- 取得语言编码
+	DECLARE _errInfo1 varchar;
+			_errInfo2 varchar;
+			_errInfo3 varchar;
+			_errInfo4 varchar;
+			_errInfo5 varchar;
+            _Return varchar;
+            _isEdit smallint;
+			_languageCode varchar(50);
+BEGIN
+    if _language ='' Then
+		_language:=null;
+	end if;
+	if _errAdd1 is null Then
+	    _errAdd1:='';
+    end if;
+	if _errAdd2 is null Then
+	    _errAdd2:='';
+	end if;
+    if _errAdd3 is null Then
+	    _errAdd3:='';
+	end if;
+    if _errAdd4 is null Then
+	    _errAdd4:='';
+	end if;
+    if _errAdd5 is null Then
+	    _errAdd5:='';
+    end if;
+
+    select isEdit into _isEdit from dbo.springDbInfo;
+    if  _isEdit is null Then
+        _isEdit:=0;
+    end if;
+
+    if _language is null Then
+		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    dbo.springSpTranslation as sptrn 
+				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
+			where  sp.name=_procName and sptrn.language is null and sptrn.Position = _position;
+    else
+		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    dbo.springSpTranslation as sptrn 
+				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
+			where  sp.name=_procName and sptrn.language = _language and sptrn.Position = _position;
+    end if;
+    if _errInfo1 is null and _errInfo2 is null and _errInfo3 is null and _errInfo4 is null and _errInfo5 is null Then
+		    if _language is null Then
+				_language:='默认';
+            end if;
+			return 'Stored procedure[' || _procName || ']:language[' || _language+',]position['  || _position  || '],Undefined Translation!';	
+    end if;
+        
+        
+	if _errInfo1 is null Then
+		_errInfo1 := '';
+    end if;
+	if _errInfo2 is null Then
+		_errInfo2 := '';
+    end if;
+	if _errInfo3 is null Then
+		_errInfo3 := '';
+	end if;
+    if _errInfo4 is null Then
+		_errInfo4 := '';
+	end if;
+    if _errInfo5 is null Then
+		_errInfo5 := '';
+    end if;
+   if _isEdit=1 Then
+	    _Return := 'Stored procedure[' || _procName || ']:' || _errInfo1 || _errAdd1 || _errInfo2 || _errAdd2 || _errInfo3 || _errAdd3 || _errInfo4 || _errAdd4 || _errInfo5 || _errAdd5;
+   else	 
+       _Return = _errInfo1 || _errAdd1 || _errInfo2 || _errAdd2 || _errInfo3 || _errAdd3 || _errInfo4 || _errAdd4 || _errInfo5 || _errAdd5;  
+	end if;
+   return _Return;
+END;
+$_Return$ LANGUAGE plpgsql;
+
+
+
+CALL dbo.springTb_Upp(
+    _sid => '378ea5cb-0916-4cbc-a10c-8742d36e3d1c', 
+    _pid => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _tbtype => 1, 
+    _name => 'springTb', 
+    _shortname => '123', 
+    _description => '表测试', 
+    _descriptionen => '123', 
+    _tbname => 'springTb', 
+    _fieldname => '123', 
+    _fieldno => 1, 
+    _isfile => 0, 
+    _filepathno => '123', 
+    _storedprocname => 'springTb_Action', 
+    _remark => '123', 
+    _modifyuser => '123', 
+    _error => '123', 
+    _einfo => '123'
+);
+
+CALL dbo.SpringCheckRel2(
+    _editTbName => 'springTb', 
+    _typeName => 'tbType', 
+    _pId => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _cType => 1, 
+    _error => '123'
+);
+
+CALL dbo.SpringCheckRel(
+    _editTbName => 'springTb', 
+    _typeName => 'tbType', 
+    _pType => 1, 
+    _cType => 1, 
+    _error => '123'
+);
+
+CALL dbo.SpringSpTranslation_Error(
+    _procName => 'springTb_Action', 
+    _language => '0000', 
+    _position => 1
+);
+
+
+CALL dbo.springTb_Action(_userId=>'120912',
+ _userName=> 'wangyifan',
+  _info=>'[{"action":"upp",
+  "sId":"378ea5cb-0916-4cbc-a10c-8742d36e3d1c",
+  "pId":"f0eff541-4e35-4ef5-a5ae-7df2df3f05ea",
+  "tbType":1,
+  "name":"springTb",
+  "shortName":"123",
+  "description":"表测试",
+  "descriptionEn":"123",
+  "tbName":"springTb",
+  "fieldName":"123",
+  "fieldNo":1,
+  "isFile":0,
+  "filePathNo":"123",
+  "storedProcName":"springTb_Action",
+  "remark":"123"}]',
+  _entity=>'123',
+  _error=>'123',
+  _eInfo=>'123'
+);
+
+
+CALL dbo.springTb_Upp(
+    _sid => '378ea5cb-0916-4cbc-a10c-8742d36e3d1c', 
+    _pid => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _tbtype => 1, 
+    _name => 'springTb', 
+    _shortname => '123', 
+    _description => '表测试', 
+    _descriptionen => '123', 
+    _tbname => 'springTb', 
+    _fieldname => '123', 
+    _fieldno => 1, 
+    _isfile => 0, 
+    _filepathno => '123', 
+    _storedprocname => 'springTb_Action', 
+    _remark => '123', 
+    _modifyuser => '123', 
+    _error => '123', 
+    _einfo => '123'
+);
+
+CALL dbo.springTb_Upp(
+    '378ea5cb-0916-4cbc-a10c-8742d36e3d1c', 
+    'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    1, 
+    'springTb', 
+    '123', 
+    '表测试', 
+    '123', 
+    'springTb', 
+    '123', 
+    1, 
+    0, 
+    '123', 
+    'springTb_Action', 
+    '123', 
+    '123', 
+    '123', 
+    '123'
+);
