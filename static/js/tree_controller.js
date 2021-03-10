@@ -1,5 +1,4 @@
 function onLoadTree() {
-
     wrapAjax(true, "getunionjson", "POST", "json", null, true, function (data) {
         zNodes = data["0"];
         tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
@@ -60,7 +59,7 @@ function createActionJson(type, treeNode) {
     return JSON.stringify(jsonObj);
 }
 
-function beforeRemove(treeId, treeNode) {
+function beforeRemove(treeNode) {
     if (treeNode.children != undefined) {
         layer.msg("请先删除子项表。");
         return false;
@@ -68,7 +67,7 @@ function beforeRemove(treeId, treeNode) {
     return true;
 }
 
-function onRemove(event, treeId, treeNode) {
+function onRemove(treeNode) {
     jsonObj = createActionJson(type = "del");
     var sendData = {
         action: jsonObj
@@ -113,8 +112,10 @@ function _xname(pid, description, name) {
     return description + "[" + name + "]"
 }
 
-function loadFormData(database, treeNode) {
+function showForm(database, treeNode) {
     $("#information").empty();
+
+    // get details given treeNode.id to create form
     var jsonObj = {
         "_db": database,
         "_sid": treeNode.id,
@@ -129,9 +130,8 @@ function loadFormData(database, treeNode) {
     });
 }
 
-function createForm(data) {
+function constructForm(data) {
     for (var val in data) {
-        // console.log(val + " " + data[val]);//输出如:name
         if (val == 'tbtype')
             $("#information").append(tbtype);
         else if (val == 'name')
@@ -165,7 +165,52 @@ function createForm(data) {
         else if (val == 'modifytime')
             $("#information").append(modifytime);
     };
+}
+
+function fillForm(data) {
+    $('#tbtype').val(data['tbtype']);
+    $('#name').val(data['name']);
+    $('#shortname').val(data['shortname']);
+    $('#description').val(data['description']);
+    $('#descriptionen').val(data['descriptionen']);
+    $('#tbname').val(data['tbname']);
+    $('#fieldname').val(data['fieldname']);
+    data['isfile'] == 1 ? $('#isfile').prop("checked", true) : $('#isfile').prop("checked", false);
+
+    $('#fieldno').val(data['fieldno']);
+    $('#filepathno').val(data['filepathno']);
+    $('#storedprocname').val(data['storedprocname']);
+    $('#remark').val(data['remark']);
+    $('#createuser').val(data['createuser']);
+    $('#createtime').val(data['createtime']);
+    $('#modifyuser').val(data["modifyuser"]);
+    $('#modifytime').val(data["modifytime"]);
+}
+
+function submitForm() {
+    jsonObj = createActionJson(type = "upp");
+    console.log(jsonObj)
+    var sendData = {
+        action: jsonObj
+    };
+    wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
+        var msg = data[0].info[0]._einfo;
+        layer.msg(msg);
+        if (msg.indexOf("success") != -1) {
+            tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
+            tree.zTree.updateNode(tree.pTreeNode);
+        }
+    }, function (error) {
+        console.log(error);
+    });
+}
+
+function createForm(data) {
+    // construct form given list of data
+    constructForm(data);
+
     console.log(data['name']);
+    // show thr form and fill the data
     layer.open({
         type: 1, //Page层类型
         skin: 'layui-layer-lan',
@@ -177,40 +222,11 @@ function createForm(data) {
         maxmin: false, //允许全屏最小化
         content: $("#information"),
         success: function () {
-            $('#tbtype').val(data['tbtype']);
-            $('#name').val(data['name']);
-            $('#shortname').val(data['shortname']);
-            $('#description').val(data['description']);
-            $('#descriptionen').val(data['descriptionen']);
-            $('#tbname').val(data['tbname']);
-            $('#fieldname').val(data['fieldname']);
-            data['isfile'] == 1 ? $('#isfile').prop("checked", true) : $('#isfile').prop("checked", false);
-
-            $('#fieldno').val(data['fieldno']);
-            $('#filepathno').val(data['filepathno']);
-            $('#storedprocname').val(data['storedprocname']);
-            $('#remark').val(data['remark']);
-            $('#createuser').val(data['createuser']);
-            $('#createtime').val(data['createtime']);
-            $('#modifyuser').val(data["modifyuser"]);
-            $('#modifytime').val(data["modifytime"]);
+            // fill the data
+            fillForm(data);
         },
         yes: function (index, layero) {
-            jsonObj = createActionJson(type = "upp");
-            console.log(jsonObj)
-            var sendData = {
-                action: jsonObj
-            };
-            wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
-                var msg = data[0].info[0]._einfo;
-                layer.msg(msg);
-                if (msg.indexOf("success") != -1) {
-                    tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
-                    tree.zTree.updateNode(tree.pTreeNode);
-                }
-            }, function (error) {
-                console.log(error);
-            });
+            submitForm()
             layer.close(index);
         }
     });
@@ -230,11 +246,11 @@ $(document).on('click', '#menu-item-addRela', function () {
 });
 $(document).on('click', '#menu-item-modify', function () {
     hideMenu();
-    loadFormData('springtb', tree.pTreeNode)
+    showForm('springtb', tree.pTreeNode)
 });
 $(document).on('click', '#menu-item-delete', function () {
     hideMenu();
-    if (beforeRemove(tree.pTreeId, tree.pTreeNode)) onRemove(event, tree.pTreeId, tree.pTreeNode);
+    if (beforeRemove(tree.pTreeNode)) onRemove(ree.pTreeNode);
 });
 $(document).on('click', '#menu-item-clip', function () {
     hideMenu();
