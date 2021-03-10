@@ -1,20 +1,12 @@
 function onLoadTree() {
-    $.ajax({
-        cache: true,
-        url: "getunionjson",
-        type: "POST",
-        dataType: "json",
-        async: true,
-        success: function (data) {
-            zNodes = data["0"];
-            tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
-            tree.preLoadNode(tree.zTree.getNodes());
-        },
-        error: function (error) {
-            console.log(error);
-        },
-    });
 
+    wrapAjax(true, "getunionjson", "POST", "json", null, true, function (data) {
+        zNodes = data["0"];
+        tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
+        tree.preLoadNode(tree.zTree.getNodes());
+    }, function (error) {
+        console.log(error);
+    });
 }
 
 function expandNode(event, treeId, treeNode) {
@@ -55,18 +47,17 @@ function createActionJson(type, treeNode) {
         "remark": $('#remark').val(),
     };
 
-    var data_list = [];
-    data_list.push(info_json);
+    var action_list = [];
+    action_list.push(info_json);
     var jsonObj = {
         "_userId": "123",
         "_userName": "123",
-        "_info": JSON.stringify(data_list),
+        "_info": JSON.stringify(action_list),
         "_entity": "123",
         "_error": "123",
         "_eInfo": "123"
     };
     return JSON.stringify(jsonObj);
-
 }
 
 function beforeRemove(treeId, treeNode) {
@@ -79,24 +70,17 @@ function beforeRemove(treeId, treeNode) {
 
 function onRemove(event, treeId, treeNode) {
     jsonObj = createActionJson(type = "del");
-    $.ajax({
-        cache: true,
-        url: "dataset",
-        type: 'post',
-        dataType: "json",
-        data: {
-            action: jsonObj
-        },
-        // timeout: 1000, //超时时间设置，单位毫秒
-        success: function (data) {
-            layer.msg(data[0].info[0]._einfo);
+    var sendData = {
+        action: jsonObj
+    };
+    wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
+        var msg = data[0].info[0]._einfo
+        layer.msg(msg);
+        if (msg.indexOf("success") != -1) {
             tree.zTree.removeNode(treeNode);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            alert("请求对象XMLHttpRequest: " + XMLHttpRequest);
-            alert("错误类型textStatus: " + textStatus);
-            alert("异常对象errorThrown: " + errorThrown);
         }
+    }, function (error) {
+        console.log(error);
     });
 }
 
@@ -135,23 +119,13 @@ function loadFormData(database, treeNode) {
         "_db": database,
         "_sid": treeNode.id,
     };
-    $.ajax({
-        cache: true,
-        url: "dataset/rowdata",
-        type: 'post',
-        dataType: "json",
-        data: {
-            row: JSON.stringify(jsonObj)
-        },
-        async: true,
-        success: function (data) {
-            // console.log(data)
-            createForm(data);
-
-        },
-        error: function (error) {
-            console.log(error);
-        },
+    var sendData = {
+        row: JSON.stringify(jsonObj)
+    };
+    wrapAjax(true, "dataset/rowdata", "POST", "json", sendData, true, function (data) {
+        createForm(data);
+    }, function (error) {
+        console.log(error);
     });
 }
 
@@ -224,27 +198,18 @@ function createForm(data) {
         yes: function (index, layero) {
             jsonObj = createActionJson(type = "upp");
             console.log(jsonObj)
-            $.ajax({
-                cache: true,
-                url: "dataset",
-                type: 'post',
-                dataType: "json",
-                data: {
-                    action: jsonObj
-                },
-                success: function (data) {
-                    var msg = data[0].info[0]._einfo;
-                    layer.msg(msg);
-                    if (msg.indexOf("success") != -1) {
-                        tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
-                        tree.zTree.updateNode(tree.pTreeNode);
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert("请求对象XMLHttpRequest: " + XMLHttpRequest);
-                    alert("错误类型textStatus: " + textStatus);
-                    alert("异常对象errorThrown: " + errorThrown);
+            var sendData = {
+                action: jsonObj
+            };
+            wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
+                var msg = data[0].info[0]._einfo;
+                layer.msg(msg);
+                if (msg.indexOf("success") != -1) {
+                    tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
+                    tree.zTree.updateNode(tree.pTreeNode);
                 }
+            }, function (error) {
+                console.log(error);
             });
             layer.close(index);
         }
@@ -299,3 +264,20 @@ $(document).on('click', '#menu-item-exportModel', function () {
     hideMenu();
     console.log("模型导出");
 });
+
+function wrapAjax(cache, url, type, dataType, sendData = null, async = true, success, failed) {
+    $.ajax({
+        cache: cache,
+        url: url,
+        type: type,
+        dataType: dataType,
+        data: sendData,
+        async: async,
+        success: function (data) {
+            success(data);
+        },
+        error: function (error) {
+            failed(error);
+        },
+    });
+}
