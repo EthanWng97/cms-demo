@@ -2,6 +2,9 @@ var tree = {
     zTree: '',
     pNode: '',
     setting: {
+        views: {
+            dblClickExpand: false
+        },
         data: {
             simpleData: {
                 enable: true,
