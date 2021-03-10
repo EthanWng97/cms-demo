@@ -105,7 +105,7 @@ function createActionJson(type, treeNode) {
         "tbName": $('#tbname').val(),
         "fieldName": $('#fieldname').val(),
         "fieldNo": parseInt($('#fieldno').val()),
-        "isFile": $("input:checkbox[name='isfile']:checked")? 1:0,
+        "isFile": $("input:checkbox[name='isfile']:checked").length == 1? 1:0,
         "filePathNo": $('#filepathno').val(),
         "storedProcName": $('#storedprocname').val(),
         "remark": $('#remark').val(),
