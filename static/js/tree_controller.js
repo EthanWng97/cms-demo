@@ -180,6 +180,11 @@ function hideMenu() {
     $('#directory-tree-menu').hide();
     $(document).off('mousedown');
 }
+function _xname(pid, description, name){
+    if (!pid || !description)
+        return name;
+    return description + "[" + name + "]"
+}
 
 function loadFormData(database, treeNode) {
     $("#information").empty();
@@ -187,7 +192,6 @@ function loadFormData(database, treeNode) {
         "_db": database,
         "_sid": treeNode.id,
     };
-
     $.ajax({
         cache: true,
         url: "dataset/rowdata",
@@ -282,7 +286,12 @@ function createForm(data) {
                 data: { action: jsonObj },
                 // timeout: 1000, //超时时间设置，单位毫秒
                 success: function (data) {
-
+                    var msg = data[0].info[0]._einfo;
+                    layer.msg(msg);
+                    if (msg.indexOf("success") != -1){
+                        tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
+                        tree.zTree.updateNode(tree.pTreeNode);
+                    }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     alert("请求对象XMLHttpRequest: " + XMLHttpRequest);
