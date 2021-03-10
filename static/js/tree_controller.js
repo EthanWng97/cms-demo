@@ -36,63 +36,7 @@ function beforeRename(treeId, treeNode, newName, isCancel) {
     return true;
 }
 
-// function onRename(event, treeId, treeNode, isCancel) {
-//     if (isCancel) {
-//         return;
-//     }
-//     // var zTree = $.fn.zTree.getZTreeObj("treeDemo");
-//     // var onodes = zTree.getNodes();
-//     // console.log(onodes);
-//     //发送请求修改节点信息
-//     var data = {
-//         "id": treeNode.id,
-//         "code": treeNode.pId,  //父节点
-//         "name": treeNode.name,
-//     };
-//     console.log(data);
-//     // $.ajax({
-//     //     type: 'post',
-//     //     url: "",
-//     //     data: data,
-//     //     timeout: 1000, //超时时间设置，单位毫秒
-//     //     dataType: 'json',
-//     //     success: function (res) {
-//     //         layer.msg(res.msg)
-//     //     }
-//     // });
-// }
-
 function createActionJson(type, treeNode) {
-    // var info_json = {
-    //     "action": "del",
-    //     "sId": treeNode.id,
-    //     "pId": treeNode.pId,
-    //     "tbType": 0,
-    //     "name": "testname",
-    //     "shortName": "testshortName",
-    //     "description": "testdescription",
-    //     "descriptionEn": "testdescriptionEn",
-    //     "tbName": "testtbName",
-    //     "fieldName": "testfieldName",
-    //     "fieldNo": 123,
-    //     "isFile": 0,
-    //     "filePathNo": "testfilePathNo",
-    //     "storedProcName": "teststoredProcName",
-    //     "remark": "testremark",
-    //     "sTamp": "2020-11-12 04:17:43.635664",
-    //     "queue": 1
-    // };
-
-    // var data_list = [];
-    // data_list.push(info_json);
-    // var jsonObj = {
-    //     "_userId": "",
-    //     "_userName": "",
-    //     "_info": JSON.stringify(data_list),
-    //     "_entity": "123",
-    //     "_error": "123",
-    //     "_eInfo": "123"
-    // };
     var info_json = {
         "action": type,
         "sId": tree.pTreeNode.id,
@@ -105,12 +49,10 @@ function createActionJson(type, treeNode) {
         "tbName": $('#tbname').val(),
         "fieldName": $('#fieldname').val(),
         "fieldNo": parseInt($('#fieldno').val()),
-        "isFile": $("input:checkbox[name='isfile']:checked").length == 1? 1:0,
+        "isFile": $("input:checkbox[name='isfile']:checked").length == 1 ? 1 : 0,
         "filePathNo": $('#filepathno').val(),
         "storedProcName": $('#storedprocname').val(),
         "remark": $('#remark').val(),
-        // "sTamp": "2020-11-12 04:17:43.635664",
-        // "queue": 1
     };
 
     var data_list = [];
@@ -126,6 +68,7 @@ function createActionJson(type, treeNode) {
     return JSON.stringify(jsonObj);
 
 }
+
 function beforeRemove(treeId, treeNode) {
     if (treeNode.children != undefined) {
         layer.msg("请先删除子项表。");
@@ -135,18 +78,15 @@ function beforeRemove(treeId, treeNode) {
 }
 
 function onRemove(event, treeId, treeNode) {
-    var data = {
-        "sId": treeNode.id,
-        "pId": treeNode.pId,  //父节点
-        "name": treeNode.name,
-    };
     jsonObj = createActionJson(type = "del");
     $.ajax({
         cache: true,
         url: "dataset",
         type: 'post',
         dataType: "json",
-        data: { action: jsonObj },
+        data: {
+            action: jsonObj
+        },
         // timeout: 1000, //超时时间设置，单位毫秒
         success: function (data) {
             layer.msg(data[0].info[0]._einfo);
@@ -159,16 +99,17 @@ function onRemove(event, treeId, treeNode) {
         }
     });
 }
+
 function onRightClick(event, treeId, treeNode) {
     tree.pTreeId = treeId;
     tree.pTreeNode = treeNode;
-    var type = '';
     var x = event.clientX;
     var y = event.clientY;
 
-    $('#directory-tree-menu').css({ left: x + 'px', top: y + 'px' }).show();
-    // if (treeNode.name == '数据模型') $('#menu-item-addRoot').hide();
-    // else $('#menu-item-addRoot').show();
+    $('#directory-tree-menu').css({
+        left: x + 'px',
+        top: y + 'px'
+    }).show();
 
     $(document).on('mousedown', function (event) {
         if (!(event.target.id == 'directory-tree-menu' || $(event.target).parents('#directory-tree-menu').length > 0)) {
@@ -176,11 +117,13 @@ function onRightClick(event, treeId, treeNode) {
         }
     });
 }
+
 function hideMenu() {
     $('#directory-tree-menu').hide();
     $(document).off('mousedown');
 }
-function _xname(pid, description, name){
+
+function _xname(pid, description, name) {
     if (!pid || !description)
         return name;
     return description + "[" + name + "]"
@@ -197,7 +140,9 @@ function loadFormData(database, treeNode) {
         url: "dataset/rowdata",
         type: 'post',
         dataType: "json",
-        data: { row: JSON.stringify(jsonObj) },
+        data: {
+            row: JSON.stringify(jsonObj)
+        },
         async: true,
         success: function (data) {
             // console.log(data)
@@ -209,6 +154,7 @@ function loadFormData(database, treeNode) {
         },
     });
 }
+
 function createForm(data) {
     for (var val in data) {
         // console.log(val + " " + data[val]);//输出如:name
@@ -247,16 +193,16 @@ function createForm(data) {
     };
     console.log(data['name']);
     layer.open({
-        type: 1 //Page层类型
-        , skin: 'layui-layer-lan'
-        , area: ['500px', '600px']
-        , title: ['表', 'font-size:18px']
-        , btn: ['确定', '取消']
-        , shadeClose: true
-        , shade: 0 //遮罩透明度
-        , maxmin: false //允许全屏最小化
-        , content: $("#information")
-        , success: function () {
+        type: 1, //Page层类型
+        skin: 'layui-layer-lan',
+        area: ['500px', '600px'],
+        title: ['表', 'font-size:18px'],
+        btn: ['确定', '取消'],
+        shadeClose: true,
+        shade: 0, //遮罩透明度
+        maxmin: false, //允许全屏最小化
+        content: $("#information"),
+        success: function () {
             $('#tbtype').val(data['tbtype']);
             $('#name').val(data['name']);
             $('#shortname').val(data['shortname']);
@@ -274,8 +220,8 @@ function createForm(data) {
             $('#createtime').val(data['createtime']);
             $('#modifyuser').val(data["modifyuser"]);
             $('#modifytime').val(data["modifytime"]);
-        }
-        , yes: function (index, layero) {
+        },
+        yes: function (index, layero) {
             jsonObj = createActionJson(type = "upp");
             console.log(jsonObj)
             $.ajax({
@@ -283,12 +229,13 @@ function createForm(data) {
                 url: "dataset",
                 type: 'post',
                 dataType: "json",
-                data: { action: jsonObj },
-                // timeout: 1000, //超时时间设置，单位毫秒
+                data: {
+                    action: jsonObj
+                },
                 success: function (data) {
                     var msg = data[0].info[0]._einfo;
                     layer.msg(msg);
-                    if (msg.indexOf("success") != -1){
+                    if (msg.indexOf("success") != -1) {
                         tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
                         tree.zTree.updateNode(tree.pTreeNode);
                     }
@@ -318,12 +265,10 @@ $(document).on('click', '#menu-item-addRela', function () {
 });
 $(document).on('click', '#menu-item-modify', function () {
     hideMenu();
-    console.log("修改");
     loadFormData('springtb', tree.pTreeNode)
 });
 $(document).on('click', '#menu-item-delete', function () {
     hideMenu();
-    console.log("删除");
     if (beforeRemove(tree.pTreeId, tree.pTreeNode)) onRemove(event, tree.pTreeId, tree.pTreeNode);
 });
 $(document).on('click', '#menu-item-clip', function () {
