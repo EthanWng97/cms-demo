@@ -245,6 +245,11 @@ CREATE TABLE dbo.springField
     sTamp varchar NULL
 );
 
+COPY dbo.springField
+FROM '/postgresql/springField.csv'
+csv
+HEADER
+NULL 'NULL';
 
 CREATE or REPLACE PROCEDURE dbo.springTb_Del(
     INOUT _sId varchar(36),
@@ -470,7 +475,7 @@ CREATE OR REPLACE FUNCTION dbo.SpringSpTranslation_Error
 (
 	_procName varchar(50),
     _language varchar(50),
-    _position bigint,
+    _position int,
     _errAdd1 varchar,
 	_errAdd2 varchar,
 	_errAdd3 varchar,
