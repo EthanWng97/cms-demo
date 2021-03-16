@@ -14,15 +14,12 @@
     <script type="text/javascript" src="/static/layer_v3.1.1/layer.js"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/tree_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
-
-    <!-- <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.excheck.js"></script> -->
 </head>
 
 <body>
     <div class="modal-body">
-        <script src="{{ url_for('static',filename='js/tree.js') }}"></script>
-        <ul id="treeDemo" class="ztree" style="width:300px; min-height: 1000px; overflow:auto;"></ul>
-        <!-- <div id="tree" style="height:220px;overflow-x:hidden;"> -->
+        <script src="{{ url_for('static',filename='js/tree_pure_async.js') }}"></script>
+        <ul id="treeDemo" class="ztree"></ul>
         <ul id="directory-tree-menu">
             <li id="menu-item-addRoot">添加根[表]</li>
             <li id="menu-item-addTable">添加[列表]</li>
@@ -39,10 +36,8 @@
             <li id="menu-item-exportModel">模型导出</li>
         </ul>
     </div>
-    <!-- <div class="site-text" style="margin: 5%; display: none" id="window" target="test123"> -->
-    <form class="layui-form" style="margin: 5%; display: none" id="information" method="post" lay-filter="example">
+    <form class="layui-form" id="information" method="post" lay-filter="example">
     </form>
-    <!-- </div> -->
 </body>
 
 </html>
