@@ -1,3 +1,9 @@
+ul#treeDemo {
+    width:30%;
+    overflow:true;
+    margin-left: 10px;
+    height: 970px;
+}
 #directory-tree-menu {
     position: absolute;
     top: 0;
@@ -68,4 +74,8 @@ select.tbtype {
 
 input.layui-input {
     width: 100%;
+}
+form#information{
+    margin: 5%;
+    display: none
 }
