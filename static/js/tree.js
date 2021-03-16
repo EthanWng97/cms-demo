@@ -3,7 +3,7 @@ var tree = {
     pTreeId: '',
     pTreeNode: '',
     setting: {
-        views: {
+        view: {
             dblClickExpand: false
         },
         data: {

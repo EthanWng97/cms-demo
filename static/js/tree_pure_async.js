@@ -2,7 +2,7 @@ var tree = {
     zTree: '',
     pNode: '',
     setting: {
-        views: {
+        view: {
             dblClickExpand: false
         },
         data: {
