@@ -1,3 +1,5 @@
+layui.use(['layer', 'form'], function () {});
+
 function showForm(database, treeNode) {
     $("#information").empty();
 
@@ -41,6 +43,7 @@ function createForm(data) {
             layer.close(index);
         }
     });
+
 }
 
 function constructForm(data) {
@@ -140,6 +143,8 @@ function _xname(pid, description, name) {
 
 
 function fillForm(data) {
+    var form = layui.form;
+    console.log(data);
     $('#tbtype').val(data['tbtype']);
     $('#name').val(data['name']);
     $('#shortname').val(data['shortname']);
@@ -157,5 +162,5 @@ function fillForm(data) {
     $('#createtime').val(data['createtime']);
     $('#modifyuser').val(data["modifyuser"]);
     $('#modifytime').val(data["modifytime"]);
+    form.render(); //刷新select选择框渲染
 }
-
