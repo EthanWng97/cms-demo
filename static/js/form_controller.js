@@ -39,8 +39,11 @@ function createForm(data) {
             fillForm(data);
         },
         yes: function (index, layero) {
-            submitForm()
+            submitForm();
             layer.close(index);
+        },
+        btn2: function (index, layero) {
+            $('#information').empty();
         }
     });
 
@@ -95,9 +98,11 @@ function submitForm() {
         if (msg.indexOf("success") != -1) {
             tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
             tree.zTree.updateNode(tree.pTreeNode);
+            $('#information').empty();
         }
     }, function (error) {
         console.log(error);
+        $('#information').empty();
     });
 }
 
@@ -138,9 +143,6 @@ function _xname(pid, description, name) {
         return name;
     return description + "[" + name + "]"
 }
-
-
-
 
 function fillForm(data) {
     var form = layui.form;
