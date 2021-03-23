@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    <div class="modal-body">
+    <div class="tree-container" style="float:left; display:inline">
         <script src="{{ url_for('static',filename='js/tree_pure_async.js') }}"></script>
         <ul id="treeDemo" class="ztree"></ul>
         <ul id="directory-tree-menu">
@@ -37,27 +37,31 @@
             <li id="menu-item-procedure">存储过程</li>
             <li id="menu-item-exportModel">模型导出</li>
         </ul>
+        <form class="layui-form" id="information" method="post" lay-filter="example">
+        </form>
     </div>
-    <form class="layui-form" id="information" method="post" lay-filter="example">
-    </form>
-    <div>
-        <table class="layui-table" id="tableDemo">
-            <thead>
-                <tr>
-                    <th lay-data="{field:'id', width:80, sort: true}">ID</th>
-                    <th lay-data="{field:'username', width:80}">用户名</th>
-                    <th lay-data="{field:'sex', width:80, sort: true}">性别</th>
-                    <th lay-data="{field:'city'}">城市</th>
-                    <th lay-data="{field:'sign'}">签名</th>
-                    <th lay-data="{field:'experience', sort: true}">积分</th>
-                    <th lay-data="{field:'score', sort: true}">评分</th>
-                    <th lay-data="{field:'classify'}">职业</th>
-                    <th lay-data="{field:'wealth', sort: true}">财富</th>
-                </tr>
-            </thead>
+    <div class="tab-container" id = "tab-container" style="float:right; display:inline; margin-right: 20px">
+        <div class="layui-tab layui-tab-card" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+                <li application_status="1" class="layui-this">用户类型1</li>
+                <li application_status="2">用户类型2</li>
+                <li application_status="3">全部</li>
 
-        </table>
+            </ul>
+            <div class="layui-tab-content" style="height: 100%;width: 100%;">
+                <div class="layui-tab-item layui-show" id="tab-show" style="min-height: 920px; min-width: 500px;">
+                    <table id="fourFile_not"></table>
+                </div>
+                <div class="layui-tab-item" style="width: 100%;height:800px;">
+                    <table id="fourFile_have"></table>
+                </div>
+                <div class="layui-tab-item" style="width: 100%;height:800px;">
+                    <table id="fourFile_all"></table>
+                </div>
+            </div>
+        </div>
     </div>
+
 </body>
 
 </html>
