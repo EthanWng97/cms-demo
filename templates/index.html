@@ -12,6 +12,7 @@
     <script src="/static/js/jquery.min.js "></script>
     <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.all.min.js"></script>
     <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/index.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/tree_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_controller.js') }}"></script>
@@ -20,7 +21,6 @@
 
 <body>
     <div class="tree-container" style="float:left; display:inline">
-        <script src="{{ url_for('static',filename='js/tree_pure_async.js') }}"></script>
         <ul id="treeDemo" class="ztree"></ul>
         <ul id="directory-tree-menu">
             <li id="menu-item-addRoot">添加根[表]</li>
@@ -40,7 +40,7 @@
         <form class="layui-form" id="information" method="post" lay-filter="example">
         </form>
     </div>
-    <div class="tab-container" id = "tab-container" style="float:right; display:inline; margin-right: 20px">
+    <div class="tab-container" id="tab-container" style="float:right; display:inline; margin-right: 20px">
         <div class="layui-tab layui-tab-card" lay-filter="docDemoTabBrief">
             <ul class="layui-tab-title">
                 <li application_status="1" class="layui-this">用户类型1</li>
