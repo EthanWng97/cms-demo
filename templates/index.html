@@ -17,6 +17,7 @@
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/table_controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tab_controller.js') }}"></script>
 </head>
 
 <body>
@@ -40,24 +41,11 @@
         <form class="layui-form" id="information" method="post" lay-filter="example">
         </form>
     </div>
-    <div class="tab-container" id="tab-container" style="float:right; display:inline; margin-right: 20px">
-        <div class="layui-tab layui-tab-card" lay-filter="docDemoTabBrief">
+    <div class="tab-container" id="tab-container" style="float:right; display:inline; ">
+        <div class="layui-tab layui-tab-card" lay-allowClose="true" lay-filter="docDemoTabBrief">
             <ul class="layui-tab-title">
-                <li application_status="1" class="layui-this">用户类型1</li>
-                <li application_status="2">用户类型2</li>
-                <li application_status="3">全部</li>
-
             </ul>
-            <div class="layui-tab-content" style="height: 100%;width: 100%;">
-                <div class="layui-tab-item layui-show" id="tab-show" style="min-height: 920px; min-width: 500px;">
-                    <table id="fourFile_not"></table>
-                </div>
-                <div class="layui-tab-item" style="width: 100%;height:800px;">
-                    <table id="fourFile_have"></table>
-                </div>
-                <div class="layui-tab-item" style="width: 100%;height:800px;">
-                    <table id="fourFile_all"></table>
-                </div>
+            <div class="layui-tab-content" id="tab-show" style="min-height: 920px; min-width: 500px;">
             </div>
         </div>
     </div>
