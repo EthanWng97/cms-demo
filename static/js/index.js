@@ -1,14 +1,14 @@
 $(function () {
     onLoadTree();
-    showTable();
+    // showTable();
     var pagestyle = function () {
         var container = $("#tab-container");
-        var w = $(window).width() - 350;
+        var w = $(window).width() - 340;
         if (w < 100) {
             w = 100;
         }
         container.width(w);
-        $("#tab-show").width(w).width(w);
+        // $("#tab-show").width(w).width(w);
 
         var h = $(window).height() - container.offset().top - 10;
         container.height(h);
