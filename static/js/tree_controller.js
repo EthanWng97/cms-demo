@@ -17,6 +17,7 @@ if(method == "normal"){
             callback: {
                 onExpand: expandNode,
                 onRightClick: onRightClick,
+                onDblClick: onDblClick,
             }
         },
         preLoadNode: function (rawData) {
@@ -73,6 +74,7 @@ else if (method == "async"){
             callback: {
                 onExpand: expandNode,
                 onRightClick: onRightClick,
+                onDblClick: onDblClick,
             }
         },
         preLoadNode: function (rawData) {
@@ -172,6 +174,10 @@ function onRightClick(event, treeId, treeNode) {
         }
     });
 }
+
+function onDblClick(event, treeId, treeNode) {
+    showTab(treeNode.name, null, treeNode.id);
+};
 
 function hideMenu() {
     $('#directory-tree-menu').hide();
