@@ -1,4 +1,9 @@
 /* treeDemo */
+.ztree * {
+     font-size:13px;
+     padding:1px;
+}
+
 ul#treeDemo {
     width: 20%;
     overflow: true;
