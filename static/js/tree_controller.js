@@ -176,7 +176,8 @@ function onRightClick(event, treeId, treeNode) {
 }
 
 function onDblClick(event, treeId, treeNode) {
-    showTab(treeNode.name, null, treeNode.id);
+    if (treeNode != null)
+        showTab(treeNode.name, null, treeNode.id);
 };
 
 function hideMenu() {
