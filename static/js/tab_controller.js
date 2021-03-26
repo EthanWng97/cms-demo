@@ -8,7 +8,9 @@ function showTab(title, content, id) {
         }
     })
     if (isExist == false) {
+        content = '<table id="' + id + '" lay-filter="test"></table>'
         tabAdd(title, content, id);
+        showTable(id);
     }
     tabChange(id);
 }
