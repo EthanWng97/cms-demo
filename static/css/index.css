@@ -1,7 +1,7 @@
 /* treeDemo */
 .ztree * {
-     font-size:13px;
-     padding:1px;
+    font-size: 13px;
+    padding: 1px;
 }
 
 ul#treeDemo {
@@ -75,3 +75,18 @@ label.layui-form-label {
 input.layui-input {
     width: 80%;
 }
+
+/* .layui-table-box .layui-table-main table tr {
+    height: 47.5px;
+    line-height: 47.5px;
+}
+
+.layui-table-box .layui-table-fixed .layui-table-body table tr {
+    height: 47.5px;
+
+} */
+
+/* .layui-table-cell * {
+    height: 36px;
+    line-height: 36px;
+} */
