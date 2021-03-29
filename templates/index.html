@@ -12,23 +12,18 @@
     <script src="/static/js/jquery.min.js "></script>
     <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.all.min.js"></script>
     <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/table_template.js') }}"></script>
+    
     <script type="text/javascript" src="{{ url_for('static',filename='js/index.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/tree_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/form_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/table_controller.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/tab_controller.js') }}"></script>
 
-    <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static',filename='js/table_template.js') }}"></script>
 </head>
 
 <body>
-
-    <script type="text/html" id="isFieldCheckbox">
-  <!-- 这里的 checked 的状态只是演示 -->
-    <input type="checkbox" name="isField" lay-skin="primary">
-    </script>
-
     <div class="tree-container" style="float:left; display:inline">
         <ul id="treeDemo" class="ztree"></ul>
         <ul id="directory-tree-menu">
