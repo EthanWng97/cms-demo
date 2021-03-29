@@ -1,4 +1,6 @@
-layui.use(['element', 'jquery'], function () {});
+layui.use(['element', 'jquery'], function () {
+    loadTableTemplate();
+});
 
 function showTab(title, content, id) {
     var isExist = false;
