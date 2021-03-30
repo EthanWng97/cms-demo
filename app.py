@@ -228,8 +228,38 @@ def get_rowdata(row_json):
     return result
 
 
-@app.route("/getunionjson", methods=["GET", "POST"])
-def get_union_json():
+@app.route("/dataset/load", methods=["GET", "POST"])
+def dataset_load():
+    """ 加载 springtb 中的树形结构
+    Args:
+        arg: sid的列表，存储着需要遍历的节点列表
+        {
+            "sId":[
+                "77721d6d-01fc-4b80-a316-7f6d07549542",
+                "31b4ade8-5f03-46e4-bdad-262b0974f787"
+            ]
+        }
+    Returns:
+        json.dumps(result): 符合 ZTree 的树形数据结构
+        {
+            "f0eff541-4e35-4ef5-a5ae-7df2df3f05ea":[
+                {
+                    "id":"2082994e-eeca-4fc7-aec1-712cb2fec23e",
+                    "pId":"f0eff541-4e35-4ef5-a5ae-7df2df3f05ea",
+                    "name":"数据库信息[springDbInfo]",
+                    "isParent":0
+                },
+                {
+                    "id":"378ea5cb-0916-4cbc-a10c-8742d36e3d1c",
+                    "pId":"f0eff541-4e35-4ef5-a5ae-7df2df3f05ea",
+                    "name":"表[springTb]",
+                    "isParent":0
+                }
+            ],
+            "f0eff541-4e35-4ef5-a5ae-7df2df3f05eb":[
+            ]
+        }
+    """
     sid = request.form.get("sId")
     isJson = _is_json(sid)
     groups = _fetch_tree_data(sid, isJson)
@@ -243,8 +273,47 @@ def get_union_json():
     return json.dumps(result)
 
 
-@app.route("/dataset", methods=["GET", "POST"])
-def dataset():
+@app.route("/dataset/action", methods=["GET", "POST"])
+def dataset_action():
+    """ 一个动作组，用来执行对数据库的操作的增删改操作
+    Args:
+        action:
+        {
+            "_userId": "123",
+            "_userName": "123",
+            "_info": 
+            [
+                {
+                    "action":"update","sId":"378ea5cb-0916-4cbc-a10c-8742d36e3d1c",
+                    "pId":"f0eff541-4e35-4ef5-a5ae-7df2df3f05ea",
+                    "tbType":1,
+                    "name":"springTb",
+                    "shortName":"123",
+                    "description":"表",
+                    "descriptionEn":"",
+                    "tbName":"springTb",
+                    "fieldName":"",
+                    "fieldNo":null,
+                    "isFile":null,
+                    "filePathNo":"",
+                    "storedProcName":"springTb_Action",
+                    "remark":""
+                }
+            ],
+            "_entity": "123",
+            "_error": "123",
+            "_eInfo": "123"
+        }
+    Returns:
+        json.dumps(result): 返回动作组执行结果
+        [
+            {"info": "i._info",
+            "entity": "i._entity",
+            "error": "i._error",
+            "einfo": "i._einfo"
+            }
+        ]
+    """
     action_json = request.form.get("action")
     isJson = _is_json(action_json)
     result = get_action(action_json)
@@ -252,7 +321,39 @@ def dataset():
 
 
 @app.route("/dataset/rowdata", methods=["GET", "POST"])
-def rowdata():
+def dataset_rowdata():
+    """ 在 springtb 中获取特定表的字段属性值
+    Args:
+        row:指定数据库 + 表格信息
+        {
+            "_db": "dbo.springtb",
+            "_sid": "treeNode.id"
+        }
+    Returns:
+        json.dumps(result): 表sid以及相关字段属性值
+        {
+            "sid":"f0eff541-4e35-4ef5-a5ae-7df2df3f05ea",
+            "pid":null,
+            "tbtype":0,
+            "name":"数据模型",
+            "shortname":"数据模型",
+            "description":"数据模型",
+            "descriptionen":"",
+            "tbname":"",
+            "fieldname":"",
+            "fieldno":null,
+            "isfile":0,
+            "filepathno":"",
+            "storedprocname":"",
+            "remark":"",
+            "queue":1,
+            "createuser":"77dec868-d001-4790-b6a4-0fa8df9a39f9",
+            "createtime":"2012-12-14 11:34:11.579009+00:00",
+            "modifyuser":null,
+            "modifytime":"2021-03-23 11:41:54.031940+00:00",
+            "stamp":"0x0000000000339BF8"
+        }
+    """
     row_json = request.form.get("row")
     isJson = _is_json(row_json)
     result = get_rowdata(row_json)
@@ -271,54 +372,3 @@ if __name__ == "__main__":
     # get_simple_json()
     # 启动flask
     app.run(debug=True)
-
-    # action_json = {
-    #     "_userId": "120912",
-    #     "_userName": "wangyifan",
-    #     "_info": [
-    #         {
-    #             "action": "del",
-    #             "sId": "123",
-    #             "pId": "textbox2",
-    #             "tbType": 0,
-    #             "name": "testname",
-    #             "shortName": "testshortName",
-    #             "description": "testdescription",
-    #             "descriptionEn": "testdescriptionEn",
-    #             "tbName": "testtbName",
-    #             "fieldName": "testfieldName",
-    #             "fieldNo": 123,
-    #             "isFile": 0,
-    #             "filePathNo": "testfilePathNo",
-    #             "storedProcName": "teststoredProcName",
-    #             "remark": "testremark",
-    #             "sTamp": "2020-11-12 04:17:43.635664",
-    #             "queue": 1,
-    #         },
-    #         {
-    #             "action": "del",
-    #             "sId": "123",
-    #             "pId": "textbox2",
-    #             "tbType": 0,
-    #             "name": "testname",
-    #             "shortName": "testshortName",
-    #             "description": "testdescription",
-    #             "descriptionEn": "testdescriptionEn",
-    #             "tbName": "testtbName",
-    #             "fieldName": "testfieldName",
-    #             "fieldNo": 123,
-    #             "isFile": 0,
-    #             "filePathNo": "testfilePathNo",
-    #             "storedProcName": "teststoredProcName",
-    #             "remark": "testremark",
-    #             "sTamp": "2020-11-12 04:17:43.635664",
-    #             "queue": 1,
-    #         },
-    #     ],
-    #     "_entity": "123",
-    #     "_error": "123",
-    #     "_eInfo": "123",
-    # }
-
-    # action_json = json.dumps(action_json) # convert to json
-    # get_action(action_json)
