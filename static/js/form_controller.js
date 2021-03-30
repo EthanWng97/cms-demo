@@ -92,7 +92,7 @@ function submitForm() {
     var sendData = {
         action: jsonObj
     };
-    wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
+    wrapAjax(true, "dataset/action", "POST", "json", sendData, true, function (data) {
         var msg = data[0].info[0]._einfo;
         layer.msg(msg);
         if (msg.indexOf("success") != -1) {

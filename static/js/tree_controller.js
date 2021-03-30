@@ -1,4 +1,4 @@
-var method = "async"
+var method = "normal"
 var tree;
 if(method == "normal"){
     tree = {
@@ -32,7 +32,7 @@ if(method == "normal"){
                 var sendData = {
                     sId: JSON.stringify(data_list)
                 };
-                wrapAjax(true, "getunionjson", "POST", "json", sendData, false, function (data) {
+                wrapAjax(true, "dataset/load", "POST", "json", sendData, false, function (data) {
                     tree.addSubNodes(data);
                 }, function (error) {
                     console.log(error);
@@ -65,7 +65,7 @@ else if (method == "async"){
             },
             async: { // 属性配置
                 enable: true,
-                url: "getunionjson",
+                url: "dataset/load",
                 otherParam: getParam,
                 type: 'post',
                 dataType: "json",
@@ -105,7 +105,7 @@ function dataFilter(treeId, parentNode, responseData) {
 }
 
 function onLoadTree() {
-    wrapAjax(true, "getunionjson", "POST", "json", null, true, function (data) {
+    wrapAjax(true, "dataset/load", "POST", "json", null, true, function (data) {
         zNodes = data["0"];
         tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
         tree.preLoadNode(tree.zTree.getNodes());
@@ -146,7 +146,7 @@ function onRemove(treeNode) {
     var sendData = {
         action: jsonObj
     };
-    wrapAjax(true, "dataset", "POST", "json", sendData, true, function (data) {
+    wrapAjax(true, "dataset/action", "POST", "json", sendData, true, function (data) {
         var msg = data[0].info[0]._einfo
         layer.msg(msg);
         if (msg.indexOf("success") != -1) {
