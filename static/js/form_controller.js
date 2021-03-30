@@ -22,7 +22,7 @@ function createForm(data) {
     // construct form given list of data
     constructForm(data);
 
-    console.log(data['name']);
+    // console.log(data['name']);
     // show thr form and fill the data
     layer.open({
         type: 1, //Page层类型
@@ -88,7 +88,7 @@ function constructForm(data) {
 
 function submitForm() {
     jsonObj = createActionJson(type = "upp");
-    console.log(jsonObj)
+    // console.log(jsonObj)
     var sendData = {
         action: jsonObj
     };
@@ -107,22 +107,23 @@ function submitForm() {
 }
 
 function createActionJson(type, treeNode) {
+    var data = layui.form.val("information");
     var info_json = {
         "action": type,
         "sId": tree.pTreeNode.id,
         "pId": tree.pTreeNode.pId,
-        "tbType": parseInt($('#tbtype').val()),
-        "name": $('#name').val(),
-        "shortName": $('#shortname').val(),
-        "description": $('#description').val(),
-        "descriptionEn": $('#descriptionen').val(),
-        "tbName": $('#tbname').val(),
-        "fieldName": $('#fieldname').val(),
-        "fieldNo": parseInt($('#fieldno').val()),
-        "isFile": $("input:checkbox[name='isfile']:checked").length == 1 ? 1 : 0,
-        "filePathNo": $('#filepathno').val(),
-        "storedProcName": $('#storedprocname').val(),
-        "remark": $('#remark').val(),
+        "tbType": parseInt(data['tbtype']),
+        "name": data['name'],
+        "shortName": data['shortname'],
+        "description": data['description'],
+        "descriptionEn": data['descriptionen'],
+        "tbName": data['tbname'],
+        "fieldName": data['fieldname'],
+        "fieldNo": parseInt(data['fieldno']),
+        "isFile": data['isfile'] ? 1 : 0,
+        "filePathNo": data['filepathno'],
+        "storedProcName": data['storedprocname'],
+        "remark": data['remark'],
     };
 
     var action_list = [];
@@ -146,23 +147,24 @@ function _xname(pid, description, name) {
 
 function fillForm(data) {
     var form = layui.form;
-    console.log(data);
-    $('#tbtype').val(data['tbtype']);
-    $('#name').val(data['name']);
-    $('#shortname').val(data['shortname']);
-    $('#description').val(data['description']);
-    $('#descriptionen').val(data['descriptionen']);
-    $('#tbname').val(data['tbname']);
-    $('#fieldname').val(data['fieldname']);
-    data['isfile'] == 1 ? $('#isfile').prop("checked", true) : $('#isfile').prop("checked", false);
-
-    $('#fieldno').val(data['fieldno']);
-    $('#filepathno').val(data['filepathno']);
-    $('#storedprocname').val(data['storedprocname']);
-    $('#remark').val(data['remark']);
-    $('#createuser').val(data['createuser']);
-    $('#createtime').val(data['createtime']);
-    $('#modifyuser').val(data["modifyuser"]);
-    $('#modifytime').val(data["modifytime"]);
-    form.render(); //刷新select选择框渲染
+    // console.log(data);
+    form.val("information", {
+        "tbtype": data['tbtype'],
+        "name": data['name'],
+        "shortname": data['shortname'],
+        "description": data['description'],
+        "descriptionen": data['descriptionen'],
+        "tbname": data['tbname'],
+        "fieldname": data['fieldname'],
+        "isfile": data['isfile'] == 1,
+        "fieldno": data['fieldno'],
+        "filepathno": data['filepathno'],
+        "storedprocname": data['storedprocname'],
+        "remark": data['remark'],
+        "createuser": data['createuser'],
+        "createtime": data['createtime'],
+        "modifyuser": data['modifyuser'],
+        "modifytime": data['modifytime']
+    })
+    form.render(null, 'information'); //刷新select选择框渲染
 }
