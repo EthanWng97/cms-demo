@@ -230,7 +230,7 @@ def get_rowdata(row_json):
 
 @app.route("/dataset/load", methods=["GET", "POST"])
 def dataset_load():
-    """ 加载 springtb 中的树形结构
+    """加载 springtb 中的树形结构
     Args:
         arg: sid的列表，存储着需要遍历的节点列表
         {
@@ -275,13 +275,13 @@ def dataset_load():
 
 @app.route("/dataset/action", methods=["GET", "POST"])
 def dataset_action():
-    """ 一个动作组，用来执行对数据库的操作的增删改操作
+    """一个动作组，用来执行对数据库的操作的增删改操作
     Args:
         action:
         {
             "_userId": "123",
             "_userName": "123",
-            "_info": 
+            "_info":
             [
                 {
                     "action":"update","sId":"378ea5cb-0916-4cbc-a10c-8742d36e3d1c",
@@ -322,7 +322,7 @@ def dataset_action():
 
 @app.route("/dataset/rowdata", methods=["GET", "POST"])
 def dataset_rowdata():
-    """ 在 springtb 中获取特定表的字段属性值
+    """在 springtb 中获取特定表的字段属性值
     Args:
         row:指定数据库 + 表格信息
         {
@@ -358,6 +358,129 @@ def dataset_rowdata():
     isJson = _is_json(row_json)
     result = get_rowdata(row_json)
     return json.dumps(result)
+
+
+@app.route("/dataset/table/<sid>", methods=["GET", "POST"])
+def dataset_table(sid):
+    """Description
+    Args:
+        arg:
+    Returns:
+        json.dumps(result):
+        {
+            "code":0,
+            "msg":"",
+            "count":1000,
+            "data":[
+                {
+                    "id":"00194a35-0e40-4583-bb19-407271dfe69e",
+                    "isField":1,
+                    "name":"sId",
+                    "description":"主键",
+                    "fdType":"varchar",
+                    "length":"36",
+                    "decimal":"0",
+                    "descriptionEn":"主键",
+                    "isNullable":0,
+                    "isUseable":1,
+                    "isForeignKey":0,
+                    "fkTbId":null,
+                    "fkFieldId":null,
+                    "defaultValue":null,
+                    "uiType":"TextBox",
+                    "uiMask":null,
+                    "uiVisible":0,
+                    "uiReadOnly":1,
+                    "uiWidth":"60",
+                    "uiDefault":null,
+                    "isAddField":1,
+                    "isEditField":1,
+                    "orderType":1,
+                    "remark":null,
+                    "createUser":"创建用户",
+                    "createTime":"创建时间",
+                    "modifyUser":"修改用户",
+                    "modifyTime":"修改时间"
+                }
+            ]
+        }
+    """
+    page = request.args.get("page")
+    limit = request.args.get("limit")
+    print(sid)
+    print(page)
+    print(limit)
+    data = []
+    data_list1 = {
+        "id":"00194a35-0e40-4583-bb19-407271dfe69e",
+        "isField": 1,
+        "name": "sId",
+        "description": "主键",
+        "fdType": "varchar",
+        "length": "36",
+        "decimal": "0",
+        "descriptionEn": "主键",
+        "isNullable": 1,
+        "isUseable": 1,
+        "isForeignKey": 1,
+        "fkTbId": None,
+        "fkFieldId": None,
+        "defaultValue": None,
+        "uiType": 2,
+        "uiMask": None,
+        "uiVisible": 1,
+        "uiReadOnly": 1,
+        "uiWidth": "60",
+        "uiDefault": None,
+        "isAddField": 1,
+        "isEditField": 1,
+        "orderType": 1,
+        "remark": None,
+        "createUser": "创建用户",
+        "createTime": "创建时间",
+        "modifyUser": "修改用户",
+        "modifyTime": "修改时间",
+    }
+    data_list2 = {
+        "id": "0067a87a-0a42-474f-a3a2-b682120da2c7",
+        "isField": 1,
+        "name": "sId123",
+        "description": "测试",
+        "fdType": "integer",
+        "length": "36",
+        "decimal": "0",
+        "descriptionEn": "主键",
+        "isNullable": 1,
+        "isUseable": 1,
+        "isForeignKey": 1,
+        "fkTbId": None,
+        "fkFieldId": None,
+        "defaultValue": None,
+        "uiType": 2,
+        "uiMask": None,
+        "uiVisible": 0,
+        "uiReadOnly": 1,
+        "uiWidth": "60",
+        "uiDefault": None,
+        "isAddField": 1,
+        "isEditField": 1,
+        "orderType": 1,
+        "remark": None,
+        "createUser": "创建用户",
+        "createTime": "创建时间",
+        "modifyUser": "修改用户",
+        "modifyTime": "修改时间",
+    }
+    data.append(data_list1)
+    data.append(data_list2)
+    result = {
+        "code":0,
+        "msg":"",
+        "count":1000,
+        "data": data
+    }
+    return json.dumps(result)
+    # get from springField according to page and limit
 
 
 # 定义url请求路径
