@@ -230,7 +230,7 @@ def get_rowdata(row_json):
 
 @app.route("/dataset/load", methods=["GET", "POST"])
 def dataset_load():
-    """加载 springtb 中的树形结构
+    """ 加载 springtb 中的树形结构
     Args:
         arg: sid的列表，存储着需要遍历的节点列表
         {
@@ -275,7 +275,7 @@ def dataset_load():
 
 @app.route("/dataset/action", methods=["GET", "POST"])
 def dataset_action():
-    """一个动作组，用来执行对数据库的操作的增删改操作
+    """ 一个动作组，用来执行对数据库的操作的增删改操作
     Args:
         action:
         {
@@ -322,7 +322,7 @@ def dataset_action():
 
 @app.route("/dataset/rowdata", methods=["GET", "POST"])
 def dataset_rowdata():
-    """在 springtb 中获取特定表的字段属性值
+    """ 在 springtb 中获取特定表的字段属性值
     Args:
         row:指定数据库 + 表格信息
         {
