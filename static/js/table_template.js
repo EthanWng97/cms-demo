@@ -1,47 +1,47 @@
 function loadTableTemplate() {
     var isFieldCheckbox =
         '<script type="text/html" id="isFieldCheckbox">' +
-        '<input type="checkbox" name="isField" lay-skin="primary">' +
+        '<input type="checkbox" name="isField" id="isField-{{d.id}}" lay-skin="primary"> ' +
         '</script>';
 
     var isNullableCheckbox =
         '<script type="text/html" id="isNullableCheckbox">' +
-        '<input type="checkbox" name="isNullable" lay-skin="primary">' +
+        '<input type="checkbox" name="isNullable" id="isNullable-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var isUseableCheckbox =
         '<script type="text/html" id="isUseableCheckbox">' +
-        '<input type="checkbox" name="isUseable" lay-skin="primary">' +
+        '<input type="checkbox" name="isUseable" id="isUseable-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var isForeignKeyCheckbox =
         '<script type="text/html" id="isForeignKeyCheckbox">' +
-        '<input type="checkbox" name="isForeignKey" lay-skin="primary">' +
+        '<input type="checkbox" name="isForeignKey" id="isForeignKey-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var uiVisibleCheckbox =
         '<script type="text/html" id="uiVisibleCheckbox">' +
-        '<input type="checkbox" name="uiVisible" lay-skin="primary">' +
+        '<input type="checkbox" name="uiVisible" id="uiVisible-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var uiReadOnlyCheckbox =
         '<script type="text/html" id="uiReadOnlyCheckbox">' +
-        '<input type="checkbox" name="uiReadOnly" lay-skin="primary">' +
+        '<input type="checkbox" name="uiReadOnly" id="uiReadOnly-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var isAddFieldCheckbox =
         '<script type="text/html" id="isAddFieldCheckbox">' +
-        '<input type="checkbox" name="isAddField" lay-skin="primary">' +
+        '<input type="checkbox" name="isAddField" id="isAddField-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var isEditFieldCheckbox =
         '<script type="text/html" id="isEditFieldCheckbox">' +
-        '<input type="checkbox" name="isEditField" lay-skin="primary">' +
+        '<input type="checkbox" name="isEditField" id="isEditField-{{d.id}}" lay-skin="primary">' +
         '</script>';
 
     var fdTypeSelect =
         '<script type="text/html" id="fdTypeSelect">' +
-        '<select name="fdTypeSelect" lay-verify="" lay-search="">' +
+        '<select name="fdTypeSelect" id="fdType-{{d.id}}" lay-verify="" lay-search="">' +
         '    <option value="integer">integer</option>' +
         '    <option value="varchar">varchar</option>' +
         '    <option value="timestamp with time zone">timestamp with time zone</option>' +
@@ -51,7 +51,7 @@ function loadTableTemplate() {
 
     var uiTypeSelect =
         '<script type="text/html" id="uiTypeSelect">' +
-        '<select name="uiTypeSelect" lay-verify="" lay-search="">' +
+        '<select name="uiTypeSelect" id="uiType-{{d.id}}" lay-verify="" lay-search="">' +
         '    <option value="1">Lable</option>' +
         '    <option value="2">TextBox</option>' +
         '    <option value="3">CheckBox</option>' +
@@ -66,7 +66,7 @@ function loadTableTemplate() {
 
     var orderTypeSelect =
         '<script type="text/html" id="orderTypeSelect">' +
-        '<select name="orderTypeSelect" lay-verify="" lay-search="">' +
+        '<select name="orderTypeSelect" id="orderType-{{d.id}}" lay-verify="" lay-search="">' +
         '    <option value="-1">升序</option>' +
         '    <option value="1">降序</option>' +
         '</select>' +

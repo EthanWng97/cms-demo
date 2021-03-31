@@ -1,4 +1,4 @@
-var method = "normal"
+var method = "async"
 var tree;
 if(method == "normal"){
     tree = {
