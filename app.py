@@ -360,11 +360,13 @@ def dataset_rowdata():
     return json.dumps(result)
 
 
-@app.route("/dataset/table/<sid>", methods=["GET", "POST"])
-def dataset_table(sid):
+@app.route("/dataset/table1/<sid>", methods=["GET", "POST"])
+def dataset_table1(sid):
     """Description
     Args:
-        arg:
+        sid: 具体table的sid，在springField中以 tbid 显示
+        page： 分页查询的页编号
+        limit： 每页显示的最大数目
     Returns:
         json.dumps(result):
         {
@@ -480,8 +482,78 @@ def dataset_table(sid):
         "data": data
     }
     return json.dumps(result)
-    # get from springField according to page and limit
 
+@app.route("/dataset/table2/<sid>", methods=["GET", "POST"])
+def dataset_table2(sid):
+    """Description
+    Args:
+        sid: 具体table的sid，在 springTbUiTemplate 中以 tbid 显示
+        page： 分页查询的页编号
+        limit： 每页显示的最大数目
+    Returns:
+        json.dumps(result):
+        {
+            "code":0,
+            "msg":"",
+            "count":1000,
+            "data":[
+                {
+                    "id":"1b5f0d8d-b9d7-4446-b4bd-5e261185e169",
+                    "type": 1,
+                    "no": 99,
+                    "name": "多数据集合",
+                    "description": "描述",
+                    "descriptionEn": "英文描述",
+                    "remark": None,
+                    "createUser": "创建用户",
+                    "createTime": "创建时间",
+                    "modifyUser": "修改用户",
+                    "modifyTime": "修改时间",
+                }
+            ]
+        }
+    """
+    page = request.args.get("page")
+    limit = request.args.get("limit")
+    print(sid)
+    print(page)
+    print(limit)
+    data = []
+    data_list1 = {
+        "id":"1b5f0d8d-b9d7-4446-b4bd-5e261185e169",
+        "type": 1,
+        "no": 99,
+        "name": "多数据集合",
+        "description": "描述",
+        "descriptionEn": "英文描述",
+        "remark": None,
+        "createUser": "创建用户",
+        "createTime": "创建时间",
+        "modifyUser": "修改用户",
+        "modifyTime": "修改时间",
+    }
+    data_list2 = {
+        "id": "2be97a9f-4134-450f-8961-9c42ab045075",
+        "type": 2,
+        "no": 100,
+        "name": "多数据集合",
+        "description": "描述",
+        "descriptionEn": "英文描述",
+        "remark": None,
+        "createUser": "创建用户",
+        "createTime": "创建时间",
+        "modifyUser": "修改用户",
+        "modifyTime": "修改时间",
+    }
+    data.append(data_list1)
+    data.append(data_list2)
+    result = {
+        "code":0,
+        "msg":"",
+        "count":1000,
+        "data": data
+    }
+    return json.dumps(result)
 
 # 定义url请求路径
 @app.route("/")
