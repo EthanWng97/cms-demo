@@ -1,5 +1,7 @@
 layui.use(['element', 'jquery'], function () {
-    loadTableTemplate();
+    loadTemplateTable1();
+    loadTemplateTable2();
+
 });
 
 function showTab(title, content, id) {
@@ -10,9 +12,11 @@ function showTab(title, content, id) {
         }
     })
     if (isExist == false) {
-        content = '<table id="' + id + '" lay-filter="test"></table>'
+        content = '<table id="' +'table1-'+ id + '" lay-filter="test"></table>'+
+        '<table id="' + 'table2-' + id + '" lay-filter="test"></table>';
         tabAdd(title, content, id);
-        showTable(id);
+        showTable1(id);
+        showTable2(id);
     }
     tabChange(id);
 }
