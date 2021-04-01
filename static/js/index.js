@@ -1,3 +1,20 @@
+function wrapAjax(cache, url, type, dataType, sendData = null, async = true, success, failed) {
+    $.ajax({
+        cache: cache,
+        url: url,
+        type: type,
+        dataType: dataType,
+        data: sendData,
+        async: async,
+        success: function (data) {
+            success(data);
+        },
+        error: function (error) {
+            failed(error);
+        },
+    });
+}
+
 $(function () {
     onLoadTree();
     // showTable();
