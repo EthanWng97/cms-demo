@@ -1,4 +1,4 @@
-function loadTableTemplate() {
+function loadTemplateTable1() {
     var isFieldCheckbox =
         '<script type="text/html" id="isFieldCheckbox">' +
         '<input type="checkbox" name="isField" id="isField-{{d.id}}" lay-skin="primary"> ' +
@@ -84,7 +84,7 @@ function loadTableTemplate() {
     $("body").append(isAddFieldCheckbox);
     $("body").append(isEditFieldCheckbox);
 }
-var cols_template = [
+var colsTable1 = [
     [ //标题栏
         {
             type: 'numbers',
@@ -220,93 +220,63 @@ var cols_template = [
     ]
 ];
 
-var data_template = [{
-    "id": "10001",
-    "username": "杜甫",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "116",
-    "ip": "192.168.0.8",
-    "logins": "108",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10002",
-    "username": "李白",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "12",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14",
-    "LAY_CHECKED": true
-}, {
-    "id": "10003",
-    "username": "王勃",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "65",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10004",
-    "username": "贤心",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "666",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10005",
-    "username": "贤心",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "86",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10006",
-    "username": "贤心",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "12",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10007",
-    "username": "贤心",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "16",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}, {
-    "id": "10008",
-    "username": "贤心",
-    "email": "xianxin@layui.com",
-    "sex": "男",
-    "city": "浙江杭州",
-    "sign": "人生恰似一场修行",
-    "experience": "106",
-    "ip": "192.168.0.8",
-    "logins": "106",
-    "joinTime": "2016-10-14"
-}];
+function loadTemplateTable2() {
+    var typeSelect =
+        '<script type="text/html" id="typeSelect">' +
+        '<select name="typeSelect" id="type-{{d.id}}" lay-verify="" lay-search="">' +
+        '    <option value="1">多数据集</option>' +
+        '    <option value="2">单数据集(WinForm)</option>' +
+        '    <option value="3">单数据(Web)</option>' +
+        '</select>' +
+        '</script>';
+    $("body").append(typeSelect);
+}
+var colsTable2 = [
+    [ //标题栏
+        {
+            type: 'numbers',
+        },
+        {
+            field: 'type',
+            title: '实例类型',
+            width: 200,
+            templet: '#typeSelect'
+        }, {
+            field: 'no',
+            title: '编码',
+            width: 120
+        }, {
+            field: 'name',
+            title: '名称',
+            width: 120
+        }, {
+            field: 'description',
+            title: '描述',
+            width: 120
+        }, {
+            field: 'descriptionEn',
+            title: '英文描述',
+            width: 120
+        }, {
+            field: 'remark',
+            title: '备注',
+            width: 80,
+        }, {
+            field: 'createUser',
+            title: '创建人',
+            width: 120,
+        }, {
+            field: 'createTime',
+            title: '创建时间',
+            width: 120,
+        }, {
+            field: 'modifyUser',
+            title: '修改人',
+            width: 120,
+        }, {
+            field: 'modifyTime',
+            title: '修改时间',
+            width: 120,
+        }
+    ]
+];
