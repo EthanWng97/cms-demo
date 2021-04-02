@@ -20,7 +20,7 @@ $(function () {
     // showTable();
     var pagestyle = function () {
         var container = $("#tab-container");
-        var w = $(window).width() - 340;
+        var w = $(window).width() - 350;
         if (w < 100) {
             w = 100;
         }
