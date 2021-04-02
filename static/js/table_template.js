@@ -264,19 +264,19 @@ var colsTable2 = [
         }, {
             field: 'createUser',
             title: '创建人',
-            width: 120,
+            width: 300,
         }, {
             field: 'createTime',
             title: '创建时间',
-            width: 120,
+            width: 300,
         }, {
             field: 'modifyUser',
             title: '修改人',
-            width: 120,
+            width: 300,
         }, {
             field: 'modifyTime',
             title: '修改时间',
-            width: 120,
+            width: 300,
         }
     ]
 ];
