@@ -35,13 +35,13 @@ CREATE TABLE dbo.springTbTypeRel
 (
     sId varchar(36) NOT NULL,
     tbId  varchar(36) NULL,
-    pNo bigint NULL,
-    cNo bigint NULL,
+    pNo int NULL,
+    cNo int NULL,
     name  varchar(50) NULL,
     description varchar NULL,
     descriptionEn varchar NULL,
     Remark varchar NULL,
-    queue bigint NULL,
+    queue int NULL,
     createUser varchar(36) NULL,
     createTime timestamp with time zone NULL,
     modifyUser varchar(36) NULL,
@@ -75,7 +75,7 @@ CREATE TABLE dbo.springSpTranslation(
 	sId varchar(36) NOT NULL,
 	spId varchar(36) NULL,
 	language varchar NULL,
-	position bigint NULL,
+	position int NULL,
 	description varchar NULL,
 	descriptionEn varchar NULL,
 	errInfo1 varchar NULL,
@@ -159,7 +159,7 @@ CREATE TABLE dbo.springFdList_d
     sId varchar(36) NOT NULL,
     mId varchar(36) NULL,
     pId varchar(36) NULL,
-    no bigint NULL,
+    no int NULL,
     pathNo varchar NULL,
     code varchar(50) NULL,
     pathCode varchar NULL,
@@ -189,7 +189,7 @@ CREATE TABLE dbo.springTranslation
     tbName varchar(50) NULL,
     path varchar(256) NULL,
     sId varchar(36) NOT NULL,
-    language bigint NULL,
+    language int NULL,
     name varchar(50) NULL,
     description varchar(256) NULL,
     descriptionEn varchar(256) NULL,
@@ -216,8 +216,8 @@ CREATE TABLE dbo.springField
     description varchar(256) NULL,
     descriptionEn varchar(256) NULL,
     fdType varchar(50) NULL,
-    length bigint NULL,
-    decimal bigint NULL,
+    length int NULL,
+    decimal int NULL,
     isNullable int NULL,
     isUseable int NULL,
     isForeignKey int NULL,
@@ -247,6 +247,30 @@ CREATE TABLE dbo.springField
 
 COPY dbo.springField
 FROM '/postgresql/springField.csv'
+csv
+HEADER
+NULL 'NULL';
+
+CREATE TABLE dbo.springTbUiTemplate(
+	sId varchar(36) NOT NULL,
+	tbId varchar(36) NOT NULL,
+	type int NOT NULL,
+	no int NOT NULL,
+	name varchar NULL,
+	description varchar NULL,
+	descriptionEn varchar NULL,
+	Xml varchar NULL,
+	remark varchar NULL,
+    createUser varchar(36) NULL,
+    createTime timestamp with time zone NULL,
+    modifyUser varchar(36) NULL,
+    modifyTime timestamp with time zone NULL,
+    sTamp varchar NULL,
+	PRIMARY KEY(tbId, no)
+);
+
+COPY dbo.springTbUiTemplate
+FROM '/postgresql/springTbUiTemplate.csv'
 csv
 HEADER
 NULL 'NULL';
