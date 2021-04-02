@@ -112,6 +112,8 @@ def _construct_sqlstring(type):
         )
     elif type == "row":
         return text("select * from dbo.springtb where sid=:_sid;")
+    elif type == "table2":
+        return text("select * from dbo.springTbUiTemplate where tbid=:_sid;")
 
 
 def _fetch_tree_data(sid, isJson=False):
@@ -182,6 +184,16 @@ def _fetch_row_data(row_json):
     )
     return result
 
+def _fetch_table2_data(row_json):
+    sql_string = ""
+    sql_string = _construct_sqlstring("table2")
+    result = db_session.execute(
+        sql_string,
+        {
+            "_sid": row_json["sid"],
+        },
+    )
+    return result
 
 # 创建flask的应用对象
 # __name__表示当前的模块名称
@@ -225,6 +237,39 @@ def get_rowdata(row_json):
     for rowproxy in resultproxy:
         for column, value in rowproxy.items():
             result[column] = _data_converter(value)
+    return result
+
+def get_table2(table2_json):
+    table2_json = json.loads(table2_json)
+    resultproxy = _fetch_table2_data(table2_json)
+    result = []
+    i = 0
+    for rowproxy in resultproxy:
+        _dict = {}
+        for column, value in rowproxy.items():
+            if column == "sid":
+                _dict['id'] = _data_converter(value)
+            elif column == "type":
+                _dict['type'] = _data_converter(value)
+            elif column == "no":
+                _dict['no'] = _data_converter(value)
+            elif column == "name":
+                _dict['name'] = _data_converter(value)
+            elif column == "description":
+                _dict['description'] = _data_converter(value)
+            elif column == "descriptionen":
+                _dict['descriptionEn'] = _data_converter(value)
+            elif column == "remark":
+                _dict['remark'] = _data_converter(value)
+            elif column == "createuser":
+                _dict['createUser'] = _data_converter(value)
+            elif column == "createtime":
+                _dict['createTime'] = _data_converter(value)
+            elif column == "modifyuser":
+                _dict['modifyUser'] = _data_converter(value)
+            elif column == "modifytime":
+                _dict['modifyTime'] = _data_converter(value)
+        result.append(_dict)
     return result
 
 
@@ -410,8 +455,8 @@ def dataset_table1(sid):
     page = request.args.get("page")
     limit = request.args.get("limit")
     print(sid)
-    print(page)
-    print(limit)
+    # print(page)
+    # print(limit)
     data = []
     data_list1 = {
         "id":"00194a35-0e40-4583-bb19-407271dfe69e",
@@ -508,51 +553,30 @@ def dataset_table2(sid):
                     "createUser": "创建用户",
                     "createTime": "创建时间",
                     "modifyUser": "修改用户",
-                    "modifyTime": "修改时间",
+                    "modifyTime": "修改时间"
                 }
             ]
         }
     """
     page = request.args.get("page")
     limit = request.args.get("limit")
-    print(sid)
-    print(page)
-    print(limit)
-    data = []
-    data_list1 = {
-        "id":"1b5f0d8d-b9d7-4446-b4bd-5e261185e169",
-        "type": 1,
-        "no": 99,
-        "name": "多数据集合",
-        "description": "描述",
-        "descriptionEn": "英文描述",
-        "remark": None,
-        "createUser": "创建用户",
-        "createTime": "创建时间",
-        "modifyUser": "修改用户",
-        "modifyTime": "修改时间",
+    # print(sid)
+    # print(page)
+    # print(limit)
+    table2_json = {
+        "sid":sid,
+        "page":page,
+        "limit":limit,
     }
-    data_list2 = {
-        "id": "2be97a9f-4134-450f-8961-9c42ab045075",
-        "type": 2,
-        "no": 100,
-        "name": "多数据集合",
-        "description": "描述",
-        "descriptionEn": "英文描述",
-        "remark": None,
-        "createUser": "创建用户",
-        "createTime": "创建时间",
-        "modifyUser": "修改用户",
-        "modifyTime": "修改时间",
-    }
-    data.append(data_list1)
-    data.append(data_list2)
+    table2_json = json.dumps(table2_json)
+    result1 = get_table2(table2_json)
     result = {
-        "code":0,
-        "msg":"",
-        "count":1000,
-        "data": data
-    }
+            "code":0,
+            "msg":"",
+            "count":1000,
+            "data": result1
+        }
+    print(result)
     return json.dumps(result)
 
 # 定义url请求路径
