@@ -1,281 +1,276 @@
 -- DBSchemaInit.sql
-CREATE SCHEMA dbo;
-
-CREATE TABLE dbo.springTb
+CREATE TABLE "dbo.springTb"
 (
-sId varchar(36) NOT NULL,
-pId varchar(36) NULL,
-tbType int NULL,
-name varchar(50) NULL,
-shortName varchar(50) NULL,
-description varchar(256) NULL,
-descriptionEn varchar(256) NULL,
-tbName varchar(50) NULL,
-fieldName varchar(50) NULL,
-fieldNo int NULL,
-isFile int NULL,
-filePathNo varchar(36) NULL,
-storedProcName varchar(256) NULL,
-remark varchar NULL,
-queue int NULL,
-createUser varchar(36) NULL,
-createTime timestamp with time zone default now(),
-modifyUser varchar(36) NULL,
-modifyTime timestamp with time zone default now(),
-sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "pId" varchar(36) NULL,
+    "tbType" int NULL,
+    "name" varchar(50) NULL,
+    "shortName" varchar(50) NULL,
+    "description" varchar(256) NULL,
+    "descriptionEn" varchar(256) NULL,
+    "tbName" varchar(50) NULL,
+    "fieldName" varchar(50) NULL,
+    "fieldNo" int NULL,
+    "isFile" int NULL,
+    "filePathNo" varchar(36) NULL,
+    "storedProcName" varchar(256) NULL,
+    "remark" varchar NULL,
+    "queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone default now(),
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone default now(),
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springtb 
+COPY "dbo.springTb"
 FROM '/postgresql/springTb.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springTbTypeRel
+CREATE TABLE "dbo.springTbTypeRel"
 (
-    sId varchar(36) NOT NULL,
-    tbId  varchar(36) NULL,
-    pNo int NULL,
-    cNo int NULL,
-    name  varchar(50) NULL,
-    description varchar NULL,
-    descriptionEn varchar NULL,
-    Remark varchar NULL,
-    queue int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "tbId"  varchar(36) NULL,
+    "pNo" int NULL,
+    "cNo" int NULL,
+    "name"  varchar(50) NULL,
+    "description" varchar NULL,
+    "descriptionEn" varchar NULL,
+    "Remark" varchar NULL,
+    "queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springtbtyperel 
+COPY "dbo.springTbTypeRel"
 FROM '/postgresql/springTbTypeRel.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springDbInfo(
-	sId varchar(36) NOT NULL,
-	sysDB int NULL,
-	name varchar(50) NULL,
-	description varchar NULL,
-	descriptionEn varchar NULL,
-	Version varchar NULL,
-	isEdit int NULL
+CREATE TABLE "dbo.springDbInfo"(
+	"sId" varchar(36) NOT NULL,
+	"sysDB" int NULL,
+	"name" varchar(50) NULL,
+	"description" varchar NULL,
+	"descriptionEn" varchar NULL,
+	"Version" varchar NULL,
+	"isEdit" int NULL
 );
 
-COPY dbo.springDbInfo
+COPY "dbo.springDbInfo"
 FROM '/postgresql/springDbInfo.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springSpTranslation(
-	sId varchar(36) NOT NULL,
-	spId varchar(36) NULL,
-	language varchar NULL,
-	position int NULL,
-	description varchar NULL,
-	descriptionEn varchar NULL,
-	errInfo1 varchar NULL,
-	errAdd1 varchar NULL,
-	errInfo2 varchar NULL,
-	errAdd2 varchar NULL,
-	errInfo3 varchar NULL,
-	errAdd3 varchar NULL,
-	errInfo4 varchar NULL,
-	errAdd4 varchar NULL,
-	errInfo5 varchar NULL,
-	errAdd5 varchar NULL,
-	queue int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+CREATE TABLE "dbo.springSpTranslation"(
+	"sId" varchar(36) NOT NULL,
+	"spId" varchar(36) NULL,
+	"language" varchar NULL,
+	"position" int NULL,
+	"description" varchar NULL,
+	"descriptionEn" varchar NULL,
+	"errInfo1" varchar NULL,
+	"errAdd1" varchar NULL,
+	"errInfo2" varchar NULL,
+	"errAdd2" varchar NULL,
+	"errInfo3" varchar NULL,
+	"errAdd3" varchar NULL,
+	"errInfo4" varchar NULL,
+	"errAdd4" varchar NULL,
+	"errInfo5" varchar NULL,
+	"errAdd5" varchar NULL,
+	"queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springSpTranslation
+COPY "dbo.springSpTranslation"
 FROM '/postgresql/springSpTranslation.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springSp
+CREATE TABLE "dbo.springSp"
 (
-    sId varchar(36) NOT NULL,
-    tbId varchar(36) NOT NULL,
-    name varchar(50) NOT NULL,
-    description varchar NULL,
-    descriptionEn varchar NULL,
-    type int NULL,
-    remark varchar NULL,
-    queue int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "tbId" varchar(36) NOT NULL,
+    "name" varchar(50) NOT NULL,
+    "description" varchar NULL,
+    "descriptionEn" varchar NULL,
+    "type" int NULL,
+    "remark" varchar NULL,
+    "queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springSp
+COPY "dbo.springSp"
 FROM '/postgresql/springSp.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springFdList_m
+CREATE TABLE "dbo.springFdList_m"
 (
-    sId varchar(36) NOT NULL,
-    tbId varchar(36) NULL,
-    fdId varchar(36) NULL,
-    name varchar(50) NULL,
-    isTree int NULL,
-    description varchar NULL,
-    descriptionEn varchar NULL,
-    copyId varchar(36) NULL,
-    mapTreeId varchar(36) NULL,
-    mapTreeLevel int NULL,
-    addWhere varchar NULL,
-    isTypeRel int NULL,
-    remark varchar NULL,
-    queue int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "tbId" varchar(36) NULL,
+    "fdId" varchar(36) NULL,
+    "name" varchar(50) NULL,
+    "isTree" int NULL,
+    "description" varchar NULL,
+    "descriptionEn" varchar NULL,
+    "copyId" varchar(36) NULL,
+    "mapTreeId" varchar(36) NULL,
+    "mapTreeLevel" int NULL,
+    "addWhere" varchar NULL,
+    "isTypeRel" int NULL,
+    "remark" varchar NULL,
+    "queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springFdList_m
+COPY "dbo.springFdList_m"
 FROM '/postgresql/springFdList_m.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springFdList_d
+CREATE TABLE "dbo.springFdList_d"
 (
-    sId varchar(36) NOT NULL,
-    mId varchar(36) NULL,
-    pId varchar(36) NULL,
-    no int NULL,
-    pathNo varchar NULL,
-    code varchar(50) NULL,
-    pathCode varchar NULL,
-    name varchar(50) NULL,
-    isDefault int NULL,
-    description varchar NULL,
-    descriptionEn varchar NULL,
-    remark varchar NULL,
-    treeLevel int NULL,
-    queue int NULL,
-    isDel int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "mId" varchar(36) NULL,
+    "pId" varchar(36) NULL,
+    "no" int NULL,
+    "pathNo" varchar NULL,
+    "code" varchar(50) NULL,
+    "pathCode" varchar NULL,
+    "name" varchar(50) NULL,
+    "isDefault" int NULL,
+    "description" varchar NULL,
+    "descriptionEn" varchar NULL,
+    "remark" varchar NULL,
+    "treeLevel" int NULL,
+    "queue" int NULL,
+    "isDel" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springFdList_d
+COPY "dbo.springFdList_d"
 FROM '/postgresql/springFdList_d.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springTranslation
+CREATE TABLE "dbo.springTranslation"
 (
-    tbName varchar(50) NULL,
-    path varchar(256) NULL,
-    sId varchar(36) NOT NULL,
-    language int NULL,
-    name varchar(50) NULL,
-    description varchar(256) NULL,
-    descriptionEn varchar(256) NULL,
-    remark varchar NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL
+    "tbName" varchar(50) NULL,
+    "path" varchar(256) NULL,
+    "sId" varchar(36) NOT NULL,
+    "language" varchar NULL,
+    "name" varchar(50) NULL,
+    "description" varchar(256) NULL,
+    "descriptionEn" varchar(256) NULL,
+    "remark" varchar NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springTranslation
+COPY "dbo.springTranslation"
 FROM '/postgresql/springTranslation.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springField
+CREATE TABLE "dbo.springField"
 (
-    sId varchar(36) NOT NULL,
-    tbId varchar(36) NULL,
-    isField int NULL,
-    name varchar(50) NULL,
-    description varchar(256) NULL,
-    descriptionEn varchar(256) NULL,
-    fdType varchar(50) NULL,
-    length int NULL,
-    decimal int NULL,
-    isNullable int NULL,
-    isUseable int NULL,
-    isForeignKey int NULL,
-    fkTbId varchar(36) NULL,
-    fkFieldId varchar(36) NULL,
-    defaultValue varchar(500) NULL,
-    uiType int NULL,
-    uiMask varchar(100) NULL,
-    uiVisible int NULL,
-    uiReadOnly int NULL,
-    uiWidth int NULL,
-    uiDefault varchar(200) NULL,
-    isAddField int NULL,
-    isEditField int NULL,
-    orderType int NULL,
-    remark varchar NULL,
-    queue int NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp
-    with time zone NULL,
-    modifyUser varchar
-    (36) NULL,
-    modifyTime timestamp
-    with time zone NULL,
-    sTamp varchar NULL
+    "sId" varchar(36) NOT NULL,
+    "tbId" varchar(36) NULL,
+    "isField" int NULL,
+    "name" varchar(50) NULL,
+    "description" varchar(256) NULL,
+    "descriptionEn" varchar(256) NULL,
+    "fdType" varchar(50) NULL,
+    "length" int NULL,
+    "decimal" int NULL,
+    "isNullable" int NULL,
+    "isUseable" int NULL,
+    "isForeignKey" int NULL,
+    "fkTbId" varchar(36) NULL,
+    "fkFieldId" varchar(36) NULL,
+    "defaultValue" varchar(500) NULL,
+    "uiType" int NULL,
+    "uiMask" varchar(100) NULL,
+    "uiVisible" int NULL,
+    "uiReadOnly" int NULL,
+    "uiWidth" int NULL,
+    "uiDefault" varchar(200) NULL,
+    "isAddField" int NULL,
+    "isEditField" int NULL,
+    "orderType" int NULL,
+    "remark" varchar NULL,
+    "queue" int NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL
 );
 
-COPY dbo.springField
+COPY "dbo.springField"
 FROM '/postgresql/springField.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE TABLE dbo.springTbUiTemplate(
-	sId varchar(36) NOT NULL,
-	tbId varchar(36) NOT NULL,
-	type int NOT NULL,
-	no int NOT NULL,
-	name varchar NULL,
-	description varchar NULL,
-	descriptionEn varchar NULL,
-	Xml varchar NULL,
-	remark varchar NULL,
-    createUser varchar(36) NULL,
-    createTime timestamp with time zone NULL,
-    modifyUser varchar(36) NULL,
-    modifyTime timestamp with time zone NULL,
-    sTamp varchar NULL,
-	PRIMARY KEY(tbId, no)
+CREATE TABLE "dbo.springTbUiTemplate"(
+	"sId" varchar(36) NOT NULL,
+	"tbId" varchar(36) NOT NULL,
+	"type" int NOT NULL,
+	"no" int NOT NULL,
+	"name" varchar NULL,
+	"description" varchar NULL,
+	"descriptionEn" varchar NULL,
+	"Xml" varchar NULL,
+	"remark" varchar NULL,
+    "createUser" varchar(36) NULL,
+    "createTime" timestamp with time zone NULL,
+    "modifyUser" varchar(36) NULL,
+    "modifyTime" timestamp with time zone NULL,
+    "sTamp" varchar NULL,
+	PRIMARY KEY("tbId", "no")
 );
 
-COPY dbo.springTbUiTemplate
+COPY "dbo.springTbUiTemplate"
 FROM '/postgresql/springTbUiTemplate.csv'
 csv
 HEADER
 NULL 'NULL';
 
-CREATE or REPLACE PROCEDURE dbo.springTb_Del(
+CREATE or REPLACE PROCEDURE "dbo.springTb_Del"(
     INOUT _sId varchar(36),
     IN _modifyUser varchar,
     INOUT _error varchar,
@@ -296,8 +291,8 @@ DECLARE
 
 BEGIN
     select count(*) into _count
-    from dbo.springTb
-    where pId=_sId;
+    from "dbo.springTb"
+    where "pId"=_sId;
 
     if _count>0 Then
         _error :='00000';
@@ -305,9 +300,9 @@ BEGIN
         return;
     END IF;
 
-    select name, pId, queue into _tabname, _pId, _queue
-    from dbo.springTb
-    where sId = _sId;
+    select "name", "pId", "queue" into _tabname, _pId, _queue
+    from "dbo.springTb"
+    where "sId" = _sId;
     -- delete from springTranslation where tbName='springTb' and (sId=sId or path=('pId='+sId));
     -- delete from springTranslation where tbName='springField' and path=('tbId='+sId); 
     -- delete from springSp where tbId=sId;
@@ -323,7 +318,7 @@ BEGIN
     --     FROM dbo.springFileTableRel
     --     where tbName like tabname)
     -- delete  FROM  dbo.springFileTableRel where tbName like tabname
-	delete from dbo.springTb where sId=_sid RETURNING sId INTO _tmp;
+	delete from "dbo.springTb" where "sId"=_sid RETURNING "sId" INTO _tmp;
 --     EXECUTE 'delete from dbo.springTb where sId=$1 RETURNING *' INTO _tmp USING _sId;
     if _tmp is null THEN
     -- sid not exist
@@ -331,9 +326,9 @@ BEGIN
         _eInfo:= 'sid not exist';
     ELSE
         if _pId is null Then
-	        update dbo.springTb set queue=queue-1 where pId is null and queue>_queue;
+	        update "dbo.springTb" set "queue"="queue"-1 where "pId" is null and "queue">_queue;
         else
-	    	update dbo.springTb set queue=queue-1 where pId=_pId and queue>_queue;
+	    	update "dbo.springTb" set "queue"="queue"-1 where "pId"=_pId and "queue">_queue;
         END IF;
         _error:='00000';
         _eInfo:= 'successful delete: ' ||  _tmp;
@@ -349,7 +344,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE or REPLACE PROCEDURE dbo.springTb_Action(
+CREATE or REPLACE PROCEDURE "dbo.springTb_Action"(
     IN _userId varchar,      -- which user call the stored procedure
     IN _userName varchar,    -- user name
     INOUT _info jsonb,       -- input of action and details, output of result
@@ -418,8 +413,8 @@ BEGIN
             _filePathNo := _rowinfo->>'filePathNo';
             _storedProcName := _rowinfo->>'storedProcName';
             _remark := _rowinfo->>'remark';
-            _createuser := _rowinfo->>'_createuser';
-            _modifyuser := _rowinfo->>'_modifyuser';
+            _createuser := _rowinfo->>'createUser';
+            _modifyuser := _rowinfo->>'modifyUser';
             _sTamp := _rowinfo->>'sTamp';
             _queue := _rowinfo->>'queue';
             -- parameter assignment
@@ -446,7 +441,7 @@ BEGIN
                 --    return_error,
                 --    return_eInfo);
 	        ELSIF _action = 'upp' Then
-                CALL dbo.springTb_Upp(
+                CALL "dbo.springTb_Upp"(
                     _sId, 
                     _pId, 
                     _tbType, 
@@ -466,7 +461,7 @@ BEGIN
                     _return_eInfo
                 );
 	        ELSIF _action = 'del' Then
-                CALL dbo.springTb_Del(_sId,_userId,_return_error, _return_eInfo);
+                CALL "dbo.springTb_Del"(_sId,_userId,_return_error, _return_eInfo);
 	        ELSIF _action = 'move' Then
 	        ELSIF _action = 'paste' Then
             ELSIF _action = 'getmoudel' Then
@@ -495,7 +490,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION dbo.SpringSpTranslation_Error
+CREATE OR REPLACE FUNCTION "dbo.springSpTranslation_Error"
 (
 	_procName varchar(50),
     _language varchar(50),
@@ -536,21 +531,21 @@ BEGIN
 	    _errAdd5:='';
     end if;
 
-    select isEdit into _isEdit from dbo.springDbInfo;
+    select "isEdit" into _isEdit from "dbo.springDbInfo";
     if  _isEdit is null Then
         _isEdit:=0;
     end if;
 
     if _language is null Then
-		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
-			from    dbo.springSpTranslation as sptrn 
-				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
-			where  sp.name=_procName and sptrn.language is null and sptrn.Position = _position;
+		select  "errInfo1", "errInfo2", "errInfo3", "errInfo4", "errInfo5" into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    "dbo.springSpTranslation" as sptrn 
+				inner join "dbo.springSp" as sp on sptrn."spId"=sp."sId"
+			where  sp."name"=_procName and sptrn."language" is null and sptrn."position" = _position;
     else
-		select  errInfo1, errInfo2, errInfo3, errInfo4, errInfo5 into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
-			from    dbo.springSpTranslation as sptrn 
-				inner join dbo.SpringSp as sp on sptrn.spId=sp.sId
-			where  sp.name=_procName and sptrn.language = _language and sptrn.Position = _position;
+		select  "errInfo1", "errInfo2", "errInfo3", "errInfo4", "errInfo5" into _errInfo1, _errInfo2, _errInfo3, _errInfo4, _errInfo5
+			from    "dbo.springSpTranslation" as sptrn 
+				inner join "dbo.springSp" as sp on sptrn."spId"=sp."sId"
+			where  sp."name"=_procName and sptrn."language" = _language and sptrn."position" = _position;
     end if;
     if _errInfo1 is null and _errInfo2 is null and _errInfo3 is null and _errInfo4 is null and _errInfo5 is null Then
 		    if _language is null Then
@@ -584,7 +579,7 @@ BEGIN
 END;
 $_Return$ LANGUAGE plpgsql;
 
-CREATE or REPLACE PROCEDURE dbo.springCheckRel(
+CREATE or REPLACE PROCEDURE "dbo.springCheckRel"(
 	    IN _editTbName varchar(50),
         IN _typeName varchar(50),
         IN _pType int,
@@ -593,7 +588,7 @@ CREATE or REPLACE PROCEDURE dbo.springCheckRel(
 )
 AS $$
 declare 
-    _procName varchar := 'SpringCheckRel';    --存储过程名称
+    _procName varchar := 'springCheckRel';    --存储过程名称
     _language varchar := _error;   --语言代码
     _position int := 1;          --错误位置
     _Count int;
@@ -602,40 +597,40 @@ declare
 
 BEGIN
 --如果REL定义为空，不判断关联
-select count(*) into _Count from dbo.springTbTypeRel where tbID in 
-			 (select sId from dbo.springTb where Name = _editTbName);
+select count(*) into _Count from "dbo.springTbTypeRel" where "tbId" in 
+			 (select "sId" from "dbo.springTb" where "name" = _editTbName);
 if _Count =0 Then
 	_error := '0';
 	return;
 end if;
 
 if (_pType is null and _cType is null) Then
-	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
-				 (select sId from dbo.springTb where Name = _editTbName)
-				 and pNO is null and cNO is null;
+	select count(*) into _Count from "dbo.springTbTypeRel" where "tbId" in 
+				 (select "sId" from "dbo.springTb" where "name" = _editTbName)
+				 and "pNo" is null and "cNo" is null;
 ELSIF (_pType is null and not(_cType is null)) Then
-	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
-				 (select sId from dbo.springTb where Name = _editTbName)
-				 and pNO is null and cNO = _cType;
+	select count(*) into _Count from "dbo.springTbTypeRel" where "tbId" in 
+				 (select "sId" from "dbo.springTb" where "name" = _editTbName)
+				 and "pNo" is null and "cNo" = _cType;
 ELSIF (not(_pType is null) and _cType is null) Then
-	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
-				 (select sId from dbo.springTb where Name = _editTbName)
-				 and pNO= _pType and cNO is null;
+	select count(*) into _Count from "dbo.springTbTypeRel" where "tbId" in 
+				 (select "sId" from "dbo.springTb" where "name" = _editTbName)
+				 and "pNo"= _pType and "cNo" is null;
 else
-	select count(*) into _Count from dbo.springTbTypeRel where tbID in 
-				 (select sId from dbo.springTb where Name = _editTbName)
-				 and pNO = _pType and cNO = _cType;
+	select count(*) into _Count from "dbo.springTbTypeRel" where "tbId" in 
+				 (select "sId" from "dbo.springTb" where "name" = _editTbName)
+				 and "pNo" = _pType and "cNo" = _cType;
 end if;
 if _Count = 0 Then
     if _pType is null Then
             _pName := 'Root';
     else
-		_pName:=dbo.SpringFdNameByNo(_language,_editTbName,_typeName,_pType);
-	   
-        _CName = dbo.SpringFdNameByNo(_language,_editTbName,_typeName,_cType);
-       --不能添加[PName->CName]的连接...
-        _error :=  dbo.SpringSpTranslation_Error(_procName,_language,_position,_PName,_CName,'','','');
-   end if;
+		_pName:="dbo.springFdNameByNo"(_language,_editTbName,_typeName,_pType);
+    end if;
+
+    _CName = "dbo.springFdNameByNo"(_language,_editTbName,_typeName,_cType);
+    --不能添加[PName->CName]的连接...
+    _error :=  "dbo.springSpTranslation_Error"(_procName,_language,_position,_PName,_CName,'','','');
 else
     _error := '0';
 end if;
@@ -643,7 +638,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
-CREATE or REPLACE PROCEDURE dbo.springCheckRel2(
+CREATE or REPLACE PROCEDURE "dbo.springCheckRel2"(
 	    IN _editTbName varchar(50),
         IN _typeName varchar(50),
         IN _pId varchar(36),
@@ -652,7 +647,7 @@ CREATE or REPLACE PROCEDURE dbo.springCheckRel2(
 )
 AS $$
 
-declare _procName varchar := 'SpringCheckRel2';    --存储过程名称
+declare _procName varchar := 'springCheckRel2';    --存储过程名称
         _language varchar := _error;    --语言代码
         _position int := 1;          --错误位置
         _pType int;
@@ -664,12 +659,12 @@ BEGIN
 if _pId is null Then
 	_pType := null;
 else
-    EXECUTE format('SELECT %s from dbo.%s where sId = ''%s''', _typeName, _editTbName, _pId)
+    EXECUTE format('SELECT "%s" from "dbo.%s" where "sId" = ''%s''', _typeName, _editTbName, _pId)
     INTO _pType;
     -- EXEC sp_executesql @sql,N'@pType bigint output',@pType output;
 end if;
 
-CALL dbo.SpringCheckRel(
+CALL "dbo.springCheckRel"(
 	    _editTbName,
         _typeName,
         _pType,
@@ -678,7 +673,7 @@ CALL dbo.SpringCheckRel(
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION dbo.SpringFdNameByNo
+CREATE OR REPLACE FUNCTION "dbo.springFdNameByNo"
 (
     _language varchar,
     _tbName varchar(50),
@@ -693,37 +688,37 @@ declare _Name varchar(50);
         _MapTreeID varchar(36);
 BEGIN
     _Name:='';
-    select m.sId, m.copyID, mapTreeID into _mID, _mCopyID, _MapTreeID
-    from dbo.springTb as tab inner join dbo.springFdList_m as m on tab.sId = m.tbID
-        inner join dbo.springField as field on m.fdId = field.sId
-    where tab.Name = _tbName and field.name = _Field;
+    select m."sId", m."copyId", "mapTreeId" into _mID, _mCopyID, _MapTreeID
+    from "dbo.springTb" as tab inner join "dbo.springFdList_m" as m on tab."sId" = m."tbId"
+        inner join "dbo.springField" as field on m."fdId" = field."sId"
+    where tab."name" = _tbName and field."name" = _field;
 
     if _mID is null Then
 		return null;
     end if;
 
     if _mCopyID is null and not(_MapTreeID is null) Then
-        _mID:=MapTreeID;
+        _mID:=_MapTreeID;
     ELSIF not(_mCopyID is null) and _MapTreeID is null Then
-		_mID:=mCopyID;
+		_mID:=_mCopyID;
     end if;
 
     if _language is null Then
-	    select _Name = (case when trn.name is null then d.name else trn.name end)
-    from dbo.springFdList_d as d
-        left outer join dbo.springTranslation as trn on d.sId=trn.sId and trn.language is null
+	    select (case when trn."name" is null then d."name" else trn."name" end) into _Name
+    from "dbo.springFdList_d" as d
+        left outer join "dbo.springTranslation" as trn on d."sId"=trn."sId" and trn."language" is null
     where d.mId = _mID and d.no = _no;
 	else	
-		 select _Name = (case when trn.name is null then d.name else trn.name end)
-    from dbo.springFdList_d as d
-        left outer join dbo.springTranslation as trn on d.sId=trn.sId and trn.language = _language
-    where d.mId = _mID and d.no = _no;
+		 select (case when trn."name" is null then d."name" else trn."name" end) into _Name
+    from "dbo.springFdList_d" as d
+        left outer join "dbo.springTranslation" as trn on d."sId"=trn."sId" and trn."language" = _language
+    where d."mId" = _mID and d."no" = _no;
     end if;
     return _Name;
 END;
 $_Name$ LANGUAGE plpgsql;
 
-CREATE or REPLACE PROCEDURE dbo.springTb_Upp(
+CREATE or REPLACE PROCEDURE "dbo.springTb_Upp"(
     INOUT _sId varchar(36),
     IN _pId varchar(36),
     IN _tbType int,
@@ -758,15 +753,15 @@ DECLARE
 
 BEGIN
 	--判断与父项的连接是否允许----------
-    CALL dbo.SpringCheckRel2('springTb', 'tbType', _pId, _tbType, _eInfo);
+    CALL "dbo.springCheckRel2"('springTb', 'tbType', _pId, _tbType, _eInfo);
     if _eInfo != '0' THEN
 		return;
 	end if;
 	-------------------------------------
 	--判断与子项的连接是否允许-----------
-    for _ctbType in select tbType from dbo.springTb where pId=_sId
+    for _ctbType in select "tbType" from "dbo.springTb" where "pId"=_sId
     loop
-    	CALL dbo.SpringCheckRel('springTb', 'tbType', _tbType, _ctbType, _eInfo);
+    	CALL "dbo.springCheckRel"('springTb', 'tbType', _tbType, _ctbType, _eInfo);
 		if _eInfo != '0' Then
 			return;
 		end if;
@@ -785,19 +780,17 @@ BEGIN
     _error := '';
 	if _name='' or _name is null Then  -- 名称不能为空...
 		_position = 1;
-		_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,'','','','','');
+		_error:="dbo.springSpTranslation_Error"(_procName,_language,_position,'','','','','');
 		return;
 	end if;
 
 	if _tbType=1 Then-- 名称已经存在
-		if exists (select *
-		from dbo.springTb
-		where sId!=_sId and tbType=1 and name=_name) Then
+		if exists (select * from "dbo.springTb" where "sId"!=_sId and "tbType"=1 and "name"=_name) Then
 			_position := 2;
 			if _error='' Then
-					_error:=dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+					_error:="dbo.springSpTranslation_Error"(_procName,_language,_position,_name,'','','','');
 			    else
-			    	_error:=_error || chr(10) || dbo.SpringSpTranslation_Error(_procName,_language,_position,_name,'','','','');
+			    	_error:=_error || chr(10) || "dbo.springSpTranslation_Error"(_procName,_language,_position,_name,'','','','');
 			end if;
 		end if;
 	end if;
@@ -806,22 +799,22 @@ BEGIN
 	return;
     end if;
 
-    Update dbo.springTb set
-			tbType=_tbType,
-			name=_name,
-			shortName=_shortName,
-			description=_description,
-			descriptionEn=_descriptionEn,
-			tbName=_tbName,
-			fieldName=_fieldName,
-			fieldNo=_fieldNo,
-			isFile=_isFile,
-			filePathNo=_filePathNo,
-			storedProcName=_storedProcName,
-			remark=_remark,
-			modifyUser=_modifyUser,
-			modifyTime=now()
-         where sId=_sId;
+    Update "dbo.springTb" set
+			"tbType" =_tbType,
+			"name" =_name,
+			"shortName" =_shortName,
+			"description" =_description,
+			"descriptionEn" =_descriptionEn,
+			"tbName" =_tbName,
+			"fieldName" =_fieldName,
+			"fieldNo" =_fieldNo,
+			"isFile" =_isFile,
+			"filePathNo" =_filePathNo,
+			"storedProcName" =_storedProcName,
+			"remark" =_remark,
+			"modifyUser" =_modifyUser,
+			"modifyTime" =now()
+         where "sId"=_sId;
 
     _error:='00000';
     _eInfo:= 'successful update';
