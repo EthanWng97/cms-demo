@@ -209,11 +209,11 @@ var colsTable1 = [
             title: '创建时间',
             width: 80,
         }, {
-            field: 'modifyUser',
+            field: 'modifyuser',
             title: '修改人',
             width: 80,
         }, {
-            field: 'modifyTime',
+            field: 'modifytime',
             title: '修改时间',
             width: 80,
         }
@@ -270,11 +270,11 @@ var colsTable2 = [
             title: '创建时间',
             width: 300,
         }, {
-            field: 'modifyUser',
+            field: 'modifyuser',
             title: '修改人',
             width: 300,
         }, {
-            field: 'modifyTime',
+            field: 'modifytime',
             title: '修改时间',
             width: 300,
         }
