@@ -51,38 +51,38 @@ function createForm(data) {
 
 function constructForm(data) {
     for (var val in data) {
-        if (val == 'tbtype')
-            $("#information").append(tbtype);
+        if (val == 'tbType')
+            $("#information").append(tbType);
         else if (val == 'name')
             $("#information").append(name);
-        else if (val == 'shortname')
-            $("#information").append(shortname);
+        else if (val == 'shortName')
+            $("#information").append(shortName);
         else if (val == 'description')
             $("#information").append(description);
-        else if (val == 'descriptionen')
-            $("#information").append(descriptionen);
-        else if (val == 'tbname')
-            $("#information").append(tbname);
-        else if (val == 'fieldname')
-            $("#information").append(fieldname);
-        else if (val == 'fieldno')
-            $("#information").append(fieldno);
-        else if (val == 'isfile')
-            $("#information").append(isfile);
-        else if (val == 'filepathno')
-            $("#information").append(filepathno);
-        else if (val == 'storedprocname')
-            $("#information").append(storedprocname);
+        else if (val == 'descriptionEn')
+            $("#information").append(descriptionEn);
+        else if (val == 'tbName')
+            $("#information").append(tbName);
+        else if (val == 'fieldName')
+            $("#information").append(fieldName);
+        else if (val == 'fieldNo')
+            $("#information").append(fieldNo);
+        else if (val == 'isFile')
+            $("#information").append(isFile);
+        else if (val == 'filePathNo')
+            $("#information").append(filePathNo);
+        else if (val == 'storedProcName')
+            $("#information").append(storedProcName);
         else if (val == 'remark')
             $("#information").append(remark);
-        else if (val == 'createuser')
-            $("#information").append(createuser);
-        else if (val == 'createtime')
-            $("#information").append(createtime);
-        else if (val == 'modifyuser')
-            $("#information").append(modifyuser);
-        else if (val == 'modifytime')
-            $("#information").append(modifytime);
+        else if (val == 'createUser')
+            $("#information").append(createUser);
+        else if (val == 'createTime')
+            $("#information").append(createTime);
+        else if (val == 'modifyUser')
+            $("#information").append(modifyUser);
+        else if (val == 'modifyTime')
+            $("#information").append(modifyTime);
     };
 }
 
@@ -112,17 +112,17 @@ function createActionJson(type, treeNode) {
         "action": type,
         "sId": tree.pTreeNode.id,
         "pId": tree.pTreeNode.pId,
-        "tbType": parseInt(data['tbtype']),
+        "tbType": parseInt(data['tbType']),
         "name": data['name'],
-        "shortName": data['shortname'],
+        "shortName": data['shortName'],
         "description": data['description'],
-        "descriptionEn": data['descriptionen'],
-        "tbName": data['tbname'],
-        "fieldName": data['fieldname'],
-        "fieldNo": parseInt(data['fieldno']),
-        "isFile": data['isfile'] ? 1 : 0,
-        "filePathNo": data['filepathno'],
-        "storedProcName": data['storedprocname'],
+        "descriptionEn": data['descriptionEn'],
+        "tbName": data['tbName'],
+        "fieldName": data['fieldName'],
+        "fieldNo": parseInt(data['fieldNo']),
+        "isFile": data['isFile'] ? 1 : 0,
+        "filePathNo": data['filePathNo'],
+        "storedProcName": data['storedProcName'],
         "remark": data['remark'],
     };
 
@@ -149,22 +149,22 @@ function fillForm(data) {
     var form = layui.form;
     // console.log(data);
     form.val("information", {
-        "tbtype": data['tbtype'],
+        "tbType": data['tbType'],
         "name": data['name'],
-        "shortname": data['shortname'],
+        "shortName": data['shortName'],
         "description": data['description'],
-        "descriptionen": data['descriptionen'],
-        "tbname": data['tbname'],
-        "fieldname": data['fieldname'],
-        "isfile": data['isfile'] == 1,
-        "fieldno": data['fieldno'],
-        "filepathno": data['filepathno'],
-        "storedprocname": data['storedprocname'],
+        "descriptionEn": data['descriptionEn'],
+        "tbName": data['tbName'],
+        "fieldName": data['fieldName'],
+        "isFile": data['isFile'] == 1,
+        "fieldNo": data['fieldNo'],
+        "filePathNo": data['filePathNo'],
+        "storedProcName": data['storedProcName'],
         "remark": data['remark'],
-        "createuser": data['createuser'],
-        "createtime": data['createtime'],
-        "modifyuser": data['modifyuser'],
-        "modifytime": data['modifytime']
+        "createUser": data['createUser'],
+        "createTime": data['createTime'],
+        "modifyUser": data['modifyUser'],
+        "modifyTime": data['modifyTime']
     })
     form.render(null, 'information'); //刷新select选择框渲染
 }

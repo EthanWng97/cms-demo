@@ -1,7 +1,7 @@
-var tbtype = '<div class="layui-form-item">' +
+var tbType = '<div class="layui-form-item">' +
     '<label class="layui-form-label">表类型</label>' +
     '<div class="layui-input-block">' +
-    '<select id="tbtype" name="tbtype" lay-verify="required" class="tbtype">' +
+    '<select id="tbType" name="tbType" lay-verify="required" class="tbType">' +
     '<option value=""></option>' +
     '<option value="0">文件夹</option>' +
     '<option value="1">表</option>' +
@@ -18,10 +18,10 @@ var name = '<div class="layui-form-item">' +
     '</div>';
 
 
-var shortname = '<div class="layui-form-item">' +
+var shortName = '<div class="layui-form-item">' +
     '<label class="layui-form-label">简称</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="shortname" name="shortname" lay-verify="title" placeholder="请输入简称" autocomplete="off"' +
+    '<input type="text" id="shortName" name="shortName" lay-verify="title" placeholder="请输入简称" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
@@ -38,64 +38,64 @@ var description = '<div class="layui-form-item">' +
 
 
 
-var descriptionen = '<div class="layui-form-item">' +
+var descriptionEn = '<div class="layui-form-item">' +
     '<label class="layui-form-label">英文描述</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="descriptionen" name="descriptionen" lay-verify="title" placeholder="请输入英文描述" autocomplete="off"' +
+    '<input type="text" id="descriptionEn" name="descriptionEn" lay-verify="title" placeholder="请输入英文描述" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
 
 
-var tbname = '<div class="layui-form-item">' +
+var tbName = '<div class="layui-form-item">' +
     '<label class="layui-form-label">实际标名称</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="tbname" name="tbname" lay-verify="title" placeholder="请输入实际标名称" autocomplete="off"' +
+    '<input type="text" id="tbName" name="tbName" lay-verify="title" placeholder="请输入实际标名称" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
 
 
-var fieldname = '<div class="layui-form-item">' +
+var fieldName = '<div class="layui-form-item">' +
     '<label class="layui-form-label">拓展类型字段名称</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="fieldname" name="fieldname" lay-verify="title" placeholder="请输入拓展类型字段名称" autocomplete="off"' +
+    '<input type="text" id="fieldName" name="fieldName" lay-verify="title" placeholder="请输入拓展类型字段名称" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
-var fieldno = '<div class="layui-form-item">' +
+var fieldNo = '<div class="layui-form-item">' +
     '<label class="layui-form-label">类型值</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="fieldno" name="fieldno" lay-verify="title" placeholder="请输入类型值" autocomplete="off"' +
+    '<input type="text" id="fieldNo" name="fieldNo" lay-verify="title" placeholder="请输入类型值" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
-var isfile = '<div class="layui-form-item">' +
+var isFile = '<div class="layui-form-item">' +
     '<label class="layui-form-label">是否有文档附件</label>' +
     '<div class="layui-input-block">' +
-    '<input type="checkbox" id="isfile" name="isfile" lay-skin="primary">' +
+    '<input type="checkbox" id="isFile" name="isFile" lay-skin="primary">' +
     '</div>' +
     '</div>';
 
 
 
-var filepathno = '<div class="layui-form-item">' +
+var filePathNo = '<div class="layui-form-item">' +
     '<label class="layui-form-label">文档附件目录编码</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="filepathno" name="filepathno" lay-verify="title" placeholder="请输入文档附件目录编码" autocomplete="off"' +
+    '<input type="text" id="filePathNo" name="filePathNo" lay-verify="title" placeholder="请输入文档附件目录编码" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
 
 
-var storedprocname = '<div class="layui-form-item">' +
+var storedProcName = '<div class="layui-form-item">' +
     '<label class="layui-form-label">存储过程名称</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="storedprocname" name="storedprocname" lay-verify="title" placeholder="请输入存储过程名称" autocomplete="off"' +
+    '<input type="text" id="storedProcName" name="storedProcName" lay-verify="title" placeholder="请输入存储过程名称" autocomplete="off"' +
     'class="layui-input">' +
     '</div>' +
     '</div>';
@@ -109,38 +109,38 @@ var remark = '<div class="layui-form-item">' +
     '</div>';
 
 
-var createuser = '<div class="layui-form-item">' +
+var createUser = '<div class="layui-form-item">' +
     '<label class="layui-form-label">创建人</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="createuser" name="createuser" lay-verify="title" autocomplete="off"' +
+    '<input type="text" id="createUser" name="createUser" lay-verify="title" autocomplete="off"' +
     'class="layui-input" readonly="readonly">' +
     '</div>' +
     '</div>';
 
 
 
-var createtime = '<div class="layui-form-item">' +
+var createTime = '<div class="layui-form-item">' +
     '<label class="layui-form-label">创建时间</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="createtime" name="createtime" lay-verify="title" autocomplete="off"' +
+    '<input type="text" id="createTime" name="createTime" lay-verify="title" autocomplete="off"' +
     'class="layui-input" readonly="readonly">' +
     '</div>' +
     '</div>';
 
 
-var modifyuser = '<div class="layui-form-item">' +
+var modifyUser = '<div class="layui-form-item">' +
     '<label class="layui-form-label">修改人</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="modifyuser" name="modifyuser" lay-verify="title" autocomplete="off"' +
+    '<input type="text" id="modifyUser" name="modifyUser" lay-verify="title" autocomplete="off"' +
     'class="layui-input" readonly="readonly">' +
     '</div>' +
     '</div>';
 
 
-var modifytime = '<div class="layui-form-item">' +
+var modifyTime = '<div class="layui-form-item">' +
     '<label class="layui-form-label">修改时间</label>' +
     '<div class="layui-input-block">' +
-    '<input type="text" id="modifytime" name="modifytime" lay-verify="title" autocomplete="off"' +
+    '<input type="text" id="modifyTime" name="modifyTime" lay-verify="title" autocomplete="off"' +
     'class="layui-input" readonly="readonly">' +
     '</div>' +
     '</div>';
