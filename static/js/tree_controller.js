@@ -203,7 +203,7 @@ $(document).on('click', '#menu-item-modify', function () {
 });
 $(document).on('click', '#menu-item-delete', function () {
     hideMenu();
-    if (beforeRemove(tree.pTreeNode)) onRemove(ree.pTreeNode);
+    if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
 });
 $(document).on('click', '#menu-item-clip', function () {
     hideMenu();
