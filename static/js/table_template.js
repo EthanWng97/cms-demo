@@ -42,8 +42,34 @@ function loadTemplateTable1() {
     var fdTypeSelect =
         '<script type="text/html" id="fdTypeSelect">' +
         '<select name="fdTypeSelect" id="fdType-{{d.id}}" lay-verify="" lay-search="">' +
-        '    <option value="integer">integer</option>' +
+        '    <option value="bigint">bigint</option>' +
+        '    <option value="int">int</option>' +
+        '    <option value="tinyint">tinyint</option>' +
+        '    <option value="smallint">smallint</option>' +
+        '    <option value="nchar">nchar</option>' +
+        '    <option value="ntext">ntext</option>' +
+        '    <option value="nvarchar">nvarchar</option>' +
+        '    <option value="char">char</option>' +
         '    <option value="varchar">varchar</option>' +
+        '    <option value="xml">xml</option>' +
+        '    <option value="text">text</option>' +
+        '    <option value="bit">bit</option>' +
+        '    <option value="datetime">datetime</option>' +
+        '    <option value="date">date</option>' +
+        '    <option value="smalldatetime">smalldatetime</option>' +
+        '    <option value="float">float</option>' +
+        '    <option value="money">money</option>' +
+        '    <option value="numeric">numeric</option>' +
+        '    <option value="real">real</option>' +
+        '    <option value="smallmoney">smallmoney</option>' +
+        '    <option value="binary">binary</option>' +
+        '    <option value="decimal">decimal</option>' +
+        '    <option value="timestamp">timestamp</option>' +
+        '    <option value="image">image</option>' +
+        '    <option value="uniqueidentifier">uniqueidentifier</option>' +
+        '    <option value="varbinary">varbinary</option>' +
+        '    <option value="datetimeoffset">datetimeoffset</option>' +
+        '    <option value="time">time</option>' +
         '    <option value="timestamp with time zone">timestamp with time zone</option>' +
         '    <option value="bool">bool</option>' +
         '</select>' +
@@ -57,10 +83,14 @@ function loadTemplateTable1() {
         '    <option value="3">CheckBox</option>' +
         '    <option value="4">DateBox</option>' +
         '    <option value="5">RichTextBox</option>' +
+        '    <option value="6">DropDownList</option>' +
+        '    <option value="6">ForeignKey</option>' +
         '    <option value="6">DropDownTree</option>' +
         '    <option value="7">NumberBox</option>' +
-        '    <option value="8">NumberSpinner</option>' +
+        '    <option value="7">NumberSpinner</option>' +
+        '    <option value="8">TimeSpinner</option>' +
         '    <option value="9">DateTimeBox</option>' +
+        '    <option value="9">Radio</option>' +
         '</select>' +
         '</script>';
 
@@ -140,16 +170,16 @@ var colsTable1 = [
             templet: '#isForeignKeyCheckbox'
         }, {
             field: 'fkTbId',
-            title: '外键表',
-            width: 80,
+            title: '外键表ID',
+            width: 300,
         }, {
             field: 'fkFieldId',
-            title: '外键字段',
-            width: 80,
+            title: '外键字段ID',
+            width: 300,
         }, {
             field: 'defaultValue',
             title: '函数',
-            width: 80,
+            width: 200,
         }, {
             field: 'uiType',
             title: '界面控件类型',
@@ -203,19 +233,19 @@ var colsTable1 = [
         }, {
             field: 'createUser',
             title: '创建人',
-            width: 80,
+            width: 300,
         }, {
             field: 'createTime',
             title: '创建时间',
-            width: 80,
+            width: 300,
         }, {
             field: 'modifyUser',
             title: '修改人',
-            width: 80,
+            width: 300,
         }, {
             field: 'modifyTime',
             title: '修改时间',
-            width: 80,
+            width: 300,
         }
     ]
 ];
