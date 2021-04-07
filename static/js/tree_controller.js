@@ -176,7 +176,14 @@ function onRightClick(event, treeId, treeNode) {
 }
 
 function onDblClick(event, treeId, treeNode) {
-    if (treeNode != null)
+    tree.pTreeId = treeId;
+    tree.pTreeNode = treeNode;
+    if(treeNode == null) return;
+    if (treeNode.isParent == true){
+        expandNode(event, treeId, treeNode);
+        tree.zTree.expandNode(treeNode);
+    }    
+    else
         showTab(treeNode.name, null, treeNode.id);
 };
 
