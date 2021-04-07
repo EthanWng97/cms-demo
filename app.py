@@ -96,11 +96,11 @@ def _contruct_dict(sid, pid, description, name, tbtype):
 def _construct_select_sqlstring(sid):
     if sid is None:
         return (
-            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid IS NULL ORDER BY queue"
+            "SELECT * FROM \"dbo.springTb\" WHERE \"pId\" IS NULL ORDER BY queue"
         )
     else:
         return (
-            "SELECT * FROM dbo.springtb WHERE dbo.springtb.pid = '%s' ORDER BY queue"
+            "SELECT * FROM \"dbo.springTb\" WHERE \"pId\" = '%s' ORDER BY queue"
             % (sid)
         )
 
@@ -108,12 +108,14 @@ def _construct_select_sqlstring(sid):
 def _construct_sqlstring(type):
     if type == "call":
         return text(
-            "CALL dbo.springTb_Action(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);"
+            "CALL \"dbo.springTb_Action\"(_userId=>:_userId, _userName=> :_userName, _info=> :_info,  _entity=>:_entity, _error=>:_error, _eInfo=>:_eInfo);"
         )
     elif type == "row":
-        return text("select * from dbo.springtb where sid=:_sid;")
+        return text("select * from \"dbo.springTb\" where \"sId\"=:_sid ORDER BY queue;")
+    elif type == "table1":
+        return text("select * from \"dbo.springField\" where \"tbId\"=:_sid ORDER BY queue;")
     elif type == "table2":
-        return text("select * from dbo.springTbUiTemplate where tbid=:_sid;")
+        return text("select * from \"dbo.springTbUiTemplate\" where \"tbId\"=:_sid;")
 
 
 def _fetch_tree_data(sid, isJson=False):
@@ -161,6 +163,7 @@ def _fetch_action_data(action_json):
             "_eInfo": action_json["_eInfo"],
         },
     )
+    print(result)
     db_session.commit()
     return result
 
@@ -184,9 +187,9 @@ def _fetch_row_data(row_json):
     )
     return result
 
-def _fetch_table2_data(row_json):
+def _fetch_table_data(row_json, table):
     sql_string = ""
-    sql_string = _construct_sqlstring("table2")
+    sql_string = _construct_sqlstring(table)
     result = db_session.execute(
         sql_string,
         {
@@ -239,39 +242,19 @@ def get_rowdata(row_json):
             result[column] = _data_converter(value)
     return result
 
-def get_table2(table2_json):
+def get_table(table2_json,table):
     table2_json = json.loads(table2_json)
-    resultproxy = _fetch_table2_data(table2_json)
+    resultproxy = _fetch_table_data(table2_json, table)
     result = []
-    i = 0
     for rowproxy in resultproxy:
         _dict = {}
         for column, value in rowproxy.items():
-            if column == "sid":
+            if column == "sId":
                 _dict['id'] = _data_converter(value)
-            elif column == "type":
-                _dict['type'] = _data_converter(value)
-            elif column == "no":
-                _dict['no'] = _data_converter(value)
-            elif column == "name":
-                _dict['name'] = _data_converter(value)
-            elif column == "description":
-                _dict['description'] = _data_converter(value)
-            elif column == "descriptionen":
-                _dict['descriptionEn'] = _data_converter(value)
-            elif column == "remark":
-                _dict['remark'] = _data_converter(value)
-            elif column == "createuser":
-                _dict['createUser'] = _data_converter(value)
-            elif column == "createtime":
-                _dict['createTime'] = _data_converter(value)
-            elif column == "modifyuser":
-                _dict['modifyUser'] = _data_converter(value)
-            elif column == "modifytime":
-                _dict['modifyTime'] = _data_converter(value)
+            else:
+                _dict[column] = _data_converter(value)
         result.append(_dict)
     return result
-
 
 @app.route("/dataset/load", methods=["GET", "POST"])
 def dataset_load():
@@ -310,8 +293,8 @@ def dataset_load():
     groups = _fetch_tree_data(sid, isJson)
     result = {}
     for i in groups:
-        pid = _xpid(i.pid)
-        _dict = _contruct_dict(i.sid, i.pid, i.description, i.name, i.tbtype)
+        pid = _xpid(i.pId)
+        _dict = _contruct_dict(i.sId, i.pId, i.description, i.name, i.tbType)
         if pid not in result.keys():
             result[pid] = []
         result[pid].append(_dict)
@@ -454,78 +437,23 @@ def dataset_table1(sid):
     """
     page = request.args.get("page")
     limit = request.args.get("limit")
-    print(sid)
+    # print(sid)
     # print(page)
     # print(limit)
-    data = []
-    data_list1 = {
-        "id":"00194a35-0e40-4583-bb19-407271dfe69e",
-        "isField": 1,
-        "name": "sId",
-        "description": "主键",
-        "fdType": "varchar",
-        "length": "36",
-        "decimal": "0",
-        "descriptionEn": "主键",
-        "isNullable": 1,
-        "isUseable": 1,
-        "isForeignKey": 1,
-        "fkTbId": None,
-        "fkFieldId": None,
-        "defaultValue": None,
-        "uiType": 2,
-        "uiMask": None,
-        "uiVisible": 1,
-        "uiReadOnly": 1,
-        "uiWidth": "60",
-        "uiDefault": None,
-        "isAddField": 1,
-        "isEditField": 1,
-        "orderType": 1,
-        "remark": None,
-        "createUser": "创建用户",
-        "createTime": "创建时间",
-        "modifyUser": "修改用户",
-        "modifyTime": "修改时间",
+    table1_json = {
+        "sid":sid,
+        "page":page,
+        "limit":limit,
     }
-    data_list2 = {
-        "id": "0067a87a-0a42-474f-a3a2-b682120da2c7",
-        "isField": 1,
-        "name": "sId123",
-        "description": "测试",
-        "fdType": "integer",
-        "length": "36",
-        "decimal": "0",
-        "descriptionEn": "主键",
-        "isNullable": 1,
-        "isUseable": 1,
-        "isForeignKey": 1,
-        "fkTbId": None,
-        "fkFieldId": None,
-        "defaultValue": None,
-        "uiType": 2,
-        "uiMask": None,
-        "uiVisible": 0,
-        "uiReadOnly": 1,
-        "uiWidth": "60",
-        "uiDefault": None,
-        "isAddField": 1,
-        "isEditField": 1,
-        "orderType": 1,
-        "remark": None,
-        "createUser": "创建用户",
-        "createTime": "创建时间",
-        "modifyUser": "修改用户",
-        "modifyTime": "修改时间",
-    }
-    data.append(data_list1)
-    data.append(data_list2)
+    table1_json = json.dumps(table1_json)
+    result1 = get_table(table1_json, "table1")
     result = {
-        "code":0,
-        "msg":"",
-        "count":1000,
-        "data": data
-    }
+            "code":0,
+            "msg":"",
+            "count":1000,
+            "data": result1
+        }
+    print(result)
     return json.dumps(result)
 
 @app.route("/dataset/table2/<sid>", methods=["GET", "POST"])
@@ -569,7 +497,7 @@ def dataset_table2(sid):
         "limit":limit,
     }
     table2_json = json.dumps(table2_json)
-    result1 = get_table2(table2_json)
+    result1 = get_table(table2_json, "table2")
     result = {
             "code":0,
             "msg":"",
