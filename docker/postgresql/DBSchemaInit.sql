@@ -753,17 +753,20 @@ DECLARE
 
 BEGIN
 	--判断与父项的连接是否允许----------
-    CALL "dbo.springCheckRel2"('springTb', 'tbType', _pId, _tbType, _eInfo);
-    if _eInfo != '0' THEN
+    CALL "dbo.springCheckRel2"('springTb', 'tbType', _pId, _tbType, _error);
+    if _error != '0' THEN
+    	_eInfo := _error;
 		return;
 	end if;
+    _error := _language;
 	-------------------------------------
 	--判断与子项的连接是否允许-----------
     for _ctbType in select "tbType" from "dbo.springTb" where "pId"=_sId
     loop
-    	CALL "dbo.springCheckRel"('springTb', 'tbType', _tbType, _ctbType, _eInfo);
-		if _eInfo != '0' Then
-			return;
+    	CALL "dbo.springCheckRel"('springTb', 'tbType', _tbType, _ctbType, _error);
+		if _error != '0' Then
+			_eInfo := _error;
+            return;
 		end if;
 		_error := _language;
     END LOOP;
