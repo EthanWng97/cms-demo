@@ -1028,15 +1028,15 @@ CALL dbo.springTb_Action(_userId=>'120912',
 
 
 CALL dbo.springTb_Upp(
-    _sid => '378ea5cb-0916-4cbc-a10c-8742d36e3d1c', 
-    _pid => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _sid => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _pid => '123', 
     _tbtype => 1, 
-    _name => 'springTb', 
-    _shortname => '123', 
-    _description => '表测试', 
-    _descriptionen => '123', 
-    _tbname => 'springTb', 
-    _fieldname => '123', 
+    _name => '数据模型', 
+    _shortname => '数据模型', 
+    _description => '数据模型', 
+    _descriptionen => '', 
+    _tbname => '', 
+    _fieldname => '', 
     _fieldno => 1, 
     _isfile => 0, 
     _filepathno => '123', 
@@ -1065,4 +1065,24 @@ CALL dbo.springTb_Upp(
     '123', 
     '123', 
     '123'
+);
+
+CALL "dbo.springTb_Upp"(
+    _sid => 'ed18688a-b8e9-469b-a25f-37d0ca946663', 
+    _pid => 'f0eff541-4e35-4ef5-a5ae-7df2df3f05ea', 
+    _tbtype => 1, 
+    _name => '数据模型', 
+    _shortname => '数据模型', 
+    _description => '数据模型', 
+    _descriptionen => '', 
+    _tbname => '', 
+    _fieldname => '', 
+    _fieldno => 1, 
+    _isfile => 0, 
+    _filepathno => '123', 
+    _storedprocname => 'springTb_Action', 
+    _remark => '123', 
+    _modifyuser => '123', 
+    _error => '', 
+    _einfo => ''
 );
