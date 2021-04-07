@@ -88,7 +88,7 @@ function constructForm(data) {
 
 function submitForm() {
     jsonObj = createActionJson(type = "upp");
-    // console.log(jsonObj)
+    console.log(jsonObj)
     var sendData = {
         action: jsonObj
     };
@@ -97,6 +97,7 @@ function submitForm() {
         layer.msg(msg);
         if (msg.indexOf("success") != -1) {
             tree.pTreeNode.name = _xname(tree.pTreeNode.pId, $('#description').val(), $('#name').val());
+            tree.pTreeNode.isParent = $('#tbType').val() == 0;
             tree.zTree.updateNode(tree.pTreeNode);
             $('#information').empty();
         }
@@ -133,8 +134,8 @@ function createActionJson(type, treeNode) {
         "_userName": "123",
         "_info": JSON.stringify(action_list),
         "_entity": "123",
-        "_error": "123",
-        "_eInfo": "123"
+        "_error": "",
+        "_eInfo": ""
     };
     return JSON.stringify(jsonObj);
 }
