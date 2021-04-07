@@ -163,13 +163,13 @@ function onRightClick(event, treeId, treeNode) {
     var x = event.clientX;
     var y = event.clientY;
 
-    $('#directory-tree-menu').css({
+    $('#tree-menu').css({
         left: x + 'px',
         top: y + 'px'
     }).show();
 
     $(document).on('mousedown', function (event) {
-        if (!(event.target.id == 'directory-tree-menu' || $(event.target).parents('#directory-tree-menu').length > 0)) {
+        if (!(event.target.id == 'tree-menu' || $(event.target).parents('#tree-menu').length > 0)) {
             hideMenu();
         }
     });
@@ -188,55 +188,55 @@ function onDblClick(event, treeId, treeNode) {
 };
 
 function hideMenu() {
-    $('#directory-tree-menu').hide();
+    $('#tree-menu').hide();
     $(document).off('mousedown');
 }
 
-$(document).on('click', '#menu-item-addRoot', function () {
+$(document).on('click', '#tree-menu-addRoot', function () {
     hideMenu();
     console.log("添加根");
 });
-$(document).on('click', '#menu-item-addTable', function () {
+$(document).on('click', '#tree-menu-addTable', function () {
     hideMenu();
     console.log("添加[列表]");
 });
-$(document).on('click', '#menu-item-addRela', function () {
+$(document).on('click', '#tree-menu-addRela', function () {
     hideMenu();
     console.log("添加[关联]");
 });
-$(document).on('click', '#menu-item-modify', function () {
+$(document).on('click', '#tree-menu-modify', function () {
     hideMenu();
     showForm('springtb', tree.pTreeNode)
 });
-$(document).on('click', '#menu-item-delete', function () {
+$(document).on('click', '#tree-menu-delete', function () {
     hideMenu();
     if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
 });
-$(document).on('click', '#menu-item-clip', function () {
+$(document).on('click', '#tree-menu-clip', function () {
     hideMenu();
     console.log("剪切[表]");
 });
-$(document).on('click', '#menu-item-sort', function () {
+$(document).on('click', '#tree-menu-sort', function () {
     hideMenu();
     console.log("排序");
 });
-$(document).on('click', '#menu-item-translate', function () {
+$(document).on('click', '#tree-menu-translate', function () {
     hideMenu();
     console.log("翻译");
 });
-$(document).on('click', '#menu-item-edit', function () {
+$(document).on('click', '#tree-menu-edit', function () {
     hideMenu();
     console.log("编辑");
 });
-$(document).on('click', '#menu-item-manageList', function () {
+$(document).on('click', '#tree-menu-manageList', function () {
     hideMenu();
     console.log("列表分组管理");
 });
-$(document).on('click', '#menu-item-procedure', function () {
+$(document).on('click', '#tree-menu-procedure', function () {
     hideMenu();
     console.log("存储过程");
 });
-$(document).on('click', '#menu-item-exportModel', function () {
+$(document).on('click', '#tree-menu-exportModel', function () {
     hideMenu();
     console.log("模型导出");
 });

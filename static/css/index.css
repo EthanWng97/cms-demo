@@ -13,7 +13,7 @@ ul#treeDemo {
 }
 
 /* rightClickMenu */
-#directory-tree-menu {
+.menu {
     position: absolute;
     top: 0;
     display: none;
@@ -26,14 +26,14 @@ ul#treeDemo {
     box-shadow: 0 0 10px #AAA;
 }
 
-#directory-tree-menu li {
+.menu li {
     padding: 5px 15px;
     list-style: none outside none;
     cursor: default;
     color: #666;
 }
 
-#directory-tree-menu li:hover {
+.menu li:hover {
     color: #EEE;
     background-color: #666;
 }
