@@ -2,7 +2,7 @@ var tbType = '<div class="layui-form-item">' +
     '<label class="layui-form-label">表类型</label>' +
     '<div class="layui-input-block">' +
     '<select id="tbType" name="tbType" lay-verify="required" class="tbType">' +
-    '<option value=""></option>' +
+    // '<option value=""></option>' +
     '<option value="0">文件夹</option>' +
     '<option value="1">表</option>' +
     '</select>' +
