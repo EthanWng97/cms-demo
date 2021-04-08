@@ -1,14 +1,14 @@
-layui.use(['table', 'form'], function () {});
+layui.use(['table', 'form', 'dropdown'], function () {});
 
 function showTable1(id) {
-    var tableId = '#table1-' + id;
+    type = 'table1';
     url = '/dataset/table1/';
     height = 600;
     cols = colsTable1;
     limit = 20;
-    showTable(id, tableId, url, height, cols, limit, function (res, curr, count) {
+    showTable(id, type, url, height, cols, limit, function (res, curr, count) {
         $.each(res.data, function (index, values, arr) {
-            console.log(values);
+            // console.log(values);
 
             // values['isField'];
             $('#isField-' + values['id']).prop("checked", values['isField'] == 1);
@@ -49,24 +49,42 @@ function showTable1(id) {
 }
 
 function showTable2(id) {
-    var tableId = '#table2-' + id;
+    type = "table2";
     url = '/dataset/table2/';
     height = 250;
     cols = colsTable2;
     limit = 20;
-    showTable(id, tableId, url, height, cols, limit, function (res, curr, count) {
+    showTable(id, type, url, height, cols, limit, function (res, curr, count) {
         $.each(res.data, function (index, values, arr) {
-            console.log(values);
+            // console.log(values);
 
             // values['isField'];
             $('#type-' + values['id']).val(values['type'].toString());
 
             layui.form.render();
         });
-    })
+    });
+    // layui.dropdown.render({
+    //     elem: '#table1', //也可绑定到 document，从而重置整个右键
+    //     trigger: 'contextmenu', //contextmenu
+    //     show: true,
+    //     id: 'table1-menu', //定义唯一索引
+    //     data: treeMenuItem,
+    //     click: function (obj, othis) {
+    //         console.log(treeNode.id);
+    //         if (obj.id === 'modify') {
+    //             showForm('springtb', tree.pTreeNode)
+    //         } else if (obj.id === 'delete') {
+    //             if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
+    //         } else {
+    //             layui.layer.alert(obj.title);
+    //         }
+    //     }
+    // });
 }
 
-function showTable(id, tableId, url, height, cols, limit, done) {
+function showTable(id, type, url, height, cols, limit, done) {
+    var tableId = '#' + type + '-' + id;
     var requestUrl = url + id
     layui.table.render({
 
@@ -84,6 +102,23 @@ function showTable(id, tableId, url, height, cols, limit, done) {
         limit: limit, //每页默认显示的数量
 
         done: function (res, curr, count) {
+            layui.dropdown.render({
+                elem: '.'+type, //也可绑定到 document，从而重置整个右键
+                trigger: 'contextmenu', //contextmenu
+                show: true,
+                id: type +'-menu', //定义唯一索引
+                data: tableMenuItem(type),
+                click: function (obj, othis) {
+                    console.log(obj);
+                    // if (obj.id === 'modify') {
+                    //     // showForm('springtb', tree.pTreeNode)
+                    // } else if (obj.id === 'delete') {
+                    //     if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
+                    // } else {
+                    //     layui.layer.alert(obj.title);
+                    // }
+                }
+            });
             // $('#isFieldCheckbox').val(data['fieldno']);
             //刷新select选择框渲染
             // $("[data-field='lowerHairPath']").css('display', 'none');
