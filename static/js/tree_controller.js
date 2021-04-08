@@ -171,7 +171,7 @@ function showTreeMenu(event, treeId, treeNode) {
         id: 'tree-menu', //定义唯一索引
         data: treeMenuItem,
         click: function (obj, othis) {
-            console.log(treeNode.id);
+            if(!treeNode) return;
             if (obj.id === 'modify') {
                 showForm('springtb', tree.pTreeNode)
             } else if (obj.id === 'delete') {
