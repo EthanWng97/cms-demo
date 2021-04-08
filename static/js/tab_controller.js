@@ -12,8 +12,8 @@ function showTab(title, content, id) {
         }
     })
     if (isExist == false) {
-        content = '<table id="' +'table1-'+ id + '" lay-filter="test"></table>'+
-        '<table id="' + 'table2-' + id + '" lay-filter="test"></table>';
+        content = '<div class="table1"><table id="' +'table1-'+ id + '" class="table1" lay-filter="test"></table></div>'+
+        '<div class="table2"><table id="' + 'table2-' + id + '" class="table2" lay-filter="test"></table></div>';
         tabAdd(title, content, id);
         showTable1(id);
         showTable2(id);
