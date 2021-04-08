@@ -160,17 +160,25 @@ function onRemove(treeNode) {
 function onRightClick(event, treeId, treeNode) {
     tree.pTreeId = treeId;
     tree.pTreeNode = treeNode;
-    var x = event.clientX;
-    var y = event.clientY;
+    showTreeMenu(event, treeId, treeNode);
+}
 
-    $('#tree-menu').css({
-        left: x + 'px',
-        top: y + 'px'
-    }).show();
-
-    $(document).on('mousedown', function (event) {
-        if (!(event.target.id == 'tree-menu' || $(event.target).parents('#tree-menu').length > 0)) {
-            hideMenu();
+function showTreeMenu(event, treeId, treeNode) {
+    layui.dropdown.render({
+        elem: '#ztree', //也可绑定到 document，从而重置整个右键
+        trigger: 'contextmenu', //contextmenu
+        show: true,            
+        id: 'tree-menu', //定义唯一索引
+        data: treeMenuItem,
+        click: function (obj, othis) {
+            console.log(treeNode.id);
+            if (obj.id === 'modify') {
+                showForm('springtb', tree.pTreeNode)
+            } else if (obj.id === 'delete') {
+                if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
+            } else {
+                layui.layer.alert(obj.title);
+            }
         }
     });
 }
@@ -186,57 +194,3 @@ function onDblClick(event, treeId, treeNode) {
     else
         showTab(treeNode.name, null, treeNode.id);
 };
-
-function hideMenu() {
-    $('#tree-menu').hide();
-    $(document).off('mousedown');
-}
-
-$(document).on('click', '#tree-menu-addRoot', function () {
-    hideMenu();
-    console.log("添加根");
-});
-$(document).on('click', '#tree-menu-addTable', function () {
-    hideMenu();
-    console.log("添加[列表]");
-});
-$(document).on('click', '#tree-menu-addRela', function () {
-    hideMenu();
-    console.log("添加[关联]");
-});
-$(document).on('click', '#tree-menu-modify', function () {
-    hideMenu();
-    showForm('springtb', tree.pTreeNode)
-});
-$(document).on('click', '#tree-menu-delete', function () {
-    hideMenu();
-    if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
-});
-$(document).on('click', '#tree-menu-clip', function () {
-    hideMenu();
-    console.log("剪切[表]");
-});
-$(document).on('click', '#tree-menu-sort', function () {
-    hideMenu();
-    console.log("排序");
-});
-$(document).on('click', '#tree-menu-translate', function () {
-    hideMenu();
-    console.log("翻译");
-});
-$(document).on('click', '#tree-menu-edit', function () {
-    hideMenu();
-    console.log("编辑");
-});
-$(document).on('click', '#tree-menu-manageList', function () {
-    hideMenu();
-    console.log("列表分组管理");
-});
-$(document).on('click', '#tree-menu-procedure', function () {
-    hideMenu();
-    console.log("存储过程");
-});
-$(document).on('click', '#tree-menu-exportModel', function () {
-    hideMenu();
-    console.log("模型导出");
-});
