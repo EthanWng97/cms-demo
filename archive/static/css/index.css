@@ -1,0 +1,62 @@
+/* treeDemo */
+.ztree * {
+    font-size: 13px;
+    padding: 1px;
+}
+
+ul#treeDemo {
+    width: 20%;
+    overflow: true;
+    margin-left: 10px;
+    min-height: 970px;
+    min-width: 300px;
+}
+
+/* information_form */
+/* form frame style */
+form#information {
+    margin: 1%;
+}
+
+/* form item style */
+.layui-form-item {
+    height: 25px;
+}
+
+/* left item */
+label.layui-form-label {
+    width: 120px;
+    text-align: left;
+}
+
+/* right item */
+input.layui-input {
+    width: 80%;
+}
+
+/* .layui-table-box .layui-table-main table tr {
+    height: 47.5px;
+    line-height: 47.5px;
+}
+
+.layui-table-box .layui-table-fixed .layui-table-body table tr {
+    height: 47.5px;
+
+} */
+
+/* .layui-table-cell * {
+    height: 36px;
+    line-height: 36px;
+} */
+
+/* 防止下拉框的下拉列表被隐藏---必须设置--- */
+.layui-table-cell {
+    overflow: visible !important;
+}
+
+/* 使得下拉框与单元格刚好合适 */
+td .layui-form-select {
+    margin-top: -10px;
+    margin-left: -15px;
+    margin-right: -15px;
+}
