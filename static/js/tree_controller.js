@@ -32,7 +32,7 @@ if(method == "normal"){
                 var sendData = {
                     sId: JSON.stringify(data_list)
                 };
-                wrapAjax(true, "dataset/load", "POST", "json", sendData, false, function (data) {
+                wrapAjax(true, "dataset/tree", "POST", "json", sendData, false, function (data) {
                     tree.addSubNodes(data);
                 }, function (error) {
                     console.log(error);
@@ -65,7 +65,7 @@ else if (method == "async"){
             },
             async: { // 属性配置
                 enable: true,
-                url: "dataset/load",
+                url: "dataset/tree",
                 otherParam: getParam,
                 type: 'post',
                 dataType: "json",
@@ -105,7 +105,7 @@ function dataFilter(treeId, parentNode, responseData) {
 }
 
 function onLoadTree() {
-    wrapAjax(true, "dataset/load", "POST", "json", null, true, function (data) {
+    wrapAjax(true, "dataset/tree", "POST", "json", null, true, function (data) {
         zNodes = data["0"];
         tree.zTree = $.fn.zTree.init($("#treeDemo"), tree.setting, zNodes);
         tree.preLoadNode(tree.zTree.getNodes());

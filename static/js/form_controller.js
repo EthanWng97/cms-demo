@@ -88,7 +88,7 @@ function constructForm(data) {
 
 function submitForm() {
     jsonObj = createActionJson(type = "upp");
-    console.log(jsonObj)
+    // console.log(jsonObj)
     var sendData = {
         action: jsonObj
     };
