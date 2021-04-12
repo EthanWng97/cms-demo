@@ -5,6 +5,13 @@ layui.use(['element', 'jquery'], function () {
 });
 
 function showTab(title, content, id) {
+    /**
+     * Description. 展示 Tab
+     *
+     * @param {string}   title 从树形结构返回的节点 name，用于 tab title 的显示
+     * @param {string}   content Tab 中显示的具体内容
+     * @param {string}   id 从树形结构返回的节点 id，作为 tab 的唯一索引值
+     */
     var isExist = false;
     $.each($(".layui-tab-title li[lay-id]"), function () {
         if ($(this).attr("lay-id") == id) {
@@ -22,6 +29,13 @@ function showTab(title, content, id) {
 }
 
 function tabAdd(title, content, id) {
+    /**
+     * Description. 添加 Tab
+     *
+     * @param {string}   title 从树形结构返回的节点 name，用于 tab title 的显示
+     * @param {string}   content Tab 中显示的具体内容
+     * @param {string}   id 从树形结构返回的节点 id，作为 tab 的唯一索引值
+     */
     layui.element.tabAdd('docDemoTabBrief', {
         title: title,
         content: content,
@@ -30,5 +44,10 @@ function tabAdd(title, content, id) {
 }
 
 function tabChange(id) {
+    /**
+     * Description. 切换 Tab
+     *
+     * @param {string}   id 从树形结构返回的节点 id，作为 tab 的唯一索引值
+     */
     layui.element.tabChange('docDemoTabBrief', id)
 }

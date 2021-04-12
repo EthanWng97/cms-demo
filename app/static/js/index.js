@@ -17,7 +17,6 @@ function wrapAjax(cache, url, type, dataType, sendData = null, async = true, suc
 
 $(function () {
     onLoadTree();
-    // showTable();
     var pagestyle = function () {
         var container = $("#tab-container");
         var w = $(window).width() - 350;
