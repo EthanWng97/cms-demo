@@ -6,13 +6,13 @@ function convertName(pid, description, name) {
     return description + "[" + name + "]"
 }
 
+/**
+ * Description. 展示 layui 表格信息
+ *
+ * @param {string}   database 获取 Form 的信息来源（database）
+ * @param {Object}   treeNode 获取 Form 的信息来源（表id）
+ */
 function showForm(database, treeNode) {
-    /**
-     * Description. 展示 layui 表格信息
-     *
-     * @param {string}   database 获取 Form 的信息来源（database）
-     * @param {Object}   treeNode 获取 Form 的信息来源（表id）
-     */
     $("#information").empty();
 
     // get details given treeNode.id to create form
@@ -30,12 +30,12 @@ function showForm(database, treeNode) {
     });
 }
 
+/**
+ * Description. 构建表格信息
+ *
+ * @param {Object}   data 从数据库返回的 form 信息
+ */
 function createForm(data) {
-    /**
-     * Description. 构建表格信息
-     *
-     * @param {Object}   data 从数据库返回的 form 信息
-     */
     // construct form given list of data
     constructForm(data);
 
@@ -65,12 +65,12 @@ function createForm(data) {
 
 }
 
+/**
+ * Description. 通过 data 内容动态加载表格信息
+ *
+ * @param {Object}   data 从数据库返回的 form 信息
+ */
 function constructForm(data) {
-    /**
-     * Description. 通过 data 内容动态加载表格信息
-     *
-     * @param {Object}   data 从数据库返回的 form 信息
-     */
     for (var val in data) {
         if (val == 'tbType')
             $("#information").append(tbType);
@@ -107,10 +107,10 @@ function constructForm(data) {
     };
 }
 
+/**
+ * Description. 提交表单
+ */
 function submitForm() {
-    /**
-     * Description. 提交表单
-     */
     jsonObj = createActionJson(type = "upp");
     var sendData = {
         action: jsonObj
@@ -130,13 +130,13 @@ function submitForm() {
     });
 }
 
+/**
+ * Description. 构建 action 返回体
+ *
+ * @param {string}   type action 的类型，如果是更新则为 upp
+ * @param {Object}   treeNode action 所对应的树形节点信息
+ */
 function createActionJson(type, treeNode) {
-    /**
-     * Description. 构建 action 返回体
-     *
-     * @param {string}   type action 的类型，如果是更新则为 upp
-     * @param {Object}   treeNode action 所对应的树形节点信息
-     */
     var data = layui.form.val("information");
     var info_json = {
         "action": type,
@@ -169,12 +169,12 @@ function createActionJson(type, treeNode) {
     return JSON.stringify(jsonObj);
 }
 
+/**
+ * Description. 从后台返回的数据填充表单
+ *
+ * @param {Object}   data 后台返回的数据
+ */
 function fillForm(data) {
-    /**
-     * Description. 从后台返回的数据填充表单
-     *
-     * @param {Object}   data 后台返回的数据
-     */
     var form = layui.form;
     form.val("information", {
         "tbType": data['tbType'],

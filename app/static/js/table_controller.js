@@ -56,49 +56,24 @@ function showTable2(id) {
     limit = 20;
     showTable(id, type, url, height, cols, limit, function (res, curr, count) {
         $.each(res.data, function (index, values, arr) {
-            // console.log(values);
-
-            // values['isField'];
             $('#type-' + values['id']).val(values['type'].toString());
 
             layui.form.render();
         });
     });
-    // layui.dropdown.render({
-    //     elem: '#table1', //也可绑定到 document，从而重置整个右键
-    //     trigger: 'contextmenu', //contextmenu
-    //     show: true,
-    //     id: 'table1-menu', //定义唯一索引
-    //     data: treeMenuItem,
-    //     click: function (obj, othis) {
-    //         console.log(treeNode.id);
-    //         if (obj.id === 'modify') {
-    //             showForm('springtb', tree.pTreeNode)
-    //         } else if (obj.id === 'delete') {
-    //             if (beforeRemove(tree.pTreeNode)) onRemove(tree.pTreeNode);
-    //         } else {
-    //             layui.layer.alert(obj.title);
-    //         }
-    //     }
-    // });
 }
 
 function showTable(id, type, url, height, cols, limit, done) {
     var tableId = '#' + type + '-' + id;
     var requestUrl = url + id
     layui.table.render({
-
         elem: tableId, //指定原始表格元素选择器（推荐id选择器）
         url: requestUrl,
-
         height: height, //容器高度
         cols: cols,
-        // data: data_template,
-
         even: true,
         //,page: true //是否显示分页
         //,limits: [5, 7, 10]
-
         limit: limit, //每页默认显示的数量
 
         done: function (res, curr, count) {
