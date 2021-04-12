@@ -1,5 +1,10 @@
 layui.use(['table', 'form', 'dropdown'], function () {});
 
+/**
+ * Description. 展示 Table1
+ *
+ * @param {string}   id 从树形结构返回的节点 id，作为 tab 的唯一索引值
+ */
 function showTable1(id) {
     type = 'table1';
     url = '/dataset/table1/';
@@ -48,6 +53,11 @@ function showTable1(id) {
     })
 }
 
+/**
+ * Description. 展示 Table2
+ *
+ * @param {string}   id 从树形结构返回的节点 id，作为 tab 的唯一索引值
+ */
 function showTable2(id) {
     type = "table2";
     url = '/dataset/table2/';
@@ -63,6 +73,17 @@ function showTable2(id) {
     });
 }
 
+/**
+ * Description. 展示 Table
+ *
+ * @param {string}   id 来自 Tab 的唯一索引值，用于构建table的唯一索引值
+ * @param {string}   type Table 的类型
+ * @param {string}   url 后台数据接口
+ * @param {string}   height 表格高度
+ * @param {string}   cols 表格列属性
+ * @param {string}   limit table 最多显示的数据条数
+ * @param {string}   done 表格加载完的回调函数
+ */
 function showTable(id, type, url, height, cols, limit, done) {
     var tableId = '#' + type + '-' + id;
     var requestUrl = url + id
@@ -94,33 +115,6 @@ function showTable(id, type, url, height, cols, limit, done) {
                     // }
                 }
             });
-            // $('#isFieldCheckbox').val(data['fieldno']);
-            //刷新select选择框渲染
-            // $("[data-field='lowerHairPath']").css('display', 'none');
-            // $(".layui-table-main tr").each(function (index, val) {
-            //     $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
-            //     $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
-            // });
-            // //动态监听表头高度变化，冻结行跟着改变高度
-            // $(".layui-table-header tr").resize(function () {
-            //     $(".layui-table-header tr").each(function (index, val) {
-            //         $($(".layui-table-fixed .layui-table-header table tr")[index]).height($(val).height());
-            //     });
-            // });
-            // //初始化高度，使得冻结行表头高度一致
-            // $(".layui-table-header tr").each(function (index, val) {
-            //     $($(".layui-table-fixed .layui-table-header table tr")[index]).height($(val).height());
-            // });
-            // //动态监听表体高度变化，冻结行跟着改变高度
-            // $(".layui-table-body tr").resize(function () {
-            //     $(".layui-table-body tr").each(function (index, val) {
-            //         $($(".layui-table-fixed .layui-table-body table tr")[index]).height($(val).height());
-            //     });
-            // });
-            // //初始化高度，使得冻结行表体高度一致
-            // $(".layui-table-body tr").each(function (index, val) {
-            //     $($(".layui-table-fixed .layui-table-body table tr")[index]).height($(val).height());
-            // });
             done(res, curr, count);
         }
     });
