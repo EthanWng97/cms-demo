@@ -12,7 +12,7 @@ dataset = Blueprint("dataset",__name__)
 
 Base = declarative_base()
 engine = create_engine(
-    "postgresql+psycopg2://postgres:19971004@198.13.60.74:5432/postgres",
+    "postgresql+psycopg2://postgres:19971004@postgresql:5432/postgres",
     pool_size=50,
     max_overflow=20,
 )
