@@ -66,7 +66,7 @@ else if (method == "async"){
             async: { // 属性配置
                 enable: true,
                 url: "dataset/tree",
-                otherParam: getParam,
+                otherParam: otherParam,
                 type: 'post',
                 dataType: "json",
                 dataFilter: dataFilter
@@ -88,8 +88,14 @@ else if (method == "async"){
         }
     }
 }
-
-function getParam(treeId, treeNode) {
+/**
+ * Description. 用于异步加载post参数的构建
+ *
+ * @param {JSON}   treeNode 节点的 JSON 数据对象
+ *
+ * @return {JSON}  jsonObj 参数列表
+ */
+function otherParam(treeId, treeNode) {
     var data_list = [];
     data_list.push(treeNode.id);
     var jsonObj = {
@@ -98,12 +104,23 @@ function getParam(treeId, treeNode) {
     return jsonObj
 }
 
+/**
+ * Description. 用于异步加载返回数据的筛选
+ *
+ * @param {JSON}   treeNode 节点的 JSON 数据对象
+ * @param {JSON}   responseData 数据接口返回数据
+ *
+ * @return {JSON}  jsonObj 参数列表
+ */
 function dataFilter(treeId, parentNode, responseData) {
     if (responseData) {
         return responseData[parentNode.id];
     }
 }
 
+/**
+ * Description. 加载树，当网页加载完进行自动加载
+ */
 function onLoadTree() {
     wrapAjax(true, "dataset/tree", "POST", "json", null, true, function (data) {
         zNodes = data["0"];
@@ -114,12 +131,27 @@ function onLoadTree() {
     });
 }
 
+/**
+ * Description. 展开父节点的回调函数
+ *
+ * @param {JSON}   treeNode 节点的 JSON 数据对象
+ *
+ */
 function expandNode(event, treeId, treeNode) {
     if (!treeNode.isParent) return;
     var data = treeNode.children;
     tree.preLoadNode(data);
 };
 
+/**
+ * Description. 重命名前的回调函数，用来判断节点是否满足重命名条件
+ *
+ * @param {JSON}   treeNode 节点的 JSON 数据对象
+ * @param {string}   newName 新节点名称
+ * @param {bool}   isCancel 是否取消操作
+ * 
+ * @return {bool}  返回该节点是否可以重命名
+ */
 function beforeRename(treeId, treeNode, newName, isCancel) {
     if (isCancel == true) return
     if (newName.length == 0) {
@@ -133,6 +165,13 @@ function beforeRename(treeId, treeNode, newName, isCancel) {
     return true;
 }
 
+/**
+ * Description. 删除前的回调函数，用来判断节点是否满足删除条件
+ *
+ * @param {JSON}   treeNode 节点的 JSON 数据对象
+ * 
+ * @return {bool}  返回该节点是否可以删除
+ */
 function beforeRemove(treeNode) {
     if (treeNode.children != undefined) {
         layer.msg("请先删除子项表。");
@@ -141,6 +180,12 @@ function beforeRemove(treeNode) {
     return true;
 }
 
+/**
+ * Description. 删除节点的回调函数
+ *
+ * @param {Object}   treeNode 节点信息
+ * 
+ */
 function onRemove(treeNode) {
     jsonObj = createActionJson(type = "del");
     var sendData = {
@@ -157,12 +202,28 @@ function onRemove(treeNode) {
     });
 }
 
+/**
+ * Description. 鼠标右键点击节点的回调函数
+ *
+ * @param {event}   event  js event 对象
+ * @param {string}   treeId 节点id
+ * @param {JSON}   treeNode 鼠标右键点击时所在节点的 JSON 数据对象
+ * 
+ */
 function onRightClick(event, treeId, treeNode) {
     tree.pTreeId = treeId;
     tree.pTreeNode = treeNode;
     showTreeMenu(event, treeId, treeNode);
 }
 
+/**
+ * Description. 显示右键菜单
+ *
+ * @param {event}   event  js event 对象
+ * @param {string}   treeId 节点id
+ * @param {JSON}   treeNode 鼠标右键点击时所在节点的 JSON 数据对象
+ * 
+ */
 function showTreeMenu(event, treeId, treeNode) {
     layui.dropdown.render({
         elem: '#ztree', //也可绑定到 document，从而重置整个右键
@@ -183,6 +244,14 @@ function showTreeMenu(event, treeId, treeNode) {
     });
 }
 
+/**
+ * Description. 鼠标双击点击节点的回调函数
+ *
+ * @param {event}   event  js event 对象
+ * @param {string}   treeId 节点id
+ * @param {JSON}   treeNode 鼠标右键点击时所在节点的 JSON 数据对象
+ * 
+ */
 function onDblClick(event, treeId, treeNode) {
     tree.pTreeId = treeId;
     tree.pTreeNode = treeNode;
