@@ -1,0 +1,30 @@
+version: "3"
+services:
+  cms: # set Mercury Parser API endpoint to `service.mercury:3000` on TTRSS plugin setting page
+    image: navepnow/cms:latest
+    container_name: cms
+    ports:
+      - 5000:5000
+    restart: always
+    links:
+      - postgresql
+
+  postgresql:
+    image: navepnow/postgresql:latest
+    container_name: postgresql
+    # expose:
+    #   - 5432
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    # networks:
+    #   - database_only
+    restart: always
+
+# networks:
+#   public_access: # Provide the access for ttrss UI
+#   service_only: # Provide the communication network between services only
+#     internal: true
+#   database_only: # Provide the communication between ttrss and database only
+#     internal: true
