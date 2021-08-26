@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <!-- <script src="{{ url_for('static',filename='js/tree.js') }}"></script> -->
+    <!-- <script src="/static/js/tree.js"></script> -->
+    <link rel="stylesheet" href="/static/zTree_v3/css/demo.css" type="text/css">
+    <link rel="stylesheet" href="/static/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/index.css" type="text/css">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" type="text/css">
+    <script src="/static/js/jquery.min.js "></script>
+    <script type="text/javascript" src="/static/zTree_v3/js/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="/static/layui/layui.js"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/form_template.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/table_template.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/table_template.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/menu_template.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/index.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tree_controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/form_controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/table_controller.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/tab_controller.js') }}"></script>
+
+</head>
+
+<body>
+    <div class="tree-container" style="float:left; display:inline">
+        <ul id="treeDemo" class="ztree"></ul>
+        <form class="layui-form" id="information" method="post" lay-filter="information">
+        </form>
+    </div>
+    <div class="tab-container" id="tab-container" style="float:right; display:inline; ">
+        <div class="layui-tab layui-tab-card" lay-allowClose="true" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+            </ul>
+            <div class="layui-tab-content" id="tab-show" style="min-height: 920px; min-width: 500px;">
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

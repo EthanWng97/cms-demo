@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"sqltools.connections": [
+			{
+				"previewLimit": 50,
+				"server": "198.13.60.74",
+				"port": 5433,
+				"driver": "PostgreSQL",
+				"name": "198.13.60.74",
+				"database": "wangyifan",
+				"username": "root",
+				"password": "120912"
+			},
+			{
+				"mssqlOptions": {
+					"appName": "SQLTools",
+					"useUTC": true,
+					"encrypt": true
+				},
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 1401,
+				"driver": "MSSQL",
+				"name": "docker",
+				"database": "TestDB",
+				"username": "SA",
+				"password": "Wyf&19971004"
+			}
+		]
+	}
+}

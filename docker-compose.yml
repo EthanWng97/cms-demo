@@ -1,0 +1,19 @@
+version: "3"
+services:
+  cms:
+    image: navepnow/cms:latest
+    container_name: cms
+    ports:
+      - 5000:5000
+    restart: always
+    links:
+      - postgresql
+
+  postgresql:
+    image: navepnow/postgresql:latest
+    container_name: postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    restart: always
